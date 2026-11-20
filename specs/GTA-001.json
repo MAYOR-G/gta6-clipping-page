@@ -1,0 +1,20 @@
+{
+  "src": "../raw/scout/MJaqXdJkxJs.mp4",
+  "out": "../renders/GTA-001.mp4",
+  "credit": "@ohnePixel (Twitch)",
+  "layout": "stack",
+  "facecam": [60, 690, 440, 390],
+  "game": [280, 100, 1200, 580],
+  "teaser": {"start": 17.2, "end": 19.6},
+  "teaser_text": "HE PROMISED GTA 6 CHAT NO MORE CRASHING",
+  "keep": [[5.5, 8.8], [13.6, 20.6]],
+  "slowmo": [
+    {"start": 17.4, "end": 18.1, "speed": 0.45}
+  ],
+  "punchlines": [
+    {"start": 14.3, "end": 16.8, "text": "FAMOUS LAST WORDS"},
+    {"start": 18.2, "end": 20.6, "text": "INSURANCE: DENIED"}
+  ],
+  "subtitles": "GTA-001.srt",
+  "volume": 1.35
+}

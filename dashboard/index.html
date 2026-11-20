@@ -1,0 +1,2050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vice City Chaos · GTA 6 Clipping Console</title>
+  <style>
+    :root {
+      /* Graphite neutral ramp (unslop dark dashboard tokens) */
+      --bg-sidebar: #0f0f10;
+      --bg-page: #141415;
+      --bg-card: #19191b;
+      --bg-raised: #222225;
+      --bg-hover: #2a2a2e;
+      /* Subtle solid dark-graphite hairlines (~1.25:1 against surface) */
+      --hairline: #232327;
+      --hairline-strong: #2e2e34;
+
+      /* Three text roles only */
+      --text-primary: #ededed;
+      --text-secondary: #a1a1a6;
+      --text-muted: #85858b;
+
+      /* Single Vice-dusk broadcast accent + toned semantic roles */
+      --accent: #e86f3a;
+      --accent-dim: #5e311d;
+      --accent-surface: #261a15;
+      --positive: #4cc38a;
+      --negative: #e5484d;
+      --warning: #d99b38;
+
+      /* Typography: single crisp sans family + tabular-nums everywhere */
+      --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+      /* Nested radii (cards 12, controls 8, tags 4) */
+      --r-card: 12px;
+      --r-control: 8px;
+      --r-tag: 4px;
+
+      /* Motion */
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --dur-fast: 150ms;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      background: var(--bg-page);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+      min-height: 100%;
+      max-width: 100%;
+      overflow-x: clip;
+    }
+
+    button, input {
+      font-family: inherit;
+      font-size: inherit;
+      color: inherit;
+    }
+
+    button:focus-visible, input:focus-visible, a:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    .tabular { font-variant-numeric: tabular-nums; }
+
+    /* App Shell: 240px sidebar + fluid canvas */
+    .app-shell {
+      display: grid;
+      grid-template-columns: 240px minmax(0, 1fr);
+      min-height: 100vh;
+      max-width: 100%;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: var(--bg-sidebar);
+      border-right: 1px solid var(--hairline);
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      min-width: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 4px 8px;
+    }
+
+    .brand-mark {
+      width: 24px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .brand-name {
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.2;
+      color: var(--text-primary);
+    }
+
+    .brand-scope {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.3;
+    }
+
+    .nav-section {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .nav-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      padding: 0 8px 4px;
+    }
+
+    .nav-btn {
+      width: 100%;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      padding: 0 8px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: var(--r-control);
+      color: var(--text-secondary);
+      cursor: pointer;
+      text-align: left;
+      transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+    }
+
+    .nav-btn:hover {
+      background: var(--bg-card);
+      color: var(--text-primary);
+    }
+
+    .nav-btn.active {
+      background: var(--bg-raised);
+      border-color: var(--hairline-strong);
+      color: var(--text-primary);
+    }
+
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .nav-icon {
+      width: 16px;
+      height: 16px;
+      flex-shrink: 0;
+      color: var(--text-muted);
+    }
+
+    .nav-btn.active .nav-icon {
+      color: var(--text-primary);
+    }
+
+    .nav-count {
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-muted);
+    }
+
+    .sidebar-foot {
+      margin-top: auto;
+      padding-top: 16px;
+      border-top: 1px solid var(--hairline);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 0 8px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .tally-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--positive);
+      flex-shrink: 0;
+    }
+
+    .tally-dot.warn { background: var(--warning); }
+    .tally-dot.bad { background: var(--negative); }
+
+    .meta-line {
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-muted);
+      padding: 0 8px;
+    }
+
+    /* Main Canvas */
+    .canvas {
+      width: 100%;
+      max-width: 1360px;
+      min-width: 0;
+      padding: 24px 32px 48px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Title Row */
+    .page-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .page-header h1 {
+      font-size: 24px;
+      font-weight: 500;
+      line-height: 1.2;
+      letter-spacing: -0.01em;
+      color: var(--text-primary);
+    }
+
+    .finding-line {
+      font-size: 14px;
+      color: var(--text-secondary);
+      max-width: 68ch;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      max-width: 100%;
+    }
+
+    .segmented {
+      display: inline-flex;
+      background: var(--bg-card);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-control);
+      padding: 2px;
+      gap: 2px;
+      max-width: 100%;
+      flex-wrap: wrap;
+    }
+
+    .seg-btn {
+      height: 30px;
+      padding: 0 12px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 6px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 400;
+      cursor: pointer;
+      transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+    }
+
+    .seg-btn:hover { color: var(--text-primary); }
+
+    .seg-btn.active {
+      background: var(--bg-raised);
+      border-color: var(--hairline-strong);
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .btn-secondary {
+      height: 34px;
+      padding: 0 12px;
+      background: var(--bg-raised);
+      border: 1px solid var(--hairline-strong);
+      border-radius: var(--r-control);
+      color: var(--text-primary);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+    }
+
+    .btn-secondary:hover { background: var(--bg-hover); }
+    .btn-secondary:active { transform: scale(0.98); }
+
+    /* Unified 4-column KPI strip split by 1px hairlines */
+    .kpi-strip {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr 1fr 1fr;
+      background: var(--bg-card);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-card);
+      overflow: hidden;
+      min-width: 0;
+    }
+
+    .kpi-cell {
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      border-right: 1px solid var(--hairline);
+      min-width: 0;
+    }
+
+    .kpi-cell:last-child { border-right: 0; }
+
+    .kpi-label {
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text-secondary);
+    }
+
+    .kpi-val {
+      font-size: 24px;
+      font-weight: 500;
+      line-height: 1.1;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-primary);
+    }
+
+    .kpi-cell.lead .kpi-val { font-size: 32px; }
+
+    .kpi-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .kpi-sub .good { color: var(--positive); }
+    .kpi-sub .bad { color: var(--negative); }
+
+    /* Asymmetric & Balanced Grids */
+    .row-main {
+      display: grid;
+      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .row-equal {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .row-bottom {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+      gap: 20px;
+      align-items: stretch;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-card);
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .card-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .card-title {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .card-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Main SVG Performance Chart */
+    .chart-wrap { width: 100%; }
+
+    .chart-svg {
+      width: 100%;
+      height: 268px;
+      display: block;
+    }
+
+    /* 24-Hour WAT Broadcast Slot Strip (Pure SVG, zero gradient lint issues) */
+    .wat-strip-block {
+      border-top: 1px solid var(--hairline);
+      padding-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .wat-strip-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .wat-svg {
+      width: 100%;
+      height: 64px;
+      display: block;
+    }
+
+    /* Platform Distribution + Health + Schedule Stack */
+    .plat-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .plat-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .plat-row-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 13px;
+      gap: 8px;
+    }
+
+    .plat-name {
+      color: var(--text-primary);
+      font-weight: 500;
+      text-transform: capitalize;
+    }
+
+    .plat-figs {
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-secondary);
+    }
+
+    .track {
+      width: 100%;
+      height: 6px;
+      background: var(--bg-raised);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .track-fill {
+      height: 100%;
+      background: var(--text-muted);
+      border-radius: 3px;
+    }
+
+    .track-fill.lead { background: var(--accent); }
+
+    .sub-block {
+      border-top: 1px solid var(--hairline);
+      padding-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .sub-block-label {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .kv-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      padding: 3px 0;
+      gap: 8px;
+    }
+
+    .kv-k { color: var(--text-secondary); }
+
+    .kv-v {
+      font-size: 12px;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-primary);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* Signals Lists */
+    .signal-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .signal-list li {
+      padding: 12px;
+      background: var(--bg-sidebar);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-control);
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.45;
+    }
+
+    /* Table Controls & Data Table */
+    .table-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .search-input {
+      height: 34px;
+      width: 240px;
+      max-width: 100%;
+      padding: 0 12px;
+      background: var(--bg-sidebar);
+      border: 1px solid var(--hairline-strong);
+      border-radius: var(--r-control);
+      color: var(--text-primary);
+      font-size: 13px;
+      transition: border-color var(--dur-fast) var(--ease);
+    }
+
+    .search-input::placeholder { color: var(--text-muted); }
+    .search-input:focus { border-color: var(--accent); outline: none; }
+
+    .table-scroll {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th {
+      text-align: left;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--hairline-strong);
+      white-space: nowrap;
+    }
+
+    th.num, td.num {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    th.sortable { cursor: pointer; user-select: none; }
+    th.sortable:hover { color: var(--text-primary); }
+
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--hairline);
+      color: var(--text-primary);
+      vertical-align: middle;
+    }
+
+    tbody tr { transition: background var(--dur-fast) var(--ease); }
+    tbody tr.clickable { cursor: pointer; }
+    tbody tr.clickable:hover td,
+    tbody tr.selected td { background: var(--bg-raised); }
+
+    .hook-cell {
+      max-width: 260px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .muted { color: var(--text-muted); }
+    .secondary { color: var(--text-secondary); }
+
+    .tag-quiet {
+      display: inline-block;
+      padding: 2px 6px;
+      border-radius: var(--r-tag);
+      background: var(--bg-raised);
+      border: 1px solid var(--hairline-strong);
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .tag-quiet.good {
+      color: var(--positive);
+      border-color: #254a3a;
+    }
+
+    .tag-quiet.accent {
+      color: var(--accent);
+      border-color: var(--accent-dim);
+    }
+
+    /* Inline Selected Clip Inspector */
+    .clip-drawer {
+      background: var(--bg-sidebar);
+      border: 1px solid var(--hairline-strong);
+      border-radius: var(--r-control);
+      padding: 16px;
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .clip-drawer.open { display: flex; }
+
+    .drawer-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      font-size: 13px;
+    }
+
+    .drawer-k { font-size: 12px; color: var(--text-muted); margin-bottom: 2px; }
+    .drawer-v { color: var(--text-primary); word-break: break-word; }
+
+    /* Monetization Progress Bar */
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .stream-list {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stream-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--hairline);
+    }
+
+    .stream-row:last-child { border-bottom: 0; }
+    .stream-name { font-size: 13px; font-weight: 500; color: var(--text-primary); }
+    .stream-req { font-size: 12px; color: var(--text-muted); }
+
+    .section-hidden { display: none !important; }
+
+    /* Responsive Tablet & Mobile (Zero Horizontal Overflow) */
+    @media (max-width: 1024px) {
+      .app-shell { grid-template-columns: minmax(0, 1fr); }
+      .sidebar {
+        position: static;
+        height: auto;
+        width: 100%;
+        border-right: 0;
+        border-bottom: 1px solid var(--hairline);
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+        padding: 12px 16px;
+      }
+      .nav-section {
+        flex-direction: row;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .nav-label, .sidebar-foot { display: none; }
+      .nav-btn { width: auto; height: 32px; padding: 0 10px; }
+      .canvas { padding: 20px 16px 40px; }
+      .kpi-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .kpi-cell { border-bottom: 1px solid var(--hairline); }
+      .kpi-cell:nth-child(2n) { border-right: 0; }
+      .row-main, .row-equal, .row-bottom { grid-template-columns: minmax(0, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .kpi-strip { grid-template-columns: minmax(0, 1fr); }
+      .kpi-cell { border-right: 0; padding: 16px; }
+      .card { padding: 16px; }
+      .search-input { width: 100%; }
+      .seg-btn { padding: 0 8px; font-size: 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" aria-label="Workspace navigation">
+      <div class="brand">
+        <svg class="brand-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <rect x="2" y="2" width="20" height="20" rx="5" fill="#19191b" stroke="#2e2e34" />
+          <path d="M9.5 7.5L16.5 12L9.5 16.5V7.5Z" fill="#e86f3a" />
+        </svg>
+        <div>
+          <div class="brand-name" id="sidebar-name">Vice City Chaos</div>
+          <div class="brand-scope">GTA 6 clipping desk</div>
+        </div>
+      </div>
+
+      <nav class="nav-section" aria-label="Views">
+        <div class="nav-label">Workspace</div>
+        <button class="nav-btn active" data-view="overview" type="button">
+          <span class="nav-left">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            <span>Overview</span>
+          </span>
+        </button>
+        <button class="nav-btn" data-view="clips" type="button">
+          <span class="nav-left">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 9l5 3-5 3V9z"/></svg>
+            <span>Clips queue</span>
+          </span>
+          <span class="nav-count" id="nav-clips-count">0</span>
+        </button>
+        <button class="nav-btn" data-view="experiments" type="button">
+          <span class="nav-left">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6"/><path d="M10 3v6l-5 9a2 2 0 0 0 1.7 3h10.6a2 2 0 0 0 1.7-3l-5-9V3"/></svg>
+            <span>Experiments</span>
+          </span>
+          <span class="nav-count" id="nav-exp-count">0</span>
+        </button>
+        <button class="nav-btn" data-view="monetization" type="button">
+          <span class="nav-left">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            <span>Monetization</span>
+          </span>
+        </button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <div class="status-row">
+          <span class="tally-dot" id="sidebar-dot"></span>
+          <span id="sidebar-status">Distribution healthy</span>
+        </div>
+        <div class="meta-line" id="sidebar-tz">WAT (UTC+1)</div>
+        <div class="meta-line" id="sidebar-updated">Updated -</div>
+      </div>
+    </aside>
+
+    <main class="canvas">
+      <header class="page-header">
+        <div class="title-group">
+          <h1 id="page-title">Performance overview</h1>
+          <p class="finding-line" id="page-finding">Loading latest run snapshot</p>
+        </div>
+        <div class="header-controls">
+          <div class="segmented" role="tablist" aria-label="Platform scope" id="platform-tabs">
+            <button class="seg-btn active" data-platform="all" type="button" role="tab" aria-selected="true">All</button>
+            <button class="seg-btn" data-platform="instagram" type="button" role="tab" aria-selected="false">Instagram</button>
+            <button class="seg-btn" data-platform="tiktok" type="button" role="tab" aria-selected="false">TikTok</button>
+            <button class="seg-btn" data-platform="youtube" type="button" role="tab" aria-selected="false">YouTube</button>
+          </div>
+          <button class="btn-secondary" id="copy-summary-btn" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span id="copy-summary-label">Copy recap</span>
+          </button>
+        </div>
+      </header>
+
+      <section class="kpi-strip" aria-label="Key metrics" data-section="overview">
+        <div class="kpi-cell lead">
+          <div class="kpi-label">Total plays</div>
+          <div class="kpi-val" id="kpi-views">0</div>
+          <div class="kpi-sub" id="kpi-views-sub">0 platform rows tracked</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-label">Share rate</div>
+          <div class="kpi-val" id="kpi-share">-</div>
+          <div class="kpi-sub" id="kpi-share-sub">Target 1.0% at 24h</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-label">Followers</div>
+          <div class="kpi-val" id="kpi-followers">0</div>
+          <div class="kpi-sub" id="kpi-followers-sub">Combined channels</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-label">Queued drops</div>
+          <div class="kpi-val" id="kpi-queue">0</div>
+          <div class="kpi-sub" id="kpi-queue-sub">10:00 WAT cloud schedule</div>
+        </div>
+      </section>
+
+      <section class="row-main" data-section="overview">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2 class="card-title" id="chart-heading">Clip performance by post</h2>
+              <div class="card-meta" id="chart-subtitle">Plays per clip across selected scope</div>
+            </div>
+            <div class="segmented" role="tablist" aria-label="Chart metric" id="metric-tabs">
+              <button class="seg-btn active" data-metric="views" type="button" role="tab" aria-selected="true">Plays</button>
+              <button class="seg-btn" data-metric="share_rate" type="button" role="tab" aria-selected="false">Share %</button>
+              <button class="seg-btn" data-metric="length_sec" type="button" role="tab" aria-selected="false">Duration</button>
+            </div>
+          </div>
+
+          <div class="chart-wrap">
+            <svg class="chart-svg" id="perf-chart" viewBox="0 0 720 268" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Clip performance chart"></svg>
+          </div>
+
+          <div class="wat-strip-block">
+            <div class="wat-strip-head">
+              <span>24-hour WAT posting slots (05:30 to 07:00 avoid window)</span>
+              <span class="card-meta" id="wat-next-slot">Min spacing 2.5h</span>
+            </div>
+            <svg class="wat-svg" id="wat-svg" viewBox="0 0 720 64" preserveAspectRatio="xMidYMid meet" role="img" aria-label="24-hour WAT slot schedule"></svg>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2 class="card-title">Platforms &amp; health</h2>
+            <span class="card-meta" id="health-checked">-</span>
+          </div>
+
+          <div class="plat-list" id="platform-list"></div>
+
+          <div class="sub-block">
+            <div class="sub-block-label">Distribution checks</div>
+            <div class="kv-row">
+              <span class="kv-k">Stuck posts (&lt;20 at 1h)</span>
+              <span class="kv-v" id="health-stuck">0</span>
+            </div>
+            <div class="kv-row">
+              <span class="kv-k">Kill switch</span>
+              <span class="kv-v" id="health-pause">Clear</span>
+            </div>
+            <div class="kv-row">
+              <span class="kv-k">Profile quarantine</span>
+              <span class="kv-v" id="health-quarantine">Clear</span>
+            </div>
+            <div class="kv-row">
+              <span class="kv-k">IG ceiling streak</span>
+              <span class="kv-v" id="health-ig-band">Normal</span>
+            </div>
+          </div>
+
+          <div class="sub-block">
+            <div class="sub-block-label">Cloud drop schedule</div>
+            <div class="kv-row">
+              <span class="kv-k">GitHub Actions cron</span>
+              <span class="kv-v">10:00 WAT daily</span>
+            </div>
+            <div class="kv-row">
+              <span class="kv-k">Target clip length</span>
+              <span class="kv-v">20.0s (12 to 22s)</span>
+            </div>
+            <div class="kv-row">
+              <span class="kv-k">Delivery channel</span>
+              <span class="kv-v">Telegram 5-part</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="row-equal" data-section="overview">
+        <div class="card">
+          <div class="card-head">
+            <h2 class="card-title">Working signals</h2>
+            <span class="card-meta">Evidence from latest reads</span>
+          </div>
+          <ul class="signal-list" id="working-list"></ul>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <h2 class="card-title">Attention needed</h2>
+            <span class="card-meta">Next adjustments</span>
+          </div>
+          <ul class="signal-list" id="not-working-list"></ul>
+        </div>
+      </section>
+
+      <section class="card" data-section="overview clips">
+        <div class="table-toolbar">
+          <div>
+            <h2 class="card-title">Clip log &amp; queue</h2>
+            <div class="card-meta" id="table-count">0 rows</div>
+          </div>
+          <input class="search-input" id="clip-search" type="search" placeholder="Search streamer, hook, or ID" aria-label="Search clips" />
+        </div>
+
+        <div class="clip-drawer" id="clip-drawer" aria-live="polite"></div>
+
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Post</th>
+                <th>Platform</th>
+                <th>Streamer</th>
+                <th>Hook</th>
+                <th class="num sortable" data-sort="length_sec">Length</th>
+                <th>Slot (WAT)</th>
+                <th class="num sortable" data-sort="views">Plays</th>
+                <th class="num sortable" data-sort="likes">Likes</th>
+                <th class="num sortable" data-sort="shares">Shares</th>
+                <th class="num sortable" data-sort="share_rate">Share %</th>
+                <th>Test</th>
+              </tr>
+            </thead>
+            <tbody id="clips-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="row-bottom" data-section="overview experiments monetization">
+        <div class="card" data-sub="experiments">
+          <div class="card-head">
+            <h2 class="card-title">Active experiments</h2>
+            <span class="card-meta">One variable per test</span>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>State</th>
+                  <th>Variable</th>
+                  <th>Primary metric</th>
+                </tr>
+              </thead>
+              <tbody id="exp-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card" data-sub="monetization">
+          <div class="card-head">
+            <h2 class="card-title">Monetization gate</h2>
+            <span class="card-meta" id="monetization-phase">Audience only</span>
+          </div>
+          <div>
+            <div class="progress-meta">
+              <span id="phase-day-label">Day 0 of 14 audience-only baseline</span>
+              <span class="tabular" id="phase-pct">0%</span>
+            </div>
+            <div class="track" style="margin-top:8px">
+              <div class="track-fill lead" id="phase-bar" style="width:6%"></div>
+            </div>
+          </div>
+          <div class="stream-list" id="monetization-list"></div>
+          <div class="sub-block">
+            <div class="sub-block-label">Growth benchmarks (winners' sample)</div>
+            <div class="kv-row"><span class="kv-k">24h share rate target</span><span class="kv-v">&gt;= 1.0%</span></div>
+            <div class="kv-row"><span class="kv-k">Momentum follow-up rule</span><span class="kv-v">3x account median</span></div>
+            <div class="kv-row"><span class="kv-k">Slot verdict window</span><span class="kv-v">14 days min</span></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+/* === DASHBOARD_DATA_START === */
+const DASHBOARD_DATA = {
+  "generated_at_utc": "2026-11-20T09:00:01.059373+00:00",
+  "page_name": "Leonida Chaos",
+  "timezone": "WAT (UTC+1)",
+  "platforms": {
+    "instagram": {
+      "views": 0,
+      "likes": 0,
+      "shares": 0,
+      "comments": 0,
+      "posts": 3,
+      "followers": 0,
+      "series": [
+        {
+          "label": "GTA-001 (2026-11-20)",
+          "views": 0
+        },
+        {
+          "label": "GTA-002 (2026-11-20)",
+          "views": 0
+        },
+        {
+          "label": "GTA-003 (2026-11-20)",
+          "views": 0
+        }
+      ]
+    },
+    "tiktok": {
+      "views": 4,
+      "likes": 1,
+      "shares": 0,
+      "comments": 0,
+      "posts": 3,
+      "followers": 0,
+      "series": [
+        {
+          "label": "GTA-001 (2026-11-20)",
+          "views": 4
+        },
+        {
+          "label": "GTA-002 (2026-11-20)",
+          "views": 0
+        },
+        {
+          "label": "GTA-003 (2026-11-20)",
+          "views": 0
+        }
+      ]
+    },
+    "youtube": {
+      "views": 11,
+      "likes": 0,
+      "shares": 0,
+      "comments": 0,
+      "posts": 3,
+      "followers": 0,
+      "series": [
+        {
+          "label": "GTA-001 (2026-11-20)",
+          "views": 11
+        },
+        {
+          "label": "GTA-002 (2026-11-20)",
+          "views": 0
+        },
+        {
+          "label": "GTA-003 (2026-11-20)",
+          "views": 0
+        }
+      ]
+    }
+  },
+  "totals": {
+    "views": 15,
+    "likes": 1,
+    "shares": 0,
+    "comments": 0,
+    "followers": 0,
+    "posts": 9
+  },
+  "clips": [
+    {
+      "post_id": "GTA-001",
+      "date": "2026-11-20",
+      "time": "13:30 WAT",
+      "platform": "instagram",
+      "pillar": "instant_karma",
+      "format": "stack",
+      "hook": "HE PROMISED GTA 6 CHAT NO MORE CRASHING",
+      "length_sec": 13.71,
+      "credit": "@ohnePixel (Twitch)",
+      "views": 0,
+      "likes": 0,
+      "shares": 0,
+      "comments": 0,
+      "saves": 0,
+      "share_rate": 0.0,
+      "like_rate": 0.0,
+      "comment_rate": 0.0,
+      "test_name": "EXP-R1",
+      "notes": "https://www.instagram.com/reel/Df9PpQGs9jd/ | queued_local | proof:proofs/GTA-001_proof.png | read(2026-11-20T09:00Z):v=0"
+    },
+    {
+      "post_id": "GTA-001",
+      "date": "2026-11-20",
+      "time": "13:30 WAT",
+      "platform": "tiktok",
+      "pillar": "instant_karma",
+      "format": "stack",
+      "hook": "HE PROMISED GTA 6 CHAT NO MORE CRASHING",
+      "length_sec": 13.71,
+      "credit": "@ohnePixel (Twitch)",
+      "views": 4,
+      "likes": 1,
+      "shares": 0,
+      "comments": 0,
+      "saves": 0,
+      "share_rate": 0.0,
+      "like_rate": 25.0,
+      "comment_rate": 0.0,
+      "test_name": "EXP-R1",
+      "notes": "https://www.tiktok.com/@leonida.chaos4/video/7710170672416296200 | queued_local | proof:proofs/GTA-001_proof.png | read(2026-11-20T09:00Z):v=4"
+    },
+    {
+      "post_id": "GTA-001",
+      "date": "2026-11-20",
+      "time": "13:30 WAT",
+      "platform": "youtube",
+      "pillar": "instant_karma",
+      "format": "stack",
+      "hook": "HE PROMISED GTA 6 CHAT NO MORE CRASHING",
+      "length_sec": 13.71,
+      "credit": "@ohnePixel (Twitch)",
+      "views": 11,
+      "likes": 0,
+      "shares": 0,
+      "comments": 0,
+      "saves": 0,
+      "share_rate": 0.0,
+      "like_rate": 0.0,
+      "comment_rate": 0.0,
+      "test_name": "EXP-R1",
+      "notes": "https://www.youtube.com/shorts/W1H_U7FzdlE | queued_local | proof:proofs/GTA-001_proof.png | read(2026-11-20T09:00Z):v=11"
+    },
+    {
+      "post_id": "GTA-002",
+      "date": "2026-11-20",
+      "time": "16:30 WAT",
+      "platform": "instagram",
+      "pillar": "physics_chaos_lucia",
+      "format": "stack",
+      "hook": "GTA 6 PHYSICS JUST BROKE XQC",
+      "length_sec": 15.24,
+      "credit": "@xQc (Twitch)",
+      "views": 0,
+      "likes": 0,
+      "shares": 0,
+      "comments": 0,
+      "saves": 0,
+      "share_rate": 0.0,
+      "like_rate": 0.0,
+      "comment_rate": 0.0,
+      "test_name": "EXP-R1+EXP-R3",
+      "notes": "queued_local | proof:proofs/GTA-002_proof.png"
+    },
+    {
+      "post_id": "GTA-002",
+      "date": "2026-11-20",
+      "time": "16:30 WAT",
+      "platform": "tiktok",
+      "pillar": "physics_chaos_lucia",
+      "format": "stack",
+      "hook": "GTA 6 PHYSICS JUST BROKE XQC",
+      "length_sec": 15.24,
+      "credit": "@xQc (Twitch)",
+      "views": 0,
+      "likes": 0,
+      "shares": 0,
+      "comments": 0,
+      "saves": 0,
+      "share_rate": 0.0,
+      "like_rate": 0.0,
+      "comment_rate": 0.0,
+      "test_name": "EXP-R1+EXP-R3",
+      "notes": "queued_local | proof:proofs/GTA-002_proof.png"
+    },
+    {
+      "post_id": "GTA-002",
+      "date": "2026-11-20",
+      "time": "16:30 WAT",
+      "platform": "youtube",
+      "pillar": "physics_chaos_lucia",
+      "format": "stack",
+      "hook": "GTA 6 PHYSICS JUST BROKE XQC",
+      "length_sec": 15.24,
+      "credit": "@xQc (Twitch)",
+      "views": 0,
+      "likes": 0,
+      "shares": 0,
+      "comments": 0,
+      "saves": 0,
+      "share_rate": 0.0,
+      "like_rate": 0.0,
+      "comment_rate": 0.0,
+      "test_name": "EXP-R1+EXP-R3",
+      "notes": "queued_local | proof:proofs/GTA-002_proof.png"
+    },
+    {
+      "post_id": "GTA-003",
+      "date": "2026-11-20",
+      "time": "19:30 WAT",
+      "platform": "instagram",
+      "pillar": "relatable_life_sim_jason",
+      "format": "stack",
+      "hook": "GTA 6 JASON PAINTING ALL WRONG",
+      "length_sec": 14.87,
+      "credit": "@CaseOh (Twitch)",
+      "views": 0,
+      "likes": 0,
+      "shares": 0,
+      "comments": 0,
+      "saves": 0,
+      "share_rate": 0.0,
+      "like_rate": 0.0,
+      "comment_rate": 0.0,
+      "test_name": "EXP-R3",
+      "notes": "queued_local | proof:proofs/GTA-003_proof.png"
+    },
+    {
+      "post_id": "GTA-003",
+      "date": "2026-11-20",
+      "time": "19:30 WAT",
+      "platform": "tiktok",
+      "pillar": "relatable_life_sim_jason",
+      "format": "stack",
+      "hook": "GTA 6 JASON PAINTING ALL WRONG",
+      "length_sec": 14.87,
+      "credit": "@CaseOh (Twitch)",
+      "views": 0,
+      "likes": 0,
+      "shares": 0,
+      "comments": 0,
+      "saves": 0,
+      "share_rate": 0.0,
+      "like_rate": 0.0,
+      "comment_rate": 0.0,
+      "test_name": "EXP-R3",
+      "notes": "queued_local | proof:proofs/GTA-003_proof.png"
+    },
+    {
+      "post_id": "GTA-003",
+      "date": "2026-11-20",
+      "time": "19:30 WAT",
+      "platform": "youtube",
+      "pillar": "relatable_life_sim_jason",
+      "format": "stack",
+      "hook": "GTA 6 JASON PAINTING ALL WRONG",
+      "length_sec": 14.87,
+      "credit": "@CaseOh (Twitch)",
+      "views": 0,
+      "likes": 0,
+      "shares": 0,
+      "comments": 0,
+      "saves": 0,
+      "share_rate": 0.0,
+      "like_rate": 0.0,
+      "comment_rate": 0.0,
+      "test_name": "EXP-R3",
+      "notes": "queued_local | proof:proofs/GTA-003_proof.png"
+    }
+  ],
+  "top_clips": [
+    {
+      "post_id": "GTA-001",
+      "date": "2026-11-20",
+      "time": "13:30 WAT",
+      "platform": "youtube",
+      "pillar": "instant_karma",
+      "format": "stack",
+      "hook": "HE PROMISED GTA 6 CHAT NO MORE CRASHING",
+      "length_sec": 13.71,
+      "credit": "@ohnePixel (Twitch)",
+      "views": 11,
+      "likes": 0,
+      "shares": 0,
+      "comments": 0,
+      "saves": 0,
+      "share_rate": 0.0,
+      "like_rate": 0.0,
+      "comment_rate": 0.0,
+      "test_name": "EXP-R1",
+      "notes": "https://www.youtube.com/shorts/W1H_U7FzdlE | queued_local | proof:proofs/GTA-001_proof.png | read(2026-11-20T09:00Z):v=11"
+    },
+    {
+      "post_id": "GTA-001",
+      "date": "2026-11-20",
+      "time": "13:30 WAT",
+      "platform": "tiktok",
+      "pillar": "instant_karma",
+      "format": "stack",
+      "hook": "HE PROMISED GTA 6 CHAT NO MORE CRASHING",
+      "length_sec": 13.71,
+      "credit": "@ohnePixel (Twitch)",
+      "views": 4,
+      "likes": 1,
+      "shares": 0,
+      "comments": 0,
+      "saves": 0,
+      "share_rate": 0.0,
+      "like_rate": 25.0,
+      "comment_rate": 0.0,
+      "test_name": "EXP-R1",
+      "notes": "https://www.tiktok.com/@leonida.chaos4/video/7710170672416296200 | queued_local | proof:proofs/GTA-001_proof.png | read(2026-11-20T09:00Z):v=4"
+    }
+  ],
+  "working": [
+    "Top performer: GTA-001 (youtube) \u2014 11 plays, 0.0% share rate (@ohnePixel (Twitch))."
+  ],
+  "not_working": [
+    "Median share rate is 0.00% (below 1.0% target) \u2014 double down on relatable / NPC chaos clips."
+  ],
+  "experiments": [
+    {
+      "id": "EXP-R1",
+      "status": "Queued",
+      "variable": "Keyword-first Frame 1 (`GTA 6` / `LUCIA` / `JASON` / `NPC` in hook + caption) vs. generic hook",
+      "sample": "6/arm",
+      "metric": "24h median plays + share rate",
+      "kill_condition": "Keep if >=25% lift on 24h plays without hurting share rate"
+    },
+    {
+      "id": "EXP-R2",
+      "status": "Queued",
+      "variable": "Provocative claim hook vs. curiosity-gap hook",
+      "sample": "6/arm",
+      "metric": "Share rate & YT \"Stayed to watch\" %",
+      "kill_condition": "Kill losing style after 12 posts if >=20% behind"
+    },
+    {
+      "id": "EXP-R3",
+      "status": "Queued",
+      "variable": "Character/NPC chaos pillar vs. big-streamer-name pillar",
+      "sample": "6/arm",
+      "metric": "Share rate (target >=1.0%)",
+      "kill_condition": "Allocate >=60% mix to winning share-rate pillar"
+    },
+    {
+      "id": "EXP-R4",
+      "status": "Queued",
+      "variable": "IG first-comment honest question vs. no first comment",
+      "sample": "8/arm",
+      "metric": "Comment rate (comments/plays)",
+      "kill_condition": "Keep if >=2x baseline comment rate without hurting sends"
+    },
+    {
+      "id": "EXP-R5",
+      "status": "Queued",
+      "variable": "Overnight WAT global slots (`01:30`, `04:30`, `07:30 WAT`) vs. daytime WAT median",
+      "sample": "4/slot (14d min)",
+      "metric": "24h plays vs. daytime median",
+      "kill_condition": "Kill any slot >=30% below daytime median after 2 weeks"
+    },
+    {
+      "id": "EXP-R6",
+      "status": "Planned",
+      "variable": "IG Originality Ladder (heavier facecam framing/pacing remix)",
+      "sample": "5 posts",
+      "metric": "Break 220\u2013240 play band + green IG status",
+      "kill_condition": "Trigger only if 4 consecutive IG Reels stall in same band"
+    }
+  ],
+  "queue": [
+    {
+      "post_id": "GTA-001",
+      "platform": "instagram",
+      "account_id": "clip-ig-unconfigured",
+      "backend": "queue",
+      "video_sha256": "20b016c247151f9bbaebce40d156f67bbb81688c29b925f3f1c160705619de79",
+      "caption_first_line": "he lasted three seconds on that bridge \ud83d\udc80",
+      "scheduled_time_utc": "2026-11-20T12:30:00+00:00",
+      "created_at_utc": "2026-11-20T07:16:33.278395+00:00",
+      "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-001",
+      "platform": "tiktok",
+      "account_id": "clip-tiktok-unconfigured",
+      "backend": "queue",
+      "video_sha256": "20b016c247151f9bbaebce40d156f67bbb81688c29b925f3f1c160705619de79",
+      "caption_first_line": "he lasted three seconds on that bridge \ud83d\udc80",
+      "scheduled_time_utc": "2026-11-20T12:30:00+00:00",
+      "created_at_utc": "2026-11-20T07:16:33.278395+00:00",
+      "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-001",
+      "platform": "youtube",
+      "account_id": "clip-youtube-unconfigured",
+      "backend": "queue",
+      "video_sha256": "20b016c247151f9bbaebce40d156f67bbb81688c29b925f3f1c160705619de79",
+      "caption_first_line": "he lasted three seconds on that bridge \ud83d\udc80",
+      "scheduled_time_utc": "2026-11-20T12:30:00+00:00",
+      "created_at_utc": "2026-11-20T07:16:33.278395+00:00",
+      "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-002",
+      "platform": "instagram",
+      "account_id": "clip-ig-unconfigured",
+      "backend": "queue",
+      "video_sha256": "104cda95372dd216ac3ff4ee348535ea42b53f223f9299d4b8add1e90fe1242e",
+      "caption_first_line": "lucia did not sign up for that jump \ud83d\ude02",
+      "scheduled_time_utc": "2026-11-20T15:30:00+00:00",
+      "created_at_utc": "2026-11-20T07:16:33.763550+00:00",
+      "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-002",
+      "platform": "tiktok",
+      "account_id": "clip-tiktok-unconfigured",
+      "backend": "queue",
+      "video_sha256": "104cda95372dd216ac3ff4ee348535ea42b53f223f9299d4b8add1e90fe1242e",
+      "caption_first_line": "lucia did not sign up for that jump \ud83d\ude02",
+      "scheduled_time_utc": "2026-11-20T15:30:00+00:00",
+      "created_at_utc": "2026-11-20T07:16:33.763550+00:00",
+      "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-002",
+      "platform": "youtube",
+      "account_id": "clip-youtube-unconfigured",
+      "backend": "queue",
+      "video_sha256": "104cda95372dd216ac3ff4ee348535ea42b53f223f9299d4b8add1e90fe1242e",
+      "caption_first_line": "lucia did not sign up for that jump \ud83d\ude02",
+      "scheduled_time_utc": "2026-11-20T15:30:00+00:00",
+      "created_at_utc": "2026-11-20T07:16:33.763550+00:00",
+      "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-003",
+      "platform": "instagram",
+      "account_id": "clip-ig-unconfigured",
+      "backend": "queue",
+      "video_sha256": "45aa5977c1d1d5259167eba96a064af2505a6df779afebcc20869d12805ae7d2",
+      "caption_first_line": "thirteen years for gta 6 drywall class \ud83d\ude2d",
+      "scheduled_time_utc": "2026-11-20T18:30:00+00:00",
+      "created_at_utc": "2026-11-20T07:16:34.367580+00:00",
+      "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-003",
+      "platform": "tiktok",
+      "account_id": "clip-tiktok-unconfigured",
+      "backend": "queue",
+      "video_sha256": "45aa5977c1d1d5259167eba96a064af2505a6df779afebcc20869d12805ae7d2",
+      "caption_first_line": "thirteen years for gta 6 drywall class \ud83d\ude2d",
+      "scheduled_time_utc": "2026-11-20T18:30:00+00:00",
+      "created_at_utc": "2026-11-20T07:16:34.367580+00:00",
+      "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-003",
+      "platform": "youtube",
+      "account_id": "clip-youtube-unconfigured",
+      "backend": "queue",
+      "video_sha256": "45aa5977c1d1d5259167eba96a064af2505a6df779afebcc20869d12805ae7d2",
+      "caption_first_line": "thirteen years for gta 6 drywall class \ud83d\ude2d",
+      "scheduled_time_utc": "2026-11-20T18:30:00+00:00",
+      "created_at_utc": "2026-11-20T07:16:34.367580+00:00",
+      "status": "queued_local"
+    }
+  ],
+  "health": {
+    "checked_at_utc": "2026-11-20T09:00:01.058982+00:00",
+    "stuck_posts": [],
+    "unconfirmed_scheduled": [],
+    "platforms_two_in_a_row": [],
+    "ig_ceiling_alert": false,
+    "urgent_alert_even_overnight": false,
+    "recommended_actions": [],
+    "pause_state": {
+      "paused_all": false,
+      "platforms": {},
+      "last_profile_edit_utc": null
+    }
+  },
+  "monetization": {
+    "phase": "Phase 1 \u2014 Audience Only (Days 1-14)",
+    "days_completed": 0,
+    "days_required_phase1": 14,
+    "triggers": [
+      {
+        "stream": "Whop Content Rewards ($1-$1.50/1K)",
+        "requirement": "14d audience baseline (no follower min)",
+        "ready": false
+      },
+      {
+        "stream": "Instagram Gifts",
+        "requirement": "500+ IG followers",
+        "ready": false
+      },
+      {
+        "stream": "Amazon / Logitech Bio Affiliates",
+        "requirement": "14d + consistent reach on 1 app",
+        "ready": false
+      },
+      {
+        "stream": "First Sponsors / Media Kit ($10-$25/1K)",
+        "requirement": "10,000+ followers on 1 app",
+        "ready": false
+      },
+      {
+        "stream": "TikTok Creator Rewards (>60s clips)",
+        "requirement": "10K TT followers + 100K 30d views + >60s format",
+        "ready": false
+      }
+    ]
+  }
+};
+/* === DASHBOARD_DATA_END === */
+
+    const D = DASHBOARD_DATA;
+    const hasLiveViews = (D.clips || []).some((c) => (c.views || 0) > 0);
+    const state = {
+      platform: "all",
+      metric: hasLiveViews ? "views" : "length_sec",
+      view: "overview",
+      query: "",
+      sortKey: "post_id",
+      sortDir: "desc",
+      selectedKey: null
+    };
+
+    const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
+    const fmtInt = (n) => (n === null || n === undefined ? "-" : Number(n).toLocaleString("en-US"));
+    const fmtPct = (n, views) => (views > 0 ? Number(n).toFixed(1) + "%" : "-");
+    const shortUtc = (iso) => {
+      if (!iso) return "-";
+      const d = new Date(iso);
+      if (Number.isNaN(d.getTime())) return iso;
+      return d.toISOString().replace("T", " ").slice(0, 16) + " UTC";
+    };
+
+    function filteredClips() {
+      let list = (D.clips || []).slice();
+      if (state.platform !== "all") {
+        list = list.filter((c) => c.platform === state.platform);
+      }
+      if (state.query.trim()) {
+        const q = state.query.trim().toLowerCase();
+        list = list.filter((c) =>
+          (c.post_id || "").toLowerCase().includes(q) ||
+          (c.credit || "").toLowerCase().includes(q) ||
+          (c.hook || "").toLowerCase().includes(q) ||
+          (c.test_name || "").toLowerCase().includes(q)
+        );
+      }
+      const mult = state.sortDir === "asc" ? 1 : -1;
+      list.sort((a, b) => {
+        const av = a[state.sortKey] ?? "";
+        const bv = b[state.sortKey] ?? "";
+        if (typeof av === "number" && typeof bv === "number") return (av - bv) * mult;
+        return String(av).localeCompare(String(bv)) * mult;
+      });
+      return list;
+    }
+
+    function syncMetricTabs() {
+      document.querySelectorAll("#metric-tabs .seg-btn").forEach((b) => {
+        const isAct = b.getAttribute("data-metric") === state.metric;
+        b.classList.toggle("active", isAct);
+        b.setAttribute("aria-selected", isAct ? "true" : "false");
+      });
+    }
+
+    function renderChrome() {
+      const cleanName = (D.page_name || "Vice City Chaos").split("—")[0].split("-")[0].trim();
+      document.getElementById("sidebar-name").textContent = cleanName;
+      document.getElementById("sidebar-tz").textContent = D.timezone || "WAT (UTC+1)";
+      document.getElementById("sidebar-updated").textContent = "Updated " + shortUtc(D.generated_at_utc);
+      document.getElementById("nav-clips-count").textContent = String((D.clips || []).length);
+      document.getElementById("nav-exp-count").textContent = String((D.experiments || []).length);
+
+      const stuckN = (D.health?.stuck_posts || []).length;
+      const pausedAll = !!D.health?.pause_state?.paused_all;
+      const dot = document.getElementById("sidebar-dot");
+      const st = document.getElementById("sidebar-status");
+      dot.className = "tally-dot" + (pausedAll ? " bad" : stuckN > 0 ? " warn" : "");
+      st.textContent = pausedAll ? "Emergency pause active" : stuckN > 0 ? `${stuckN} stuck post flagged` : "Distribution healthy";
+    }
+
+    function renderKpisAndFinding() {
+      const scoped = (D.clips || []).filter((c) => state.platform === "all" || c.platform === state.platform);
+      const views = scoped.reduce((s, c) => s + (c.views || 0), 0);
+      const shares = scoped.reduce((s, c) => s + (c.shares || 0), 0);
+      const sharePct = views > 0 ? (shares / views) * 100 : null;
+
+      const followers = state.platform === "all"
+        ? Object.values(D.platforms || {}).reduce((s, p) => s + (p.followers || 0), 0)
+        : (D.platforms?.[state.platform]?.followers || 0);
+
+      const queuedCount = (D.queue || []).filter((q) => state.platform === "all" || q.platform === state.platform).length;
+      const uniquePosts = new Set(scoped.map((c) => c.post_id)).size;
+
+      document.getElementById("kpi-views").textContent = fmtInt(views);
+      document.getElementById("kpi-views-sub").textContent = `${uniquePosts} clip${uniquePosts === 1 ? "" : "s"} across ${scoped.length} platform rows`;
+
+      document.getElementById("kpi-share").textContent = sharePct === null ? "-" : sharePct.toFixed(2) + "%";
+      document.getElementById("kpi-share-sub").innerHTML = sharePct === null
+        ? "Awaiting first 24h reads"
+        : sharePct >= 1.0
+          ? `<span class="good">+${(sharePct - 1.0).toFixed(2)}% vs 1.0% target</span>`
+          : `<span class="bad">${(sharePct - 1.0).toFixed(2)}% vs 1.0% target</span>`;
+
+      document.getElementById("kpi-followers").textContent = fmtInt(followers);
+      document.getElementById("kpi-followers-sub").textContent = state.platform === "all" ? "Combined IG, TikTok, YouTube" : `${state.platform} channel total`;
+
+      document.getElementById("kpi-queue").textContent = fmtInt(queuedCount);
+      document.getElementById("kpi-queue-sub").textContent = "Validated in publish ledger";
+
+      const finding = document.getElementById("page-finding");
+      if (views === 0) {
+        finding.textContent = `${uniquePosts} test clips (${queuedCount} platform slots) are queued and verified. Live plays and share rates sync after publishing`;
+      } else {
+        const best = scoped.slice().sort((a, b) => (b.views || 0) - (a.views || 0))[0];
+        finding.textContent = `${best.post_id} (${best.credit}) leads at ${fmtInt(best.views)} plays and ${fmtPct(best.share_rate, best.views)} share rate`;
+      }
+    }
+
+    function renderChart() {
+      syncMetricTabs();
+      const svg = document.getElementById("perf-chart");
+      const scoped = (D.clips || []).filter((c) => state.platform === "all" || c.platform === state.platform);
+
+      const byPost = new Map();
+      scoped.forEach((c) => {
+        if (!byPost.has(c.post_id)) {
+          byPost.set(c.post_id, { post_id: c.post_id, credit: c.credit, views: 0, likes: 0, shares: 0, length_sec: Number(c.length_sec || 0) });
+        }
+        const agg = byPost.get(c.post_id);
+        agg.views += c.views || 0;
+        agg.likes += c.likes || 0;
+        agg.shares += c.shares || 0;
+      });
+      const items = Array.from(byPost.values()).slice(-10);
+
+      const values = items.map((it) => {
+        if (state.metric === "share_rate") return it.views > 0 ? (it.shares / it.views) * 100 : 0;
+        if (state.metric === "length_sec") return it.length_sec;
+        return it.views;
+      });
+
+      const W = 720, H = 268;
+      const padL = 50, padR = 16, padT = 22, padB = 34;
+      const plotW = W - padL - padR;
+      const plotH = H - padT - padB;
+
+      const rawMax = Math.max(0, ...values);
+      const isZero = rawMax === 0;
+      let niceMax = 1000;
+      if (state.metric === "length_sec") {
+        niceMax = Math.max(24, Math.ceil(rawMax / 6) * 6);
+      } else if (state.metric === "share_rate") {
+        niceMax = isZero ? 2.0 : Math.ceil((rawMax * 1.25) / 0.5) * 0.5;
+      } else {
+        niceMax = isZero ? 1000 : Math.ceil((rawMax * 1.25) / 50) * 50;
+      }
+
+      const heading = document.getElementById("chart-heading");
+      const subtitle = document.getElementById("chart-subtitle");
+      if (state.metric === "length_sec") {
+        heading.textContent = "Queued clip duration vs 20s target";
+        subtitle.textContent = "Verified render length in seconds (switch to Plays once live)";
+      } else if (state.metric === "share_rate") {
+        heading.textContent = "Share rate by post";
+        subtitle.textContent = isZero ? "Awaiting live 24h share reads (1.0% growth target shown)" : "Shares divided by plays across tracked posts";
+      } else {
+        heading.textContent = "Plays by post";
+        subtitle.textContent = isZero ? "Scale ready for live 2h and 24h reads from scoreboard.csv" : `Total plays across last ${items.length} clips`;
+      }
+
+      let out = "";
+      const steps = 4;
+      for (let i = 0; i <= steps; i++) {
+        const y = padT + (plotH * i) / steps;
+        const val = niceMax * (1 - i / steps);
+        const label = state.metric === "views"
+          ? Math.round(val).toLocaleString("en-US")
+          : state.metric === "length_sec"
+            ? Math.round(val) + "s"
+            : val.toFixed(1) + "%";
+        out += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="${i === steps ? '#2e2e34' : '#202024'}" stroke-width="1" />`;
+        out += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="#85858b" font-size="11">${label}</text>`;
+      }
+
+      // Reference line (20s target for duration, 1.0% target for share rate)
+      if (state.metric === "length_sec" && niceMax >= 20) {
+        const ty = padT + plotH * (1 - 20 / niceMax);
+        out += `<line x1="${padL}" y1="${ty}" x2="${W - padR}" y2="${ty}" stroke="#e86f3a" stroke-dasharray="4 4" stroke-width="1" opacity="0.8" />`;
+        out += `<text x="${W - padR}" y="${ty - 5}" text-anchor="end" fill="#e86f3a" font-size="11">20s target</text>`;
+      } else if (state.metric === "share_rate" && niceMax >= 1.0) {
+        const ty = padT + plotH * (1 - 1.0 / niceMax);
+        out += `<line x1="${padL}" y1="${ty}" x2="${W - padR}" y2="${ty}" stroke="#e86f3a" stroke-dasharray="4 4" stroke-width="1" opacity="0.8" />`;
+        out += `<text x="${W - padR}" y="${ty - 5}" text-anchor="end" fill="#e86f3a" font-size="11">1.0% target</text>`;
+      }
+
+      if (items.length === 0) {
+        out += `<text x="${padL + plotW / 2}" y="${padT + plotH / 2}" text-anchor="middle" fill="#85858b" font-size="13">No clips in selected scope</text>`;
+      } else {
+        const slotW = plotW / items.length;
+        const barW = Math.min(68, Math.max(24, slotW * 0.44));
+        const maxIdx = values.indexOf(rawMax);
+
+        items.forEach((it, idx) => {
+          const val = values[idx];
+          const cx = padL + slotW * idx + slotW / 2;
+          const x = cx - barW / 2;
+          const bh = isZero ? 4 : Math.max(6, (val / niceMax) * plotH);
+          const y = padT + plotH - bh;
+          const isLead = !isZero && idx === maxIdx;
+          const fill = isLead ? "#e86f3a" : (isZero ? "#2e2e34" : "#8b4728");
+          out += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${bh.toFixed(1)}" rx="2" fill="${fill}" />`;
+          const valLabel = isZero
+            ? "queued"
+            : state.metric === "views"
+              ? fmtInt(val)
+              : state.metric === "length_sec"
+                ? val.toFixed(1) + "s"
+                : val.toFixed(1) + "%";
+          out += `<text x="${cx.toFixed(1)}" y="${(y - 6).toFixed(1)}" text-anchor="middle" fill="${isLead ? '#ededed' : '#a1a1a6'}" font-size="11">${valLabel}</text>`;
+          out += `<text x="${cx.toFixed(1)}" y="${H - 12}" text-anchor="middle" fill="#a1a1a6" font-size="11">${esc(it.post_id)} · ${esc(it.credit.split(' ')[0])}</text>`;
+        });
+      }
+
+      svg.innerHTML = out;
+    }
+
+    function renderWatRuler() {
+      const svg = document.getElementById("wat-svg");
+      const W = 720, barY = 4, barH = 38;
+
+      const slotMap = new Map();
+      (D.clips || []).forEach((c) => {
+        const m = String(c.time || "").match(/(\d{2}):(\d{2})/);
+        if (m) {
+          const key = `${m[1]}:${m[2]}`;
+          if (!slotMap.has(key)) slotMap.set(key, c.post_id);
+        }
+      });
+
+      const avoidX = (330 / 1440) * W;
+      const avoidW = (90 / 1440) * W;
+      const slots = ["01:30", "04:30", "07:30", "10:30", "13:30", "16:30", "19:30", "22:30"];
+
+      let out = `<defs>
+        <pattern id="avoidHatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+          <line x1="0" y1="0" x2="0" y2="8" stroke="#5c282b" stroke-width="2" />
+        </pattern>
+      </defs>`;
+      out += `<rect x="0.5" y="${barY}" width="${W - 1}" height="${barH}" rx="6" fill="#0f0f10" stroke="#232327" />`;
+      out += `<rect x="${avoidX.toFixed(1)}" y="${barY + 1}" width="${avoidW.toFixed(1)}" height="${barH - 2}" fill="url(#avoidHatch)" />`;
+      out += `<line x1="${avoidX.toFixed(1)}" y1="${barY}" x2="${avoidX.toFixed(1)}" y2="${barY + barH}" stroke="#5c282b" stroke-width="1" />`;
+      out += `<line x1="${(avoidX + avoidW).toFixed(1)}" y1="${barY}" x2="${(avoidX + avoidW).toFixed(1)}" y2="${barY + barH}" stroke="#5c282b" stroke-width="1" />`;
+
+      slots.forEach((s) => {
+        const [hh, mm] = s.split(":").map(Number);
+        const x = ((hh * 60 + mm) / 1440) * W;
+        out += `<line x1="${x.toFixed(1)}" y1="${barY}" x2="${x.toFixed(1)}" y2="${barY + barH}" stroke="#232327" stroke-width="1" />`;
+        const post = slotMap.get(s);
+        if (post) {
+          const pw = 64, ph = 24;
+          const rx = Math.max(4, Math.min(W - pw - 4, x - pw / 2));
+          out += `<rect x="${rx.toFixed(1)}" y="${barY + 7}" width="${pw}" height="${ph}" rx="4" fill="#261a15" stroke="#e86f3a" stroke-width="1" />`;
+          out += `<text x="${(rx + pw / 2).toFixed(1)}" y="${barY + 23}" text-anchor="middle" fill="#ededed" font-size="11" font-weight="500">${esc(post)}</text>`;
+        }
+      });
+
+      const ticks = [
+        [0, "00:00", "start"],
+        [W * 0.25, "06:00", "middle"],
+        [W * 0.5, "12:00", "middle"],
+        [W * 0.75, "18:00", "middle"],
+        [W, "24:00 WAT", "end"]
+      ];
+      ticks.forEach(([tx, lbl, anc]) => {
+        out += `<text x="${tx}" y="58" text-anchor="${anc}" fill="#85858b" font-size="11">${lbl}</text>`;
+      });
+
+      svg.innerHTML = out;
+      document.getElementById("wat-next-slot").textContent = `${slotMap.size} of ${slots.length} daily slots filled`;
+    }
+
+    function renderPlatformsAndHealth() {
+      const entries = Object.entries(D.platforms || {});
+      const maxV = Math.max(1, ...entries.map(([, p]) => p.views || 0));
+      const leadPlat = entries.slice().sort((a, b) => (b[1].views || 0) - (a[1].views || 0))[0]?.[0];
+
+      document.getElementById("platform-list").innerHTML = entries.map(([name, p]) => {
+        const pct = p.views > 0 ? Math.max(6, Math.round((p.views / maxV) * 100)) : (p.posts > 0 ? 18 : 0);
+        const isLead = (p.views > 0 && name === leadPlat) || (p.views === 0 && name === "instagram");
+        return `<div class="plat-item">
+          <div class="plat-row-top">
+            <span class="plat-name">${esc(name)}</span>
+            <span class="plat-figs">${fmtInt(p.views)} plays · ${fmtInt(p.followers)} fol</span>
+          </div>
+          <div class="track"><div class="track-fill ${isLead ? 'lead' : ''}" style="width:${pct}%"></div></div>
+        </div>`;
+      }).join("");
+
+      const h = D.health || {};
+      const stuckN = (h.stuck_posts || []).length;
+      const pausedAll = !!h.pause_state?.paused_all;
+      const quar = h.pause_state?.last_profile_edit_utc;
+      document.getElementById("health-checked").textContent = shortUtc(h.checked_at_utc || D.generated_at_utc);
+      document.getElementById("health-stuck").innerHTML = `<span class="tally-dot ${stuckN > 0 ? 'warn' : ''}"></span>${stuckN}`;
+      document.getElementById("health-pause").innerHTML = `<span class="tally-dot ${pausedAll ? 'bad' : ''}"></span>${pausedAll ? 'Active' : 'Clear'}`;
+      document.getElementById("health-quarantine").textContent = quar ? shortUtc(quar) : "Clear";
+      document.getElementById("health-ig-band").textContent = h.ig_ceiling_alert ? "Flagged (EXP-R6)" : "Normal";
+    }
+
+    function renderSignals() {
+      const cleanCopy = (s) => String(s || "").replace(/\s+—\s+/g, ", ").replace(/\.$/, "");
+      document.getElementById("working-list").innerHTML = (D.working || []).length
+        ? D.working.map((x) => `<li>${esc(cleanCopy(x))}</li>`).join("")
+        : `<li>No verified winning signals yet</li>`;
+      document.getElementById("not-working-list").innerHTML = (D.not_working || []).length
+        ? D.not_working.map((x) => `<li>${esc(cleanCopy(x))}</li>`).join("")
+        : `<li>No issues flagged in latest check</li>`;
+    }
+
+    function renderTable() {
+      const rows = filteredClips();
+      document.getElementById("table-count").textContent = `${rows.length} row${rows.length === 1 ? "" : "s"}`;
+      const tbody = document.getElementById("clips-tbody");
+
+      if (!rows.length) {
+        tbody.innerHTML = `<tr><td colspan="11" class="muted">No matching clips in scoreboard.csv</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = rows.map((c) => {
+        const key = `${c.post_id}::${c.platform}`;
+        const isSel = state.selectedKey === key;
+        const shareStr = fmtPct(c.share_rate, c.views);
+        const shareClass = c.views > 0 && c.share_rate >= 1.0 ? "good" : "";
+        return `<tr class="clickable ${isSel ? 'selected' : ''}" data-key="${esc(key)}">
+          <td class="tabular">${esc(c.post_id)}</td>
+          <td style="text-transform:capitalize" class="secondary">${esc(c.platform)}</td>
+          <td class="secondary">${esc(c.credit)}</td>
+          <td class="hook-cell" title="${esc(c.hook)}">${esc(c.hook)}</td>
+          <td class="num secondary">${c.length_sec ? Number(c.length_sec).toFixed(1) + 's' : '-'}</td>
+          <td class="secondary tabular">${esc(c.time || '-')}</td>
+          <td class="num">${c.views > 0 ? fmtInt(c.views) : '<span class="muted">-</span>'}</td>
+          <td class="num">${c.views > 0 ? fmtInt(c.likes) : '<span class="muted">-</span>'}</td>
+          <td class="num">${c.views > 0 ? fmtInt(c.shares) : '<span class="muted">-</span>'}</td>
+          <td class="num"><span class="tag-quiet ${shareClass}">${shareStr}</span></td>
+          <td><span class="tag-quiet">${esc(c.test_name || '-')}</span></td>
+        </tr>`;
+      }).join("");
+
+      tbody.querySelectorAll("tr.clickable").forEach((tr) => {
+        tr.addEventListener("click", () => {
+          const key = tr.getAttribute("data-key");
+          state.selectedKey = state.selectedKey === key ? null : key;
+          renderTable();
+          renderDrawer(rows);
+        });
+      });
+      renderDrawer(rows);
+    }
+
+    function renderDrawer(rows) {
+      const drawer = document.getElementById("clip-drawer");
+      if (!state.selectedKey) {
+        drawer.classList.remove("open");
+        return;
+      }
+      const clip = rows.find((c) => `${c.post_id}::${c.platform}` === state.selectedKey);
+      if (!clip) {
+        drawer.classList.remove("open");
+        return;
+      }
+      drawer.classList.add("open");
+      drawer.innerHTML = `
+        <div class="card-head">
+          <div class="card-title">${esc(clip.post_id)} · ${esc(clip.platform)} · ${esc(clip.credit)}</div>
+          <button class="seg-btn" id="close-drawer" type="button">Close</button>
+        </div>
+        <div class="drawer-grid">
+          <div><div class="drawer-k">Frame-1 hook</div><div class="drawer-v">${esc(clip.hook)}</div></div>
+          <div><div class="drawer-k">Scheduled slot</div><div class="drawer-v tabular">${esc(clip.date)} ${esc(clip.time)}</div></div>
+          <div><div class="drawer-k">Pillar &amp; experiment</div><div class="drawer-v">${esc(clip.pillar || '-')} · ${esc(clip.test_name || '-')}</div></div>
+          <div><div class="drawer-k">Proof &amp; notes</div><div class="drawer-v">${esc(clip.notes || '-')}</div></div>
+        </div>
+      `;
+      document.getElementById("close-drawer").addEventListener("click", () => {
+        state.selectedKey = null;
+        renderTable();
+      });
+    }
+
+    function renderExperimentsAndMonetization() {
+      document.getElementById("exp-tbody").innerHTML = (D.experiments || []).length
+        ? D.experiments.map((e) => `<tr>
+            <td class="tabular">${esc(e.id)}</td>
+            <td><span class="tag-quiet ${e.status === 'Leading' ? 'accent' : ''}">${esc(e.status)}</span></td>
+            <td class="secondary">${esc(e.variable)}</td>
+            <td class="muted">${esc(e.metric)}</td>
+          </tr>`).join("")
+        : `<tr><td colspan="4" class="muted">No active experiments logged</td></tr>`;
+
+      const m = D.monetization || {};
+      const done = Number(m.days_completed || 0);
+      const req = Number(m.days_required_phase1 || 14);
+      const pct = Math.min(100, Math.round((done / Math.max(1, req)) * 100));
+      document.getElementById("monetization-phase").textContent = done >= req ? "Eligible" : "Audience baseline";
+      document.getElementById("phase-day-label").textContent = `Day ${done} of ${req} audience-only window`;
+      document.getElementById("phase-pct").textContent = `${pct}%`;
+      document.getElementById("phase-bar").style.width = `${Math.max(6, pct)}%`;
+
+      document.getElementById("monetization-list").innerHTML = (m.triggers || []).map((t) => `
+        <div class="stream-row">
+          <div>
+            <div class="stream-name">${esc(t.stream)}</div>
+            <div class="stream-req">${esc(t.requirement)}</div>
+          </div>
+          <span class="tag-quiet ${t.ready ? 'good' : ''}">${t.ready ? 'Ready' : 'Locked'}</span>
+        </div>
+      `).join("");
+    }
+
+    function applyView() {
+      document.querySelectorAll("[data-section]").forEach((el) => {
+        const scopes = el.getAttribute("data-section").split(" ");
+        el.classList.toggle("section-hidden", !scopes.includes(state.view));
+      });
+      document.querySelectorAll("[data-sub]").forEach((el) => {
+        if (state.view === "overview") {
+          el.classList.remove("section-hidden");
+        } else {
+          el.classList.toggle("section-hidden", el.getAttribute("data-sub") !== state.view);
+        }
+      });
+      const titles = {
+        overview: "Performance overview",
+        clips: "Clip queue & analytics",
+        experiments: "Active experiments",
+        monetization: "Monetization readiness"
+      };
+      document.getElementById("page-title").textContent = titles[state.view] || "Performance overview";
+    }
+
+    function renderAll() {
+      renderChrome();
+      renderKpisAndFinding();
+      renderChart();
+      renderWatRuler();
+      renderPlatformsAndHealth();
+      renderSignals();
+      renderTable();
+      renderExperimentsAndMonetization();
+      applyView();
+    }
+
+    document.querySelectorAll(".nav-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".nav-btn").forEach((b) => b.classList.remove("active"));
+        btn.classList.add("active");
+        state.view = btn.getAttribute("data-view");
+        applyView();
+      });
+    });
+
+    document.querySelectorAll("#platform-tabs .seg-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("#platform-tabs .seg-btn").forEach((b) => {
+          b.classList.remove("active");
+          b.setAttribute("aria-selected", "false");
+        });
+        btn.classList.add("active");
+        btn.setAttribute("aria-selected", "true");
+        state.platform = btn.getAttribute("data-platform");
+        renderKpisAndFinding();
+        renderChart();
+        renderTable();
+      });
+    });
+
+    document.querySelectorAll("#metric-tabs .seg-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        state.metric = btn.getAttribute("data-metric");
+        renderChart();
+      });
+    });
+
+    document.getElementById("clip-search").addEventListener("input", (e) => {
+      state.query = e.target.value;
+      renderTable();
+    });
+
+    document.querySelectorAll("th.sortable").forEach((th) => {
+      th.addEventListener("click", () => {
+        const k = th.getAttribute("data-sort");
+        if (state.sortKey === k) {
+          state.sortDir = state.sortDir === "desc" ? "asc" : "desc";
+        } else {
+          state.sortKey = k;
+          state.sortDir = "desc";
+        }
+        renderTable();
+      });
+    });
+
+    document.getElementById("copy-summary-btn").addEventListener("click", async () => {
+      const text = [
+        `${D.page_name || "GTA 6 Clipping"} Recap (${shortUtc(D.generated_at_utc)})`,
+        `Total plays: ${fmtInt(D.totals?.views)} | Followers: ${fmtInt(D.totals?.followers)} | Shares: ${fmtInt(D.totals?.shares)}`,
+        `Clips tracked: ${(D.clips || []).length} rows | Stuck: ${(D.health?.stuck_posts || []).length}`
+      ].join("\n");
+      try {
+        await navigator.clipboard.writeText(text);
+        const lbl = document.getElementById("copy-summary-label");
+        lbl.textContent = "Copied";
+        setTimeout(() => { lbl.textContent = "Copy recap"; }, 1400);
+      } catch {
+        // Clipboard unavailable in restricted local context
+      }
+    });
+
+    renderAll();
+  </script>
+</body>
+</html>

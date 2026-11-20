@@ -1,0 +1,20 @@
+{
+  "src": "../raw/scout/IV1034pNuEQ.mp4",
+  "out": "../renders/GTA-002.mp4",
+  "credit": "@xQc (Twitch)",
+  "layout": "stack",
+  "facecam": [16, 474, 380, 312],
+  "game": [420, 110, 1070, 880],
+  "teaser": {"start": 28.5, "end": 30.8},
+  "teaser_text": "GTA 6 PHYSICS JUST BROKE XQC",
+  "keep": [[18.8, 30.8]],
+  "slowmo": [
+    {"start": 25.0, "end": 25.8, "speed": 0.5}
+  ],
+  "punchlines": [
+    {"start": 21.6, "end": 24.6, "text": "ZERO CHANCE HE LANDS THIS"},
+    {"start": 28.6, "end": 30.8, "text": "LUCIA HELD ON FOR DEAR LIFE"}
+  ],
+  "subtitles": "GTA-002.srt",
+  "volume": 1.25
+}

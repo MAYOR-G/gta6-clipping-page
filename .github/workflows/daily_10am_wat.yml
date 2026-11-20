@@ -1,0 +1,95 @@
+name: Daily 10 AM WAT GTA 6 Clip Drop & Dashboard
+
+on:
+  schedule:
+    # 09:00 UTC = 10:00 AM WAT (UTC+1) every single day
+    - cron: "0 9 * * *"
+  workflow_dispatch:
+    inputs:
+      clip_count:
+        description: "How many ~20s clips to produce and send to Telegram today"
+        required: false
+        default: "3"
+      target_sec:
+        description: "Target clip duration in seconds (default: 20)"
+        required: false
+        default: "20"
+      dry_run:
+        description: "Validate without sending to Telegram or mutating state"
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "gta6-daily-pipeline"
+  cancel-in-progress: false
+
+jobs:
+  run-pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ffmpeg, DejaVu bold font, and Python packages
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg fonts-dejavu-core
+          pip install --quiet -r requirements.txt
+
+      - name: Run Daily 10 AM WAT Pipeline
+        env:
+          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
+          TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          SCRAPE_CREATORS_API_KEY: ${{ secrets.SCRAPE_CREATORS_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_MODEL: ${{ vars.OPENROUTER_MODEL || 'google/gemma-4-31b-it:free' }}
+          PAGE_NAME: ${{ vars.PAGE_NAME || 'Leonida Chaos' }}
+          YT_CHANNEL_URL: ${{ vars.YT_CHANNEL_URL }}
+          TIKTOK_HANDLE: ${{ vars.TIKTOK_HANDLE }}
+          IG_HANDLE: ${{ vars.IG_HANDLE }}
+          DAILY_CLIP_COUNT: ${{ inputs.clip_count || vars.DAILY_CLIP_COUNT || '3' }}
+          TARGET_CLIP_SEC: ${{ inputs.target_sec || vars.TARGET_CLIP_SEC || '20' }}
+        run: |
+          ARGS="--clip-count ${DAILY_CLIP_COUNT} --target-sec ${TARGET_CLIP_SEC}"
+          if [ "${{ inputs.dry_run }}" = "true" ]; then
+            ARGS="$ARGS --dry-run"
+          fi
+          python3 scripts/daily_cloud_pipeline.py $ARGS
+
+      - name: Commit updated tracking files & live dashboard
+        if: ${{ inputs.dry_run != true }}
+        run: |
+          git config user.name "gta6-clip-ceo[bot]"
+          git config user.email "actions@users.noreply.github.com"
+          git add scoreboard.csv log.md learning.md dashboard/index.html data/ proofs/
+          git diff --cached --quiet || git commit -m "chore: daily 10 AM WAT clip drop & dashboard refresh"
+          git push
+
+      - name: Upload live dashboard artifact for GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dashboard
+
+  deploy-dashboard:
+    needs: run-pipeline
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy dashboard to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

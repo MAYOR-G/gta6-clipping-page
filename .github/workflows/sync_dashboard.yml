@@ -1,0 +1,70 @@
+name: Sync Live Stats & Refresh Dashboard (Every 6h)
+
+on:
+  schedule:
+    # Runs 4x daily (01:00, 07:00, 13:00, 19:00 WAT) to keep dashboard views/likes/followers fresh
+    - cron: "0 0,6,12,18 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "gta6-daily-pipeline"
+  cancel-in-progress: false
+
+jobs:
+  sync-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install yt-dlp & Pillow
+        run: pip install --quiet -r requirements.txt
+
+      - name: Sync YouTube, TikTok & Instagram Stats + Stuck Check + Rebuild Dashboard
+        env:
+          SCRAPE_CREATORS_API_KEY: ${{ secrets.SCRAPE_CREATORS_API_KEY }}
+          SCRAPE_CREATORS_CREDIT_CAP: "10"
+          YT_CHANNEL_URL: ${{ vars.YT_CHANNEL_URL }}
+          TIKTOK_HANDLE: ${{ vars.TIKTOK_HANDLE }}
+          IG_HANDLE: ${{ vars.IG_HANDLE }}
+          PAGE_NAME: ${{ vars.PAGE_NAME || 'Leonida Chaos' }}
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: |
+          python3 scripts/sync_stats.py
+          python3 scripts/stuck_check.py --apply-pauses
+          python3 scripts/dashboard_data.py
+
+      - name: Commit updated scoreboard & dashboard
+        run: |
+          git config user.name "gta6-clip-ceo[bot]"
+          git config user.email "actions@users.noreply.github.com"
+          git add scoreboard.csv data/ dashboard/index.html
+          git diff --cached --quiet || git commit -m "chore: auto-sync live stats & refresh dashboard"
+          git push
+
+      - name: Upload dashboard artifact for GitHub Pages
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dashboard
+
+  deploy-dashboard:
+    needs: sync-and-build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy dashboard to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

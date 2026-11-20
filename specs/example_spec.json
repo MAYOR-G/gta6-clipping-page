@@ -1,0 +1,23 @@
+{
+  "src": "../raw/source.mp4",
+  "out": "../renders/GTA-001.mp4",
+  "credit": "@ohnePixel (Twitch)",
+  "layout": "stack",
+  "facecam": [230, 620, 410, 460],
+  "game": [640, 110, 760, 816],
+  "teaser": {"start": 22.4, "end": 24.9},
+  "teaser_text": "GTA 6 PLANES HAVE ZERO CHILL",
+  "keep": [[14.8, 27.8]],
+  "slowmo": [
+    {"start": 23.2, "end": 24.2, "speed": 0.5}
+  ],
+  "freezes": [
+    {"at": 24.6, "duration": 0.7, "text": "IT WAS AT THIS MOMENT"}
+  ],
+  "punchlines": [
+    {"start": 15.5, "end": 18.8, "text": "INTRUSIVE THOUGHTS LOADING..."},
+    {"start": 25.0, "end": 27.8, "text": "INSURANCE: DENIED"}
+  ],
+  "subtitles": "hand-timed.srt",
+  "volume": 1.4
+}

@@ -1,0 +1,10 @@
+post_id,date,time,platform,pillar,format,hook,length_sec,credit,views_12h,views_24h,views_72h,likes,reposts_or_shares,replies_or_comments,saves_or_bookmarks,followers_at_read,test_name,notes
+GTA-001,2026-11-20,13:30 WAT,instagram,instant_karma,stack,HE PROMISED GTA 6 CHAT NO MORE CRASHING,13.71,@ohnePixel (Twitch),0,0,,0,,0,,0,EXP-R1,https://www.instagram.com/reel/Df9PpQGs9jd/ | queued_local | proof:proofs/GTA-001_proof.png | read(2026-11-20T09:00Z):v=0
+GTA-001,2026-11-20,13:30 WAT,tiktok,instant_karma,stack,HE PROMISED GTA 6 CHAT NO MORE CRASHING,13.71,@ohnePixel (Twitch),4,4,,1,0,0,0,0,EXP-R1,https://www.tiktok.com/@leonida.chaos4/video/7710170672416296200 | queued_local | proof:proofs/GTA-001_proof.png | read(2026-11-20T09:00Z):v=4
+GTA-001,2026-11-20,13:30 WAT,youtube,instant_karma,stack,HE PROMISED GTA 6 CHAT NO MORE CRASHING,13.71,@ohnePixel (Twitch),11,11,,,,,,,EXP-R1,https://www.youtube.com/shorts/W1H_U7FzdlE | queued_local | proof:proofs/GTA-001_proof.png | read(2026-11-20T09:00Z):v=11
+GTA-002,2026-11-20,16:30 WAT,instagram,physics_chaos_lucia,stack,GTA 6 PHYSICS JUST BROKE XQC,15.24,@xQc (Twitch),,,,,,,,0,EXP-R1+EXP-R3,queued_local | proof:proofs/GTA-002_proof.png
+GTA-002,2026-11-20,16:30 WAT,tiktok,physics_chaos_lucia,stack,GTA 6 PHYSICS JUST BROKE XQC,15.24,@xQc (Twitch),,,,,,,,0,EXP-R1+EXP-R3,queued_local | proof:proofs/GTA-002_proof.png
+GTA-002,2026-11-20,16:30 WAT,youtube,physics_chaos_lucia,stack,GTA 6 PHYSICS JUST BROKE XQC,15.24,@xQc (Twitch),,,,,,,,,EXP-R1+EXP-R3,queued_local | proof:proofs/GTA-002_proof.png
+GTA-003,2026-11-20,19:30 WAT,instagram,relatable_life_sim_jason,stack,GTA 6 JASON PAINTING ALL WRONG,14.87,@CaseOh (Twitch),,,,,,,,0,EXP-R3,queued_local | proof:proofs/GTA-003_proof.png
+GTA-003,2026-11-20,19:30 WAT,tiktok,relatable_life_sim_jason,stack,GTA 6 JASON PAINTING ALL WRONG,14.87,@CaseOh (Twitch),,,,,,,,0,EXP-R3,queued_local | proof:proofs/GTA-003_proof.png
+GTA-003,2026-11-20,19:30 WAT,youtube,relatable_life_sim_jason,stack,GTA 6 JASON PAINTING ALL WRONG,14.87,@CaseOh (Twitch),,,,,,,,,EXP-R3,queued_local | proof:proofs/GTA-003_proof.png

@@ -1,0 +1,22 @@
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Raw media & temp renders (disk hygiene: never commit video files)
+raw/
+renders/
+tmp/
+*.mp4
+*.mkv
+*.webm
+*.mov
+*.wav
+*.mp3
+*.m4a
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+.DS_Store

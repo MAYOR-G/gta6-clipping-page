@@ -1,0 +1,38 @@
+# Learning & Experiments Log
+
+Dated lessons from every research pass and 2-hour cycle, plus the active experiment tracker.
+
+---
+
+## Active Experiments Tracker
+
+| ID | Status | Variable / Hypothesis | Sample Size | Primary Metric | Kill / Keep Condition |
+| :--- | :---: | :--- | :---: | :--- | :--- |
+| **EXP-R1** | Queued | Keyword-first Frame 1 (`GTA 6` / `LUCIA` / `JASON` / `NPC` in hook + caption) vs. generic hook | 6/arm | 24h median plays + share rate | Keep if >=25% lift on 24h plays without hurting share rate |
+| **EXP-R2** | Queued | Provocative claim hook vs. curiosity-gap hook | 6/arm | Share rate & YT "Stayed to watch" % | Kill losing style after 12 posts if >=20% behind |
+| **EXP-R3** | Queued | Character/NPC chaos pillar vs. big-streamer-name pillar | 6/arm | Share rate (target >=1.0%) | Allocate >=60% mix to winning share-rate pillar |
+| **EXP-R4** | Queued | IG first-comment honest question vs. no first comment | 8/arm | Comment rate (comments/plays) | Keep if >=2x baseline comment rate without hurting sends |
+| **EXP-R5** | Queued | Overnight WAT global slots (`01:30`, `04:30`, `07:30 WAT`) vs. daytime WAT median | 4/slot (14d min) | 24h plays vs. daytime median | Kill any slot >=30% below daytime median after 2 weeks |
+| **EXP-R6** | Planned | IG Originality Ladder (heavier facecam framing/pacing remix) | 5 posts | Break 220–240 play band + green IG status | Trigger only if 4 consecutive IG Reels stall in same band |
+
+---
+
+## Dated Lessons
+
+### 2026-11-20 — Launch-Week Lane Baseline (Step 1)
+- **Question:** What does the live GTA 6 funny-moments clip lane look like across TikTok, Instagram, and YouTube Shorts on Day 2 of launch, and which of our 8 target channels fit the format?
+- **Sources:** Live `yt-dlp` scan of 20 fresh Nov 18–20, 2026 YouTube Shorts + live channel audit of 8 target creators + guide's launch-window 189-post & 235-post TikTok winners' samples (`research/lane_research.md`).
+- **Findings:**
+  - GTA 6 peaked at ~7.91M concurrent viewers (~3.3M+ on Twitch) — massive 24/7 raw clip supply.
+  - Most launch-week YouTube Shorts in search are raw 50–63s Twitch dumps earning only 0.5%–1.1% like rates; tight 12–16s payoff-first stacked edits have a wide quality gap to win.
+  - `@MKIceAndFire` and `@UG_Z` are no-facecam walkthrough channels (spoiler risk, no reaction) — excluded from primary scouting. `@TheBurntPeanut` uses an animated peanut avatar (held pending explicit exception). `@ohnepixel`, `@IShowSpeed`, `@KaiCenatLive`, and mid-size Twitch streamers are the prime pool.
+- **Action / Change:** Prioritize mid-size Twitch streamers + deduped Tier-1 streamers (`<3` pages on X/TikTok). Run `scripts/lane_research.py` for live TikTok/IG share ratios once free `SCRAPE_CREATORS_API_KEY` is added.
+
+### 2026-11-20 — 2026 Platform Algorithms & Humor Mechanics (Step 2)
+- **Question:** What ranking signals and originality rules actually control distribution for a brand-new clipping page on Instagram Reels, TikTok, and YouTube Shorts in 2026?
+- **Sources:** Primary platform sources (Instagram/Mosseri Reels ranking & April 30, 2026 Originality Update; TikTok Newsroom *How TikTok recommends videos* & Unoriginal Content Guidelines; YouTube Creator Insider Todd Sherman/Rene Ritchie & Google Support *Reused Content* policy; McGraw & Warren 2010; Berger & Milkman 2012; NYT Psychology of Sharing) (`research/algorithm_research.md`).
+- **Findings:**
+  - Across all 3 apps, the two levers we control are **completion/looping** and **sends/shares per reach**.
+  - Subtitles + credit alone fail originality checks on IG, TikTok, and YouTube; context-adding on-screen hook/punchline text + payoff-first recut + clean facecam/gameplay crop are mandatory.
+  - YouTube's *Reused Content* policy is stricter for YPP ad monetization than IG/TikTok distribution — treat YouTube Shorts as a free reach/brand funnel first.
+- **Action / Change:** Encoded 6 standing production rules in `playbook.md`, automated caption/ledger/pause/quarantine guardrails in `scripts/safe_publish.py`, and queued `EXP-R1` through `EXP-R6`.

@@ -1,0 +1,20 @@
+{
+  "src": "../raw/scout/ObRR-A2AUzI.mp4",
+  "out": "../renders/GTA-003.mp4",
+  "credit": "@CaseOh (Twitch)",
+  "layout": "stack",
+  "facecam": [20, 40, 580, 390],
+  "game": [340, 440, 960, 640],
+  "teaser": {"start": 133.4, "end": 136.0},
+  "teaser_text": "GTA 6 JASON PAINTING ALL WRONG",
+  "keep": [[125.0, 136.4]],
+  "freezes": [
+    {"at": 131.2, "duration": 0.7, "text": "MAINTENANCE WORKER MODE"}
+  ],
+  "punchlines": [
+    {"start": 125.2, "end": 128.4, "text": "13 YEARS FOR PAINTING CLASS"},
+    {"start": 132.6, "end": 136.3, "text": "LEVEL 1 PAINTER"}
+  ],
+  "subtitles": "GTA-003.srt",
+  "volume": 1.25
+}

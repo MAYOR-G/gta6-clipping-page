@@ -1,0 +1,28 @@
+{
+  "_comment": "Verified 1920x1080 facecam & gameplay crop presets [x, y, w, h] per Twitch streamer login (lowercase). Unknown streamers automatically use clean 'full' vertical crop so faces are never awkwardly sliced.",
+  "ohnepixel": {
+    "layout": "stack",
+    "facecam": [60, 690, 440, 390],
+    "game": [280, 100, 1200, 580]
+  },
+  "xqc": {
+    "layout": "stack",
+    "facecam": [16, 474, 380, 312],
+    "game": [420, 110, 1070, 880]
+  },
+  "caseoh_": {
+    "layout": "stack",
+    "facecam": [16, 136, 390, 290],
+    "game": [410, 80, 1460, 960]
+  },
+  "kaicenat": {
+    "layout": "stack",
+    "facecam": [10, 680, 420, 390],
+    "game": [440, 60, 1440, 980]
+  },
+  "jynxzi": {
+    "layout": "stack",
+    "facecam": [10, 680, 420, 390],
+    "game": [440, 60, 1440, 980]
+  }
+}
