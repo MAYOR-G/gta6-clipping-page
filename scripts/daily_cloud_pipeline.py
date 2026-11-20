@@ -180,13 +180,25 @@ def scout_twitch_gta6_clips(client_id: str, client_secret: str, limit: int = 30)
     return filtered
 
 
+def get_scout_queries() -> list[str]:
+    """Combine default GTA 6 streamer queries with any custom EXTRA_SCOUT_QUERIES (comma-separated) for other viral niches."""
+    queries = list(YT_SCOUT_QUERIES)
+    extra = os.environ.get("EXTRA_SCOUT_QUERIES", "").strip()
+    if extra:
+        for item in extra.split(","):
+            q = item.strip()
+            if q and q not in queries:
+                queries.append(q)
+    return queries
+
+
 def scout_youtube_gta6_clips(limit: int = 24) -> list[dict[str, Any]]:
     """Zero-key FREE YouTube scouting via yt-dlp when Twitch Helix credentials are unavailable."""
     seen_ids: set[str] = set()
     found: list[dict[str, Any]] = []
     cutoff_date = (datetime.now(timezone.utc) - timedelta(days=2)).strftime("%Y%m%d")
 
-    for term in YT_SCOUT_QUERIES:
+    for term in get_scout_queries():
         if len(found) >= limit:
             break
         q = urllib.parse.quote(term)
@@ -325,33 +337,63 @@ def generate_copy_with_openrouter(streamer: str, clip_title: str) -> dict[str, s
     return fallback
 
 
-def compute_slot_iso(slot_index: int, now_wat: datetime) -> tuple[str, str, str]:
-    hour, minute = DAILY_WAT_SLOTS[slot_index % len(DAILY_WAT_SLOTS)]
-    day = now_wat.date()
-    if hour < 12:
-        day = day + timedelta(days=1)
-    dt = datetime(day.year, day.month, day.day, hour, minute, tzinfo=WAT)
-    if dt <= now_wat + timedelta(minutes=30):
-        dt = dt + timedelta(days=1)
-    return dt.isoformat(), dt.strftime("%Y-%m-%d"), dt.strftime("%H:%M WAT")
+def find_next_open_slot(now_wat: datetime, ledger_path: Path = DATA_DIR / "publish_ledger.json") -> tuple[str, str, str]:
+    """Pick the earliest upcoming WAT slot that is >= 2.6h away from EVERY scheduled post in the ledger."""
+    ledger = load_json(ledger_path, {"entries": []})
+    booked_utc: list[datetime] = []
+    for e in ledger.get("entries", []):
+        ts = e.get("scheduled_time_utc")
+        if ts:
+            try:
+                booked_utc.append(datetime.fromisoformat(ts.replace("Z", "+00:00")).astimezone(timezone.utc))
+            except Exception:
+                pass
+
+    # Scan the next 5 days of preferred WAT slots in chronological order
+    candidates: list[datetime] = []
+    for day_offset in range(0, 6):
+        d = (now_wat + timedelta(days=day_offset)).date()
+        for hour, minute in sorted(DAILY_WAT_SLOTS):
+            dt_wat = datetime(d.year, d.month, d.day, hour, minute, tzinfo=WAT)
+            if dt_wat > now_wat + timedelta(minutes=30):
+                candidates.append(dt_wat)
+
+    candidates.sort()
+    for cand_wat in candidates:
+        cand_utc = cand_wat.astimezone(timezone.utc)
+        if all(abs((cand_utc - b).total_seconds()) >= 2.6 * 3600 for b in booked_utc):
+            return cand_wat.isoformat(), cand_wat.strftime("%Y-%m-%d"), cand_wat.strftime("%H:%M WAT")
+
+    fallback_wat = now_wat + timedelta(hours=3)
+    return fallback_wat.isoformat(), fallback_wat.strftime("%Y-%m-%d"), fallback_wat.strftime("%H:%M WAT")
 
 
 def download_clip(url: str, out_mp4: Path) -> Path:
     out_mp4.parent.mkdir(parents=True, exist_ok=True)
-    subprocess.run(
-        [
-            "yt-dlp",
-            "-f", "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]/best",
-            "--merge-output-format", "mp4",
-            "--no-warnings",
-            "-o", str(out_mp4),
-            url,
-        ],
-        check=True,
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.PIPE,
-        timeout=120,
-    )
+    cmd = [
+        "yt-dlp",
+        "-f", "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]/best",
+        "--merge-output-format", "mp4",
+        "--extractor-args", "youtube:player_client=tv_embedded,android_vr,ios,web",
+        "--no-warnings",
+        "-o", str(out_mp4),
+        url,
+    ]
+    cookies_b64 = os.environ.get("YT_COOKIES_B64", "").strip()
+    cookie_file: Path | None = None
+    if cookies_b64:
+        import base64
+        cookie_file = RAW_DIR / "yt_cookies.txt"
+        cookie_file.write_bytes(base64.b64decode(cookies_b64))
+        cmd.extend(["--cookies", str(cookie_file)])
+    try:
+        proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=120)
+        if proc.returncode != 0 or not out_mp4.exists():
+            err_tail = (proc.stderr or proc.stdout or "unknown download error").strip().splitlines()[-1][:220]
+            raise RuntimeError(err_tail)
+    finally:
+        if cookie_file and cookie_file.exists():
+            cookie_file.unlink(missing_ok=True)
     return out_mp4
 
 
@@ -436,6 +478,7 @@ def main() -> int:
     tg_ready = bool(os.environ.get("TELEGRAM_BOT_TOKEN", "").strip() and os.environ.get("TELEGRAM_CHAT_ID", "").strip())
 
     produced: list[dict[str, Any]] = []
+    failure_reasons: list[str] = []
     seen = load_json(SEEN_PATH, {"clip_ids": []})
     seen_set = set(seen.get("clip_ids", []))
     crops = load_json(CROPS_PATH, {})
@@ -530,7 +573,7 @@ def main() -> int:
 
                 render_info = render_clip(spec_path, make_qa=True, make_sheet=False)
                 out_mp4 = Path(render_info["out"])
-                slot_iso, date_str, time_str = compute_slot_iso(len(produced), now_wat)
+                slot_iso, date_str, time_str = find_next_open_slot(now_wat)
 
                 # Validate & queue through safe_publish.py
                 pub_cmd = [
@@ -545,10 +588,11 @@ def main() -> int:
                     pub_cmd.append("--dry-run")
                 pub_res = subprocess.run(pub_cmd, capture_output=True, text=True)
                 if pub_res.returncode != 0:
-                    print(f"[skip] {post_id} blocked by safe_publish guardrails: {pub_res.stderr.strip()}", file=sys.stderr)
+                    err_line = pub_res.stderr.strip().splitlines()[-1] if pub_res.stderr.strip() else "guardrail blocked"
+                    print(f"[skip] {post_id} blocked by safe_publish guardrails: {err_line}", file=sys.stderr)
+                    failure_reasons.append(f"{post_id} publish: {err_line}")
                     raw_mp4.unlink(missing_ok=True)
                     out_mp4.unlink(missing_ok=True)
-                    seen_set.add(cid)
                     continue
 
                 # Deliver to Telegram in structured 5-part format
@@ -595,8 +639,10 @@ def main() -> int:
                 if delivered_tg:
                     out_mp4.unlink(missing_ok=True)
             except Exception as exc:
-                print(f"[warn] Failed clip {cid}: {type(exc).__name__}: {exc}", file=sys.stderr)
-                seen_set.add(cid)
+                reason = f"{cid}: {type(exc).__name__}: {str(exc)[:140]}"
+                print(f"[warn] Failed clip {reason}", file=sys.stderr)
+                failure_reasons.append(reason)
+                # Do NOT permanently blacklist on transient download errors (e.g. YouTube IP throttle)
 
         if not args.dry_run:
             save_json(SEEN_PATH, {"clip_ids": sorted(seen_set)[-500:]})
@@ -617,9 +663,11 @@ def main() -> int:
         ]
         for p in produced:
             lines.append(f"- {p['post_id']} (@{p['streamer']}, {p['duration_sec']}s) -> Post at {p['slot']}")
+        if not produced and failure_reasons:
+            lines.append(f"Diagnostic (why 0 clips): {failure_reasons[0]}")
         send_message("\n".join(lines))
 
-    print(json.dumps({"produced": produced, "dashboard_updated": True, "dry_run": args.dry_run}, indent=2))
+    print(json.dumps({"produced": produced, "failure_sample": failure_reasons[:3], "dashboard_updated": True, "dry_run": args.dry_run}, indent=2))
     return 0
 
 
