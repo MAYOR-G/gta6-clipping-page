@@ -90,6 +90,54 @@ Every published/queued clip AND every rejected scout candidate is logged here so
 
 ---
 
+
+### GTA-004 — @xqc (Cloud Auto 20s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-21 13:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 20.04s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `XQC GETTING LOST IN VICE CITY`
+- **Punchline:** `XQC VS PHYSICS`
+- **Source URL & Created At:** `https://www.twitch.tv/xqc/clip/RudeCogentAxeSMOrc-7OhxDfDLkQ0zrmEL` (2026-11-21T11:05:55Z)
+- **Credit:** `@xqc (Twitch)`
+- **Proof Frame:** `proofs/GTA-004_proof.png`
+- **Send Test:** send to a friend with funny clip
+- **IG First Comment:** `what's your worst driving moment?`
+
+---
+
+
+### GTA-005 — @kaicenat (Cloud Auto 20s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-21 16:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 20.04s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `GTA 6 LUCIA WALKS INTO A WALL`
+- **Punchline:** `LUCIA GOT LAUNCHED`
+- **Source URL & Created At:** `https://www.twitch.tv/kaicenat/clip/SoftWiseWalrusUnSane-axfl7lDmcLtkn2Ke` (2026-11-21T11:05:55Z)
+- **Credit:** `@kaicenat (Twitch)`
+- **Proof Frame:** `proofs/GTA-005_proof.png`
+- **Send Test:** send to your friend and type 'check this out'
+- **IG First Comment:** `what's your worst gta driving fail?`
+
+---
+
+
+### GTA-006 — @xqc (Cloud Auto 20s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-21 19:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 20.10s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `XQC GTA 6 PHYSICS ARE BROKEN`
+- **Punchline:** `PHYSICS SO BROKEN`
+- **Source URL & Created At:** `https://www.twitch.tv/xqc/clip/StrongAttractiveEndiveMikeHogu--aJoIv5WCi8Q3SHD` (2026-11-21T11:05:55Z)
+- **Credit:** `@xqc (Twitch)`
+- **Proof Frame:** `proofs/GTA-006_proof.png`
+- **Send Test:** sends to DMs: 'bro look at this'
+- **IG First Comment:** `what's your worst gta 6 fail?`
+
+---
+
 ## Scout Rejects Log
 
 *(Record rejected candidates with URL/ID and reason so the 2-hour routine skips them immediately.)*
