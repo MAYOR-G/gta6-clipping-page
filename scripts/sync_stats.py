@@ -197,6 +197,7 @@ def load_ledger_captions() -> dict[tuple[str, str], str]:
             cap = (e.get("caption_first_line") or "").strip()
             if pid and plat and cap:
                 out[(pid, plat)] = cap
+                out.setdefault((pid, "*"), cap)
         return out
     except Exception:
         return {}
@@ -214,7 +215,7 @@ def match_video(row: dict[str, str], videos: list[dict[str, Any]], ledger_caps: 
     # 2. Match against exact caption first line stored in publish_ledger.json (most accurate!)
     pid = (row.get("post_id") or "").strip()
     plat = (row.get("platform") or "").strip().lower()
-    cap_line = normalize_text(ledger_caps.get((pid, plat), ""))
+    cap_line = normalize_text(ledger_caps.get((pid, plat)) or ledger_caps.get((pid, "*"), ""))
     cap_words = [w for w in cap_line.split() if len(w) >= 4]
     if cap_words:
         for v in videos:

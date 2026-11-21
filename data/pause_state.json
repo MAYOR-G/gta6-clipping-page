@@ -3,9 +3,9 @@
   "reason": null,
   "platforms": {
     "youtube": {
-      "paused": true,
-      "until_utc": "2026-11-22T11:44:28.382023+00:00",
-      "reason": "2 consecutive stuck posts (<20 plays at 1h)"
+      "paused": false,
+      "until_utc": null,
+      "reason": null
     }
   },
   "last_profile_edit_utc": null,
@@ -34,6 +34,14 @@
       "at_utc": "2026-11-21T11:44:28.382023+00:00",
       "action": "auto_pause_youtube_24h",
       "until_utc": "2026-11-22T11:44:28.382023+00:00"
+    },
+    {
+      "at_utc": "2026-11-21T12:51:04.602192+00:00",
+      "action": "unpause_youtube",
+      "reason": "manual action"
     }
+  ],
+  "paused_pairs": [
+    "youtube:GTA-002:GTA-003"
   ]
 }

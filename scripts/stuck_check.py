@@ -34,6 +34,11 @@ PAUSE_PATH = ROOT_DIR / "data" / "pause_state.json"
 
 STUCK_PLAYS_THRESHOLD = 20
 STUCK_MIN_AGE_HOURS = 1.0
+STUCK_MIN_AGE_BY_PLATFORM = {
+    "instagram": 1.0,
+    "tiktok": 1.0,
+    "youtube": 12.0,  # New YouTube Shorts channels often take 2-12h for their first seed batch
+}
 IG_CEILING_LOW = 190
 IG_CEILING_HIGH = 265
 IG_CEILING_STREAK = 4
@@ -125,7 +130,8 @@ def run_health_check(
         notes = r.get("notes") or ""
         is_live = ("http://" in notes or "https://" in notes) or (views is not None)
         age_h = (now - dt).total_seconds() / 3600.0 if dt else 0.0
-        is_stuck = bool(is_live and views is not None and age_h >= STUCK_MIN_AGE_HOURS and views < STUCK_PLAYS_THRESHOLD)
+        min_age = STUCK_MIN_AGE_BY_PLATFORM.get(p, STUCK_MIN_AGE_HOURS)
+        is_stuck = bool(is_live and views is not None and age_h >= min_age and views < STUCK_PLAYS_THRESHOLD)
         by_platform[p].append({
             "post_id": r.get("post_id"),
             "dt_utc": dt.isoformat() if dt else None,
@@ -203,24 +209,34 @@ def run_health_check(
                 "reason": pause_state["reason"],
             })
     else:
+        already_paused = set(pause_state.get("paused_pairs", []))
+        newly_paused = False
         for p in platforms_two_in_a_row:
+            live_p = [x for x in by_platform[p] if x["is_live"]]
+            live_p.sort(key=lambda x: x["dt_utc"] or "")
+            pair_key = f"{p}:{live_p[-2]['post_id']}:{live_p[-1]['post_id']}" if len(live_p) >= 2 else p
+            if pair_key in already_paused:
+                continue
             actions.append(
-                f"PAUSE_PLATFORM: {p} has 2 stuck posts in a row -> pause {p} for 24h, keep other platforms running, flag human."
+                f"PAUSE_PLATFORM: {p} has 2 stuck posts in a row ({pair_key}) -> pause {p} for 24h, keep other platforms running, flag human."
             )
             if apply_pauses:
                 until = (now + timedelta(hours=24)).isoformat()
                 pause_state.setdefault("platforms", {})[p] = {
                     "paused": True,
                     "until_utc": until,
-                    "reason": "2 consecutive stuck posts (<20 plays at 1h)",
+                    "reason": f"2 consecutive stuck posts ({pair_key})",
                 }
+                pause_state.setdefault("paused_pairs", []).append(pair_key)
                 pause_state.setdefault("history", []).append({
                     "at_utc": now.isoformat(),
                     "action": f"auto_pause_{p}_24h",
+                    "pair": pair_key,
                     "until_utc": until,
                 })
+                newly_paused = True
 
-    if apply_pauses and (urgent_overnight or platforms_two_in_a_row):
+    if apply_pauses and (urgent_overnight or newly_paused):
         save_json(pause_path, pause_state)
 
     return {

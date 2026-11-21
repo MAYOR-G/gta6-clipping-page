@@ -98,21 +98,52 @@ DEFAULT_TWITCH_STREAMERS = [
     "hasanabi",
 ]
 
+# YouTube-primary / YouTube-exclusive GTA 6 streamers (NOT primarily on Twitch — used with --source youtube locally on Mac!)
+YOUTUBE_ONLY_STREAMERS = [
+    "IShowSpeed",
+    "TypicalGamer",
+    "DarkViperAU",
+    "Valkyrae",
+    "Ludwig",
+    "TimTheTatman",
+    "CouRage",
+    "Caylus",
+    "Wynnsanity",
+    "LazarBeam",
+    "Berleezy",
+    "RDCworldGaming",
+    "Slogo",
+    "DrDisrespect",
+]
+
 # Local-only fallback YouTube searches (skipped in cloud when Twitch direct already supplies clips)
 YT_SCOUT_QUERIES = [
-    "ohnepixel gta 6 funny",
     "ishowspeed gta 6 funny clip",
-    "kai cenat gta 6 funny clip",
-    "caseoh gta 6 funny clip",
-    "xqc gta 6 funny clip",
-    "theburntpeanut gta 6 funny",
+    "typical gamer gta 6 funny clip",
+    "darkviperau gta 6 funny clip",
+    "valkyrae gta 6 funny clip",
+    "ludwig gta 6 funny clip",
+    "timthetatman gta 6 funny clip",
+    "couragejd gta 6 funny clip",
     "caylus gta 6 funny",
-    "wynnsanity gta 6",
-    "jynxzi gta 6 funny",
-    "gta 6 twitch clip funny",
-    "gta 6 streamer npc funny",
-    "gta 6 streamer cops funny",
+    "wynnsanity gta 6 funny",
+    "lazarbeam gta 6 funny",
+    "berleezy gta 6 funny",
+    "rdcworldgaming gta 6 funny",
 ]
+
+
+def load_local_dotenv() -> None:
+    """Load local .env when running on Mac (no-op in GitHub Actions where env vars come from Secrets)."""
+    env_path = ROOT_DIR / ".env"
+    if not env_path.exists():
+        return
+    for line in env_path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        k, v = line.split("=", 1)
+        os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
 
 
 def load_json(path: Path, default: Any) -> Any:
@@ -306,67 +337,94 @@ def get_scout_queries() -> list[str]:
     return queries
 
 
-def scout_youtube_gta6_clips(limit: int = 24) -> list[dict[str, Any]]:
-    """Zero-key FREE YouTube scouting via yt-dlp when Twitch Helix credentials are unavailable."""
+def scout_youtube_gta6_clips(
+    limit: int = 24,
+    streamers: list[str] | None = None,
+    min_duration: float = 24.0,
+) -> list[dict[str, Any]]:
+    """
+    Zero-key FREE YouTube scouting via yt-dlp (best run locally on Mac where YouTube does not gate datacenter IPs).
+    Supports tagging specific YouTube-exclusive streamers or randomly shuffling YOUTUBE_ONLY_STREAMERS round-robin.
+    """
     seen_ids: set[str] = set()
-    found: list[dict[str, Any]] = []
-    cutoff_date = (datetime.now(timezone.utc) - timedelta(days=2)).strftime("%Y%m%d")
+    buckets: list[list[dict[str, Any]]] = []
+    cutoff_date = (datetime.now(timezone.utc) - timedelta(days=7)).strftime("%Y%m%d")
 
-    for term in get_scout_queries():
-        if len(found) >= limit:
-            break
-        q = urllib.parse.quote(term)
-        # sp=EgQIAhAB -> Uploaded today + Under 4 minutes
-        url = f"https://www.youtube.com/results?search_query={q}&sp=EgQIAhAB"
-        try:
-            out = subprocess.check_output(
-                ["yt-dlp", "--flat-playlist", "--playlist-end", "6", "--dump-json", "--no-warnings", url],
-                text=True,
-                timeout=25,
-            )
-        except Exception:
-            continue
+    if streamers:
+        target_names = [s.lstrip("@").strip() for s in streamers if s.strip()]
+    else:
+        target_names = list(YOUTUBE_ONLY_STREAMERS)
+        rng = random.Random(f"yt-{datetime.now(WAT).strftime('%Y-%m-%d-%H')}")
+        rng.shuffle(target_names)
 
-        for line in out.strip().splitlines():
-            if not line.strip():
-                continue
+    known_all = list(dict.fromkeys(target_names + YOUTUBE_ONLY_STREAMERS))
+
+    for name in target_names:
+        bucket: list[dict[str, Any]] = []
+        for query in (f"ytsearch8:{name} gta 6 funny clip", f"ytsearch8:{name} gta 6 clip"):
             try:
-                d = json.loads(line)
+                out = subprocess.check_output(
+                    ["yt-dlp", "--flat-playlist", "--dump-json", "--no-warnings", query],
+                    text=True,
+                    timeout=25,
+                )
             except Exception:
                 continue
-            vid_id = d.get("id")
-            dur = float(d.get("duration") or 0)
-            title = d.get("title") or ""
-            channel = d.get("channel") or d.get("uploader") or "streamer"
-            ch_norm = re.sub(r"[^a-z0-9_]", "", channel.lower())
-            if not vid_id or vid_id in seen_ids:
-                continue
-            if dur < 19.0 or dur > 300.0:
-                continue
-            if ch_norm in EXCLUDED_CHANNELS or UNSAFE_TITLE_RE.search(title):
-                continue
 
-            # Infer streamer credit from title/query when uploaded by a clip channel
-            inferred = channel
-            for known in ("ohnePixel", "IShowSpeed", "KaiCenat", "CaseOh", "xQc", "TheBurntPeanut", "Caylus", "Wynnsanity", "Jynxzi"):
-                if known.lower() in title.lower() or known.lower() in channel.lower():
-                    inferred = known
-                    break
+            for line in out.strip().splitlines():
+                if not line.strip():
+                    continue
+                try:
+                    d = json.loads(line)
+                except Exception:
+                    continue
+                vid_id = d.get("id")
+                dur = float(d.get("duration") or 0)
+                title = d.get("title") or ""
+                channel = d.get("channel") or d.get("uploader") or name
+                ch_norm = re.sub(r"[^a-z0-9_]", "", channel.lower())
+                if not vid_id or vid_id in seen_ids:
+                    continue
+                if dur < min_duration or dur > 240.0:
+                    continue
+                if ch_norm in EXCLUDED_CHANNELS or UNSAFE_TITLE_RE.search(title):
+                    continue
 
-            seen_ids.add(vid_id)
-            found.append({
-                "id": f"yt_{vid_id}",
-                "broadcaster_name": inferred,
-                "source_platform": "YouTube",
-                "title": title,
-                "url": f"https://www.youtube.com/watch?v={vid_id}",
-                "duration": dur,
-                "created_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
-                "min_upload_date": cutoff_date,
-            })
-            if len(found) >= limit:
+                inferred = name
+                for known in known_all:
+                    if known.lower() in title.lower() or known.lower() in channel.lower():
+                        inferred = known
+                        break
+
+                seen_ids.add(vid_id)
+                bucket.append({
+                    "id": f"yt_{vid_id}",
+                    "broadcaster_name": inferred,
+                    "source_platform": "YouTube",
+                    "title": title,
+                    "url": f"https://www.youtube.com/watch?v={vid_id}",
+                    "duration": dur,
+                    "created_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+                    "min_upload_date": cutoff_date,
+                })
+            if bucket:
                 break
-    return found
+        if bucket:
+            bucket.sort(key=lambda x: abs(float(x.get("duration") or 36.0) - 38.0))
+            buckets.append(bucket)
+        if len(buckets) >= max(limit, 8):
+            break
+
+    # Interleave round-robin across streamers so each clip comes from a different YouTube creator
+    interleaved: list[dict[str, Any]] = []
+    max_len = max((len(b) for b in buckets), default=0)
+    for idx in range(max_len):
+        for b in buckets:
+            if idx < len(b):
+                interleaved.append(b[idx])
+                if len(interleaved) >= limit:
+                    return interleaved
+    return interleaved
 
 
 def clean_burned_text(text: str, fallback: str) -> str:
@@ -402,6 +460,7 @@ def generate_copy_with_openrouter(
     clip_title: str,
     strip_b64: str | None = None,
     require_gta6: bool = True,
+    source_platform: str = "Twitch",
 ) -> dict[str, Any]:
     """
     Use fast free OpenRouter vision-language models (nemotron-3.5-super-vl:free / nemotron-3-nano-omni / openrouter/free)
@@ -415,7 +474,7 @@ def generate_copy_with_openrouter(
         "visual_summary": f"Clip from @{streamer}: {clip_title}",
         "hook": clean_burned_text("GTA 6 CHAOS HIT INSTANTLY" if require_gta6 else "THIS STREAMER MOMENT WENT WILD", "THIS STREAMER MOMENT WENT WILD"),
         "punchline": "ZERO CHILL ON STREAM",
-        "caption": f"{'gta 6' if require_gta6 else handle_clean} did not let him breathe 💀\n\nCredit: @{streamer} (Twitch)\n\n#{'gta6' if require_gta6 else 'gaming'} #{handle_clean} #streamerclips #gaming #funnymoments",
+        "caption": f"{'gta 6' if require_gta6 else handle_clean} did not let him breathe 💀\n\nCredit: @{streamer} ({source_platform})\n\n#{'gta6' if require_gta6 else 'gaming'} #{handle_clean} #streamerclips #gaming #funnymoments",
         "ig_first_comment": "Be honest, how would you have reacted right there?",
         "send_test": "Send to your gaming friend: 'bro watch his face at the end'",
     }
@@ -501,8 +560,8 @@ def generate_copy_with_openrouter(
                 cap_line = "bro did not expect that 💀"
 
             tag1 = "#gta6" if is_gta6 else f"#{re.sub(r'[^a-z0-9]', '', game_det.lower()) or 'gaming'}"
-            tag3 = "#vicecity" if is_gta6 else "#twitchclips"
-            caption = f"{cap_line}\n\nCredit: @{streamer} (Twitch)\n\n{tag1} #{handle_clean} {tag3} #gaming #funnymoments"
+            tag3 = "#vicecity" if is_gta6 else ("#youtubeclips" if source_platform.lower() == "youtube" else "#twitchclips")
+            caption = f"{cap_line}\n\nCredit: @{streamer} ({source_platform})\n\n{tag1} #{handle_clean} {tag3} #gaming #funnymoments"
             return {
                 "is_gta6": is_gta6,
                 "game_detected": "GTA 6" if is_gta6 else game_det,
@@ -625,15 +684,21 @@ def append_log_entry(
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Daily 10:00 AM WAT headless cloud pipeline.")
+    load_local_dotenv()
+    parser = argparse.ArgumentParser(description="Daily 10:00 AM WAT headless cloud & local YouTube-streamer pipeline.")
     parser.add_argument("--clip-count", type=int, default=int(os.environ.get("DAILY_CLIP_COUNT", "5")))
     parser.add_argument("--target-sec", type=float, default=float(os.environ.get("TARGET_CLIP_SEC", "30.0")))
+    parser.add_argument("--source", choices=("auto", "twitch", "youtube"), default="auto",
+                        help="Clip source: auto/twitch (cloud default) or youtube (local Mac YouTube-only streamers)")
+    parser.add_argument("--streamers", type=str, default="",
+                        help="Optional comma-separated streamer names/handles (e.g. 'IShowSpeed,TypicalGamer')")
     parser.add_argument("--dry-run", action="store_true", help="Do not send Telegram messages or mutate scoreboard")
     args = parser.parse_args()
 
     require_gta6 = os.environ.get("REQUIRE_GTA6_ONLY", "true").strip().lower() not in ("0", "false", "no")
+    tagged_streamers = [s.strip() for s in args.streamers.split(",") if s.strip()]
     now_wat = datetime.now(WAT)
-    print(f"=== Daily Cloud Pipeline Starting: {now_wat.isoformat()} (target={args.clip_count} clips @ ~{args.target_sec:.0f}s, require_gta6={require_gta6}) ===")
+    print(f"=== Pipeline Starting: {now_wat.isoformat()} (source={args.source}, target={args.clip_count} clips @ ~{args.target_sec:.0f}s, require_gta6={require_gta6}) ===")
 
     # 1. Sync stats (skipped on --dry-run to save Scrape Creators credits)
     if not args.dry_run:
@@ -681,6 +746,15 @@ def main() -> int:
 
     if not active_platforms:
         failure_reasons.append("All platforms are currently paused (check data/pause_state.json or run scripts/unpause.py).")
+    elif args.source == "youtube":
+        min_src = max(22.0, args.target_sec - 5.0)
+        yt_cands = scout_youtube_gta6_clips(
+            limit=max(16, args.clip_count * 6),
+            streamers=tagged_streamers or None,
+            min_duration=min_src,
+        )
+        print(f"[scout:youtube-local] Found {len(yt_cands)} YouTube-streamer clips across {len({c['broadcaster_name'] for c in yt_cands})} creators.")
+        candidates.extend(yt_cands)
     else:
         if tw_id and tw_sec:
             try:
@@ -695,7 +769,7 @@ def main() -> int:
             print(f"[scout:twitch-direct] Found {len(tw_direct)} round-robin Twitch clips across {len({c['broadcaster_name'] for c in tw_direct})} streamers.")
             candidates.extend(tw_direct)
 
-        if len(candidates) < args.clip_count:
+        if args.source == "auto" and len(candidates) < args.clip_count:
             yt_cands = scout_youtube_gta6_clips(limit=12)
             print(f"[scout:youtube] Found {len(yt_cands)} YouTube fallback clips.")
             candidates.extend(yt_cands)
@@ -736,7 +810,11 @@ def main() -> int:
                 # Vision check on 4 real frames BEFORE cutting: verifies real GTA 6 & writes grounded copy!
                 strip_b64 = build_4frame_strip_b64(raw_mp4, src_dur)
                 copy = generate_copy_with_openrouter(
-                    streamer, clip_meta.get("title") or "", strip_b64=strip_b64, require_gta6=require_gta6
+                    streamer,
+                    clip_meta.get("title") or "",
+                    strip_b64=strip_b64,
+                    require_gta6=require_gta6,
+                    source_platform=src_plat,
                 )
                 print(
                     f"[vision] {post_id} @{streamer}: is_gta6={copy['is_gta6']} ({copy['game_detected']}) | "
@@ -841,11 +919,12 @@ def main() -> int:
                     delivered_tg = True
 
                 if not args.dry_run:
+                    # Always track all 3 platforms in scoreboard.csv so IG, TikTok & YouTube stay in sync
                     append_scoreboard_rows(
                         post_id, date_str, time_str, copy["hook"],
                         render_info["duration_sec"], f"@{streamer} ({src_plat})",
                         f"proofs/{post_id}_proof.png",
-                        platforms=active_platforms,
+                        platforms=["instagram", "tiktok", "youtube"],
                     )
                     append_log_entry(
                         post_id, f"{date_str} {time_str}", streamer, clip_url,
