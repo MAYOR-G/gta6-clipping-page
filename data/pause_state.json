@@ -4,7 +4,7 @@
   "platforms": {
     "youtube": {
       "paused": true,
-      "until_utc": "2026-11-21T19:32:08.897101+00:00",
+      "until_utc": "2026-11-22T05:16:11.732426+00:00",
       "reason": "2 consecutive stuck posts (<20 plays at 1h)"
     }
   },
@@ -14,6 +14,11 @@
       "at_utc": "2026-11-20T19:32:08.897101+00:00",
       "action": "auto_pause_youtube_24h",
       "until_utc": "2026-11-21T19:32:08.897101+00:00"
+    },
+    {
+      "at_utc": "2026-11-21T05:16:11.732426+00:00",
+      "action": "auto_pause_youtube_24h",
+      "until_utc": "2026-11-22T05:16:11.732426+00:00"
     }
   ]
 }
