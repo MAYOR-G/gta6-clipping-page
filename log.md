@@ -138,6 +138,86 @@ Every published/queued clip AND every rejected scout candidate is logged here so
 
 ---
 
+
+### GTA-007 — @jasontheween (Cloud Auto 30s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-21 22:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 30.04s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `GTA 6 BEDROOM MELTDOWN MOMENT`
+- **Punchline:** `OH MY GOD`
+- **Source URL & Created At:** `https://www.twitch.tv/jasontheween/clip/TalentedLuckyBillBudStar-U2xEL5thXRWM5_oa` (2026-11-21T11:44:29Z)
+- **Credit:** `@jasontheween (Twitch)`
+- **Proof Frame:** `proofs/GTA-007_proof.png`
+- **Send Test:** send to your friend who overreacts to everything with 'oh my god'
+- **IG First Comment:** `what's the most awkward thing you've walked in on?`
+
+---
+
+
+### GTA-008 — @jynxzi (Cloud Auto 30s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-22 01:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 30.10s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `GTA 6 LIQUOR STORE ROBBERY`
+- **Punchline:** `GIVE ME ALL`
+- **Source URL & Created At:** `https://www.twitch.tv/jynxzi/clip/ObliviousSavoryLasagnaPipeHype-UcT9aMy-Xa1KgphO` (2026-11-21T11:44:29Z)
+- **Credit:** `@jynxzi (Twitch)`
+- **Proof Frame:** `proofs/GTA-008_proof.png`
+- **Send Test:** send to your gamer friend and type 'we doing this'.
+- **IG First Comment:** `what would you rob first in gta 6`
+
+---
+
+
+### GTA-009 — @lacy (Cloud Auto 30s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-22 04:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 30.04s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `GTA 6 NIGHT CITY DRIVING`
+- **Punchline:** `STREETS ALIVE AT NIGHT`
+- **Source URL & Created At:** `https://www.twitch.tv/lacy/clip/AggressiveJazzyVampirePeanutButterJellyTime-x5Os2fBRGnW68JOW` (2026-11-21T11:44:30Z)
+- **Credit:** `@lacy (Twitch)`
+- **Proof Frame:** `proofs/GTA-009_proof.png`
+- **Send Test:** send to your driving buddy and type 'night cruise?'
+- **IG First Comment:** `what time do you usually play gta?`
+
+---
+
+
+### GTA-010 — @fanum (Cloud Auto 30s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-22 07:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 30.04s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `GTA 6 DRACO DOING WORK`
+- **Punchline:** `YOU CRAZY`
+- **Source URL & Created At:** `https://www.twitch.tv/fanum/clip/BumblingUnusualFloofRiPepperonis-5jjjnP3dx1fyHo-M` (2026-11-21T11:44:31Z)
+- **Credit:** `@fanum (Twitch)`
+- **Proof Frame:** `proofs/GTA-010_proof.png`
+- **Send Test:** send to your gamer friend and type 'this is wild'
+- **IG First Comment:** `what would you do if you saw this in gta 6?`
+
+---
+
+
+### GTA-011 — @lirik (Cloud Auto 30s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-22 10:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 30.04s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `GTA 6 FIRST PERSON MODE`
+- **Punchline:** `HE FOUND IT`
+- **Source URL & Created At:** `https://www.twitch.tv/lirik/clip/MoistGenerousMilkSMOrc-0_h_4c2_tpa0H4iL` (2026-11-21T11:44:31Z)
+- **Credit:** `@lirik (Twitch)`
+- **Proof Frame:** `proofs/GTA-011_proof.png`
+- **Send Test:** send to your gamer friend who types 'first person mode goated'
+- **IG First Comment:** `do you play gta in first person or third person?`
+
+---
+
 ## Scout Rejects Log
 
 *(Record rejected candidates with URL/ID and reason so the 2-hour routine skips them immediately.)*
