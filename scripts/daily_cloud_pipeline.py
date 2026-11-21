@@ -22,10 +22,13 @@ Security: reads all keys strictly from environment variables and NEVER prints an
 from __future__ import annotations
 
 import argparse
+import base64
 import concurrent.futures
 import csv
+import io
 import json
 import os
+import random
 import re
 import shutil
 import subprocess
@@ -35,6 +38,8 @@ import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
+
+from PIL import Image
 
 ROOT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT_DIR / "scripts"))
@@ -87,6 +92,10 @@ DEFAULT_TWITCH_STREAMERS = [
     "summit1g",
     "agent00",
     "jasontheween",
+    "lirik",
+    "lacy",
+    "esfandtv",
+    "hasanabi",
 ]
 
 # Local-only fallback YouTube searches (skipped in cloud when Twitch direct already supplies clips)
@@ -207,23 +216,30 @@ def get_twitch_streamers() -> list[str]:
     return streamers
 
 
-def scout_twitch_direct_clips(limit: int = 12) -> list[dict[str, Any]]:
-    """Zero-key, zero-2FA parallel Twitch clip scouting via yt-dlp (no YouTube bot gate on GitHub Actions!)."""
+def scout_twitch_direct_clips(limit: int = 20, min_duration: float = 24.0) -> list[dict[str, Any]]:
+    """
+    Zero-key, zero-2FA parallel Twitch clip scouting via yt-dlp.
+    Shuffles streamer order daily and interleaves round-robin across streamers so
+    every daily drop features DIFFERENT creators instead of repeating one streamer.
+    """
     seen_ids: set[str] = set()
-    found: list[dict[str, Any]] = []
+    by_streamer: dict[str, list[dict[str, Any]]] = {}
     streamers = get_twitch_streamers()
+    # Deterministic daily shuffle so different streamers lead each day
+    rng = random.Random(datetime.now(WAT).strftime("%Y-%m-%d"))
+    rng.shuffle(streamers)
 
-    def fetch_streamer(args_pair: tuple[str, str]) -> list[dict[str, Any]]:
+    def fetch_streamer(args_pair: tuple[str, str]) -> tuple[str, list[dict[str, Any]]]:
         handle, time_range = args_pair
         url = f"https://www.twitch.tv/{handle}/clips?filter=clips&range={time_range}"
         try:
             out = subprocess.check_output(
-                ["yt-dlp", "--flat-playlist", "--playlist-end", "4", "--dump-json", "--no-warnings", url],
+                ["yt-dlp", "--flat-playlist", "--playlist-end", "6", "--dump-json", "--no-warnings", url],
                 text=True,
                 timeout=15,
             )
         except Exception:
-            return []
+            return handle, []
         batch = []
         for line in out.strip().splitlines():
             if not line.strip():
@@ -236,7 +252,7 @@ def scout_twitch_direct_clips(limit: int = 12) -> list[dict[str, Any]]:
             cid = str(d.get("id") or "")
             dur = float(d.get("duration") or 0)
             title = d.get("title") or ""
-            if not cid or not clip_url or dur < 18.0 or dur > 65.0:
+            if not cid or not clip_url or dur < min_duration or dur > 65.0:
                 continue
             if UNSAFE_TITLE_RE.search(title):
                 continue
@@ -249,24 +265,33 @@ def scout_twitch_direct_clips(limit: int = 12) -> list[dict[str, Any]]:
                 "duration": dur,
                 "created_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             })
-        return batch
+        # Prefer clips near ~32-45s (plenty of footage for a clean 30s payoff-first edit)
+        batch.sort(key=lambda x: abs(x["duration"] - 36.0))
+        return handle, batch
 
-    # Check 24hr across all streamers in parallel first (~5-8s total), then 7d if needed
     for time_range in ("24hr", "7d"):
-        if len(found) >= limit:
+        if sum(len(v) for v in by_streamer.values()) >= limit:
             break
-        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as ex:
+        with concurrent.futures.ThreadPoolExecutor(max_workers=6) as ex:
             results = list(ex.map(fetch_streamer, [(h, time_range) for h in streamers]))
-        for batch in results:
+        for handle, batch in results:
+            bucket = by_streamer.setdefault(handle, [])
             for item in batch:
                 if item["id"] not in seen_ids:
                     seen_ids.add(item["id"])
-                    found.append(item)
-                    if len(found) >= limit:
-                        found.sort(key=lambda x: abs(x["duration"] - 28.0))
-                        return found
-    found.sort(key=lambda x: abs(x["duration"] - 28.0))
-    return found
+                    bucket.append(item)
+
+    # Round-robin interleave: 1 clip from every streamer before taking a 2nd from anyone
+    interleaved: list[dict[str, Any]] = []
+    max_depth = max((len(v) for v in by_streamer.values()), default=0)
+    for idx in range(max_depth):
+        for handle in streamers:
+            bucket = by_streamer.get(handle) or []
+            if idx < len(bucket):
+                interleaved.append(bucket[idx])
+                if len(interleaved) >= limit:
+                    return interleaved
+    return interleaved
 
 
 def get_scout_queries() -> list[str]:
@@ -350,43 +375,98 @@ def clean_burned_text(text: str, fallback: str) -> str:
     return (cleaned[:54].upper()) if cleaned else fallback
 
 
-def generate_copy_with_openrouter(streamer: str, clip_title: str) -> dict[str, str]:
-    """Use free OpenRouter model if OPENROUTER_API_KEY is set; otherwise safe deterministic fallback."""
+def build_4frame_strip_b64(video_path: Path, src_dur: float) -> str | None:
+    """Extract 4 frames (20%, 45%, 70%, 90%) into a compact 2x2 JPEG base64 string for fast free vision verification."""
+    try:
+        grid = Image.new("RGB", (640, 360), (15, 15, 18))
+        positions = [(0, 0), (320, 0), (0, 180), (320, 180)]
+        fracs = (0.20, 0.45, 0.70, 0.90)
+        for (px, py), frac in zip(positions, fracs):
+            ts = max(0.3, min(src_dur - 0.3, src_dur * frac))
+            raw = subprocess.check_output([
+                "ffmpeg", "-y", "-ss", f"{ts:.2f}", "-i", str(video_path),
+                "-frames:v", "1", "-vf", "scale=320:180:force_original_aspect_ratio=decrease,pad=320:180:(ow-iw)/2:(oh-ih)/2",
+                "-f", "image2pipe", "-vcodec", "mjpeg", "-"
+            ], stderr=subprocess.DEVNULL, timeout=15)
+            im = Image.open(io.BytesIO(raw)).convert("RGB")
+            grid.paste(im, (px, py))
+        buf = io.BytesIO()
+        grid.save(buf, format="JPEG", quality=70)
+        return base64.b64encode(buf.getvalue()).decode("ascii")
+    except Exception:
+        return None
+
+
+def generate_copy_with_openrouter(
+    streamer: str,
+    clip_title: str,
+    strip_b64: str | None = None,
+    require_gta6: bool = True,
+) -> dict[str, Any]:
+    """
+    Use fast free OpenRouter vision-language models (nemotron-3.5-super-vl:free / nemotron-3-nano-omni / openrouter/free)
+    with reasoning disabled for ~1.5s responses to SEE the actual 4 video frames, verify real GTA gameplay
+    (rejecting football/FIFA pitches, IRL, shooters, etc.), and write hooks/captions strictly grounded in the frames.
+    """
     handle_clean = re.sub(r"[^A-Za-z0-9_]", "", streamer.lower()) or "streamer"
     fallback = {
-        "hook": clean_burned_text("GTA 6 CHAOS HIT INSTANTLY", "GTA 6 CHAOS HIT INSTANTLY"),
-        "punchline": "VICE CITY HAS ZERO CHILL",
-        "caption": f"gta 6 did not let him breathe 💀\n\nCredit: @{streamer} (Twitch)\n\n#gta6 #{handle_clean} #vicecity #gaming #funnymoments",
-        "ig_first_comment": "Be honest, would you have survived that moment in GTA 6?",
-        "send_test": "Send to your GTA co-op friend: 'bro this is literally us on day one'",
+        "is_gta6": True,
+        "game_detected": "GTA 6" if require_gta6 else "Gaming",
+        "visual_summary": f"Clip from @{streamer}: {clip_title}",
+        "hook": clean_burned_text("GTA 6 CHAOS HIT INSTANTLY" if require_gta6 else "THIS STREAMER MOMENT WENT WILD", "THIS STREAMER MOMENT WENT WILD"),
+        "punchline": "ZERO CHILL ON STREAM",
+        "caption": f"{'gta 6' if require_gta6 else handle_clean} did not let him breathe 💀\n\nCredit: @{streamer} (Twitch)\n\n#{'gta6' if require_gta6 else 'gaming'} #{handle_clean} #streamerclips #gaming #funnymoments",
+        "ig_first_comment": "Be honest, how would you have reacted right there?",
+        "send_test": "Send to your gaming friend: 'bro watch his face at the end'",
     }
 
     api_key = os.environ.get("OPENROUTER_API_KEY", "").strip()
     if not api_key:
         return fallback
 
-    primary_model = os.environ.get("OPENROUTER_MODEL", "google/gemma-4-31b-it:free").strip()
-    model_chain = []
-    for m in (primary_model, "google/gemma-4-31b-it:free", "nvidia/nemotron-3.5-lightning:free", "openrouter/free"):
-        if m and m not in model_chain:
-            model_chain.append(m)
+    primary_model = os.environ.get("OPENROUTER_MODEL", "nvidia/nemotron-3.5-super-vl:free").strip()
+    vision_models = []
+    for m in (
+        primary_model,
+        "nvidia/nemotron-3.5-super-vl:free",
+        "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+        "openrouter/free",
+        "google/gemma-4-31b-it:free",
+    ):
+        if m and m not in vision_models:
+            vision_models.append(m)
+    text_fallbacks = ["nvidia/nemotron-3.5-lightning:free", "openrouter/free"]
 
     prompt = (
-        f"You are writing short-form copy for a faceless GTA 6 funny-moments clipping page.\n"
+        f"You are reviewing a 2x2 grid of 4 sequential frames from a gaming stream clip (today is Nov 2026 and GTA 6 just launched).\n"
         f"Streamer: @{streamer} (Twitch). Original clip title: {clip_title!r}.\n"
-        f"Return STRICT JSON ONLY with keys: hook, punchline, caption_line, ig_first_comment, send_test.\n"
-        f"Rules:\n"
-        f"- hook: 4 to 7 words ALL CAPS, NO emoji, adds funny context (never 'STREAMER DOES X'), MUST include 'GTA 6' or 'VICE CITY' or 'LUCIA' or 'JASON'.\n"
-        f"- punchline: 2 to 5 words ALL CAPS, NO emoji.\n"
-        f"- caption_line: 3 to 6 words lowercase friend's voice with 'gta 6' or character name, NO question mark, NO em dash, NO 'official'/'leak'/'giveaway', at most 1 emoji.\n"
-        f"- ig_first_comment: 1 honest short question viewers can answer about themselves.\n"
+        f"CRITICAL ACCURACY RULES:\n"
+        f"1. Describe ONLY what is LITERALLY visible in the 4 frames. NEVER invent cars, driving, police, Lucia, Jason, or physics glitches if they are NOT actually visible on screen.\n"
+        f"2. Set is_gta6=true if the frames show Grand Theft Auto open-world gameplay (cars/highways, Vice City/Leonida/city streets, GTA characters/NPCs, police, open-world third-person/first-person GTA action — note: GTA 6 just released and resembles modern GTA V visually, so treat any modern GTA gameplay as is_gta6=true).\n"
+        f"3. Set is_gta6=false for football/soccer/FIFA pitches, sports games, CS/Valorant/FPS shooters, Fortnite, Minecraft/2D/horror games, pure IRL/Just Chatting streams without GTA gameplay, or menu-only screens.\n"
+        f"Return STRICT JSON ONLY with keys: is_gta6 (boolean), game_detected (short string), visual_summary (1 short sentence of what is literally on screen), hook, punchline, caption_line, ig_first_comment, send_test.\n"
+        f"Copy rules:\n"
+        f"- hook: 4 to 7 words ALL CAPS, NO emoji, accurately matches what is ACTUALLY in the frames (include 'GTA 6' ONLY if is_gta6 is true).\n"
+        f"- punchline: 2 to 5 words ALL CAPS, NO emoji, matching the actual reaction/moment.\n"
+        f"- caption_line: 3 to 7 words lowercase friend's voice matching the REAL moment on screen, NO question mark, NO em dash, NO 'official'/'leak'/'giveaway', at most 1 emoji.\n"
+        f"- ig_first_comment: 1 honest short question viewers can answer about themselves based on what actually happened.\n"
         f"- send_test: who a viewer sends this to and what they type.\n"
     )
-    for model in model_chain:
+
+    attempts_list: list[tuple[str, bool]] = [(m, True) for m in vision_models if strip_b64] + [(m, False) for m in text_fallbacks]
+    for model, use_vision in attempts_list:
+        if use_vision and strip_b64:
+            content: Any = [
+                {"type": "text", "text": prompt},
+                {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{strip_b64}"}},
+            ]
+        else:
+            content = prompt
         payload = {
             "model": model,
-            "messages": [{"role": "user", "content": prompt}],
-            "temperature": 0.7,
+            "messages": [{"role": "user", "content": content}],
+            "temperature": 0.4,
+            "reasoning": {"effort": "none"},
         }
         try:
             req = urllib.request.Request(
@@ -396,30 +476,43 @@ def generate_copy_with_openrouter(streamer: str, clip_title: str) -> dict[str, s
                 headers={
                     "Authorization": f"Bearer {api_key}",
                     "Content-Type": "application/json",
-                    "HTTP-Referer": "https://github.com/gta6-clipping-page",
-                    "X-Title": "Leonida Chaos Clipping Pipeline",
+                    "HTTP-Referer": "https://github.com/MAYOR-G/gta6-clipping-page",
+                    "X-Title": "Leonida Chaos Vision Pipeline",
                 },
             )
-            with urllib.request.urlopen(req, timeout=15) as resp:
+            with urllib.request.urlopen(req, timeout=20) as resp:
                 body = json.loads(resp.read().decode("utf-8"))
-            raw = body["choices"][0]["message"]["content"]
+            raw = body["choices"][0]["message"].get("content") or ""
+            if not raw.strip():
+                continue
             m_json = re.search(r"\{.*\}", raw, flags=re.DOTALL)
             parsed = json.loads(m_json.group(0) if m_json else raw)
+
+            game_det = str(parsed.get("game_detected") or "Gaming").strip()
+            if use_vision:
+                is_gta6 = bool(parsed.get("is_gta6", False)) or ("gta" in game_det.lower()) or ("grand theft auto" in game_det.lower())
+            else:
+                is_gta6 = True
             hook = clean_burned_text(parsed.get("hook", ""), fallback["hook"])
-            if not any(k in hook for k in ("GTA 6", "VICE CITY", "LUCIA", "JASON", "NPC", "COPS")):
-                hook = f"GTA 6 {hook}"[:54]
             punch = clean_burned_text(parsed.get("punchline", ""), fallback["punchline"])
-            cap_line = (parsed.get("caption_line") or "gta 6 has zero chill 💀").strip()
+            cap_line = (parsed.get("caption_line") or "bro did not expect that 💀").strip()
             cap_line = cap_line.replace("—", " ").replace("--", " ").rstrip("?").strip()
             if re.search(r"\b(official|leak|early|giveaway|free copy)\b", cap_line, re.I):
-                cap_line = "gta 6 has zero chill 💀"
-            caption = f"{cap_line}\n\nCredit: @{streamer} (Twitch)\n\n#gta6 #{handle_clean} #vicecity #gaming #funnymoments"
+                cap_line = "bro did not expect that 💀"
+
+            tag1 = "#gta6" if is_gta6 else f"#{re.sub(r'[^a-z0-9]', '', game_det.lower()) or 'gaming'}"
+            tag3 = "#vicecity" if is_gta6 else "#twitchclips"
+            caption = f"{cap_line}\n\nCredit: @{streamer} (Twitch)\n\n{tag1} #{handle_clean} {tag3} #gaming #funnymoments"
             return {
+                "is_gta6": is_gta6,
+                "game_detected": "GTA 6" if is_gta6 else game_det,
+                "visual_summary": str(parsed.get("visual_summary") or clip_title).strip(),
                 "hook": hook,
                 "punchline": punch,
                 "caption": caption,
                 "ig_first_comment": (parsed.get("ig_first_comment") or fallback["ig_first_comment"]).strip(),
                 "send_test": (parsed.get("send_test") or fallback["send_test"]).strip(),
+                "model_used": model,
             }
         except Exception:
             continue
@@ -490,7 +583,7 @@ def append_scoreboard_rows(
         writer = csv.writer(f)
         for plat in (platforms or ["instagram", "tiktok", "youtube"]):
             writer.writerow([
-                post_id, date_str, time_str, plat, "cloud_auto_20s", "stack_or_full",
+                post_id, date_str, time_str, plat, "cloud_auto_30s", "stack_or_full",
                 hook, f"{length_sec:.2f}", credit,
                 "", "", "", "", "", "", "", "", "EXP-R1",
                 f"delivered_telegram | proof:{proof_rel}",
@@ -508,7 +601,7 @@ def append_log_entry(
     proof_rel: str,
 ) -> None:
     entry = (
-        f"\n### {post_id} — @{streamer} (Cloud Auto 20s)\n"
+        f"\n### {post_id} — @{streamer} (Cloud Auto 30s)\n"
         f"- **Status:** Cut & Delivered to Telegram\n"
         f"- **Recommended Slot (WAT):** `{slot_str}`\n"
         f"- **Platforms:** instagram, tiktok, youtube\n"
@@ -533,13 +626,14 @@ def append_log_entry(
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Daily 10:00 AM WAT headless cloud pipeline.")
-    parser.add_argument("--clip-count", type=int, default=int(os.environ.get("DAILY_CLIP_COUNT", "3")))
-    parser.add_argument("--target-sec", type=float, default=float(os.environ.get("TARGET_CLIP_SEC", "20.0")))
+    parser.add_argument("--clip-count", type=int, default=int(os.environ.get("DAILY_CLIP_COUNT", "5")))
+    parser.add_argument("--target-sec", type=float, default=float(os.environ.get("TARGET_CLIP_SEC", "30.0")))
     parser.add_argument("--dry-run", action="store_true", help="Do not send Telegram messages or mutate scoreboard")
     args = parser.parse_args()
 
+    require_gta6 = os.environ.get("REQUIRE_GTA6_ONLY", "true").strip().lower() not in ("0", "false", "no")
     now_wat = datetime.now(WAT)
-    print(f"=== Daily Cloud Pipeline Starting: {now_wat.isoformat()} (target={args.clip_count} clips @ ~{args.target_sec:.0f}s) ===")
+    print(f"=== Daily Cloud Pipeline Starting: {now_wat.isoformat()} (target={args.clip_count} clips @ ~{args.target_sec:.0f}s, require_gta6={require_gta6}) ===")
 
     # 1. Sync stats (skipped on --dry-run to save Scrape Creators credits)
     if not args.dry_run:
@@ -595,9 +689,10 @@ def main() -> int:
             except Exception as exc:
                 print(f"[warn] Twitch API scout failed ({type(exc).__name__}); using zero-key Twitch direct scout.", file=sys.stderr)
 
-        if len(candidates) < args.clip_count * 3:
-            tw_direct = scout_twitch_direct_clips(limit=max(10, args.clip_count * 4))
-            print(f"[scout:twitch-direct] Found {len(tw_direct)} Twitch streamer clips (zero-key, cloud-safe).")
+        if len(candidates) < args.clip_count * 4:
+            min_src = max(20.0, args.target_sec - 5.0)
+            tw_direct = scout_twitch_direct_clips(limit=max(24, args.clip_count * 6), min_duration=min_src)
+            print(f"[scout:twitch-direct] Found {len(tw_direct)} round-robin Twitch clips across {len({c['broadcaster_name'] for c in tw_direct})} streamers.")
             candidates.extend(tw_direct)
 
         if len(candidates) < args.clip_count:
@@ -608,17 +703,23 @@ def main() -> int:
     if candidates and active_platforms:
         post_num = next_post_number()
         attempts = 0
-        max_attempts = max(6, args.clip_count * 3)
+        max_attempts = max(14, args.clip_count * 4)
+        used_streamers_today: set[str] = set()
+
         for clip_meta in candidates:
             if len(produced) >= args.clip_count or attempts >= max_attempts:
                 break
             cid = clip_meta["id"]
             if cid in seen_set:
                 continue
-            attempts += 1
 
             streamer = clip_meta.get("broadcaster_name") or "streamer"
             streamer_key = streamer.lower()
+            # Enforce max 1 clip per streamer per day so every daily drop has diverse creators!
+            if streamer_key in used_streamers_today:
+                continue
+            attempts += 1
+
             src_plat = clip_meta.get("source_platform", "Twitch")
             clip_url = clip_meta.get("url") or f"https://clips.twitch.tv/{cid}"
             post_id = f"GTA-{post_num:03d}"
@@ -627,7 +728,22 @@ def main() -> int:
                 raw_mp4 = RAW_DIR / f"{cid}.mp4"
                 download_clip(clip_url, raw_mp4)
                 src_dur = probe_duration(raw_mp4)
-                if src_dur < 17.5:
+                if src_dur < max(19.0, args.target_sec - 6.0):
+                    raw_mp4.unlink(missing_ok=True)
+                    seen_set.add(cid)
+                    continue
+
+                # Vision check on 4 real frames BEFORE cutting: verifies real GTA 6 & writes grounded copy!
+                strip_b64 = build_4frame_strip_b64(raw_mp4, src_dur)
+                copy = generate_copy_with_openrouter(
+                    streamer, clip_meta.get("title") or "", strip_b64=strip_b64, require_gta6=require_gta6
+                )
+                print(
+                    f"[vision] {post_id} @{streamer}: is_gta6={copy['is_gta6']} ({copy['game_detected']}) | "
+                    f"hook={copy['hook']!r} | seen={copy['visual_summary'][:80]!r}"
+                )
+                if require_gta6 and not copy.get("is_gta6", True):
+                    print(f"[skip] {cid} (@{streamer}) rejected by vision check: detected {copy['game_detected']!r}, not GTA 6.")
                     raw_mp4.unlink(missing_ok=True)
                     seen_set.add(cid)
                     continue
@@ -640,21 +756,20 @@ def main() -> int:
                     "-i", str(raw_mp4), "-frames:v", "1", str(proof_png),
                 ], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-                # Build ~20-second payoff-first spec:
-                # 2.5s teaser from climax + 0.14s flash + ~16.5s setup-to-payoff + 0.8s slow-mo boost ~= 20.0s
-                payoff_end = max(17.0, min(src_dur - 0.4, 42.0))
+                # Build ~30-second payoff-first spec:
+                # 2.5s teaser from climax + 0.14s flash + ~26.5s setup-to-payoff + 0.8s slow-mo boost ~= 30.0s
+                payoff_end = max(min(src_dur - 0.3, args.target_sec + 12.0), min(src_dur - 0.3, 24.0))
                 teaser_dur = 2.5
                 teaser_start = max(10.0, payoff_end - teaser_dur - 0.5)
                 teaser_end = min(payoff_end, teaser_start + teaser_dur)
 
-                body_raw_len = max(13.5, args.target_sec - teaser_dur - 0.14 - 0.8)
+                body_raw_len = max(18.0, args.target_sec - teaser_dur - 0.14 - 0.8)
                 body_start = max(0.0, payoff_end - body_raw_len)
                 body_end = payoff_end
 
                 slowmo_start = max(body_start + 8.0, payoff_end - 2.6)
                 slowmo_end = min(body_end - 0.6, slowmo_start + 0.8)
 
-                copy = generate_copy_with_openrouter(streamer, clip_meta.get("title") or "")
                 crop_cfg = crops.get(streamer_key)
 
                 spec: dict[str, Any] = {
@@ -745,6 +860,7 @@ def main() -> int:
                     "slot": f"{date_str} {time_str}",
                     "telegram_delivered": delivered_tg,
                 })
+                used_streamers_today.add(streamer_key)
                 seen_set.add(cid)
                 post_num += 1
 

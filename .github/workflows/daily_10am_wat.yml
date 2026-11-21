@@ -7,13 +7,13 @@ on:
   workflow_dispatch:
     inputs:
       clip_count:
-        description: "How many ~20s clips to produce and send to Telegram today"
+        description: "How many ~30s clips to produce and send to Telegram today (5 different streamers)"
         required: false
-        default: "3"
+        default: "5"
       target_sec:
-        description: "Target clip duration in seconds (default: 20)"
+        description: "Target clip duration in seconds (default: 30)"
         required: false
-        default: "20"
+        default: "30"
       dry_run:
         description: "Validate without sending to Telegram or mutating state"
         type: boolean
@@ -32,7 +32,7 @@ concurrency:
 jobs:
   run-pipeline:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 20
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -56,15 +56,16 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           SCRAPE_CREATORS_API_KEY: ${{ secrets.SCRAPE_CREATORS_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          OPENROUTER_MODEL: ${{ vars.OPENROUTER_MODEL || 'google/gemma-4-31b-it:free' }}
+          OPENROUTER_MODEL: ${{ vars.OPENROUTER_MODEL || 'nvidia/nemotron-3.5-super-vl:free' }}
           PAGE_NAME: ${{ vars.PAGE_NAME || 'Leonida Chaos' }}
           TWITCH_STREAMERS: ${{ vars.TWITCH_STREAMERS }}
           EXTRA_SCOUT_QUERIES: ${{ vars.EXTRA_SCOUT_QUERIES }}
+          REQUIRE_GTA6_ONLY: ${{ vars.REQUIRE_GTA6_ONLY || 'true' }}
           YT_CHANNEL_URL: ${{ vars.YT_CHANNEL_URL }}
           TIKTOK_HANDLE: ${{ vars.TIKTOK_HANDLE }}
           IG_HANDLE: ${{ vars.IG_HANDLE }}
-          DAILY_CLIP_COUNT: ${{ inputs.clip_count || vars.DAILY_CLIP_COUNT || '3' }}
-          TARGET_CLIP_SEC: ${{ inputs.target_sec || vars.TARGET_CLIP_SEC || '20' }}
+          DAILY_CLIP_COUNT: ${{ inputs.clip_count || vars.DAILY_CLIP_COUNT || '5' }}
+          TARGET_CLIP_SEC: ${{ inputs.target_sec || vars.TARGET_CLIP_SEC || '30' }}
         run: |
           ARGS="--clip-count ${DAILY_CLIP_COUNT} --target-sec ${TARGET_CLIP_SEC}"
           if [ "${{ inputs.dry_run }}" = "true" ]; then

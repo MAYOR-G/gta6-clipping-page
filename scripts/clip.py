@@ -721,8 +721,8 @@ def render_clip(spec_path: Path, make_qa: bool = True, make_sheet: bool = True) 
         sheet_png = str(make_contact_sheet(out_path, qa_dir / f"{out_path.stem}_sheet.png", interval=2.0))
 
     warnings = []
-    if final_dur < 12.0 or final_dur > 22.0:
-        warnings.append(f"Duration {final_dur:.2f}s is outside target 12-22s window (~20s target).")
+    if final_dur < 12.0 or final_dur > 35.0:
+        warnings.append(f"Duration {final_dur:.2f}s is outside target 12-35s window (~30s target).")
 
     return {
         "out": str(out_path),

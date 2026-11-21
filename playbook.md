@@ -55,7 +55,7 @@ The edit is the product. Subtitles + a credit line alone do NOT count as origina
 -> [PAYOFF w/ 1 slow-mo OR freeze] -> [REACTION HOLD 0.5–1.5s + PUNCHLINE] -> hard cut loop
 ```
 
-- **Specs:** `1080x1920`, `30 fps`, **12 to 22 seconds** (**~20s target** for future clips until crossing monetization milestones, then test 61–75s mini-compilations for TikTok Creator Rewards).
+- **Specs:** `1080x1920`, `30 fps`, **12 to 35 seconds** (**~30s target**, **5 clips/day** until crossing monetization milestones, then test 61–75s mini-compilations for TikTok Creator Rewards).
 - **Layout:** Stack (`facecam` cropped tight inside its border on top `1080x720`; clean `gameplay` below `1080x1200` with chat, watermarks, and foreign captions cropped out).
 - **Teaser:** Tease the *end* (2–4s, finishing the word/action), then start full play from the setup with **8+ seconds** of fresh footage before the payoff returns.
 - **Text rules:**
