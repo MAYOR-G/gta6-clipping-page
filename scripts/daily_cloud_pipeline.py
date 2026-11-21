@@ -482,12 +482,13 @@ def append_scoreboard_rows(
     length_sec: float,
     credit: str,
     proof_rel: str,
+    platforms: list[str] | None = None,
 ) -> None:
     if not SCOREBOARD_PATH.exists():
         return
     with SCOREBOARD_PATH.open("a", encoding="utf-8", newline="") as f:
         writer = csv.writer(f)
-        for plat in ("instagram", "tiktok", "youtube"):
+        for plat in (platforms or ["instagram", "tiktok", "youtube"]):
             writer.writerow([
                 post_id, date_str, time_str, plat, "cloud_auto_20s", "stack_or_full",
                 hook, f"{length_sec:.2f}", credit,
@@ -544,13 +545,35 @@ def main() -> int:
     if not args.dry_run:
         subprocess.run([sys.executable, str(ROOT_DIR / "scripts/sync_stats.py")], check=False)
 
-    # 2. Health check & stuck-post protocol
+    # 2. Health check & stuck-post protocol (determine active non-paused platforms BEFORE downloading anything!)
     health = run_health_check(apply_pauses=not args.dry_run)
+    pause_state = health.get("pause_state") or {}
+    now_utc = datetime.now(timezone.utc)
+
+    active_platforms: list[str] = []
+    if not pause_state.get("paused_all"):
+        for plat in ("instagram", "tiktok", "youtube"):
+            pinfo = (pause_state.get("platforms") or {}).get(plat) or {}
+            if pinfo.get("paused"):
+                until_s = pinfo.get("until_utc")
+                if not until_s:
+                    continue
+                try:
+                    if datetime.fromisoformat(until_s.replace("Z", "+00:00")) > now_utc:
+                        continue
+                except Exception:
+                    continue
+            active_platforms.append(plat)
+
+    paused_platforms = [p for p in ("instagram", "tiktok", "youtube") if p not in active_platforms]
+    if paused_platforms:
+        print(f"[health] Paused platform(s) skipped this run: {paused_platforms} | Active: {active_platforms}")
+
     if health.get("urgent_alert_even_overnight") and not args.dry_run:
         if os.environ.get("TELEGRAM_BOT_TOKEN") and os.environ.get("TELEGRAM_CHAT_ID"):
             send_message("URGENT: All active platforms stuck simultaneously. Global pause triggered. Run scripts/unpause.py after checking Account Status.")
 
-    # 3. Scout fresh clips: Twitch Helix first (if configured), automatic zero-key YouTube fallback otherwise!
+    # 3. Scout fresh clips ONLY if at least one platform is active
     tw_id = os.environ.get("TWITCH_CLIENT_ID", "").strip()
     tw_sec = os.environ.get("TWITCH_CLIENT_SECRET", "").strip()
     tg_ready = bool(os.environ.get("TELEGRAM_BOT_TOKEN", "").strip() and os.environ.get("TELEGRAM_CHAT_ID", "").strip())
@@ -562,31 +585,37 @@ def main() -> int:
     crops = load_json(CROPS_PATH, {})
     candidates: list[dict[str, Any]] = []
 
-    if tw_id and tw_sec:
-        try:
-            candidates = scout_twitch_gta6_clips(tw_id, tw_sec, limit=40)
-            print(f"[scout:twitch-api] Found {len(candidates)} fresh (<24h, English, >=18s) GTA 6 Twitch clips.")
-        except Exception as exc:
-            print(f"[warn] Twitch API scout failed ({type(exc).__name__}); using zero-key Twitch direct scout.", file=sys.stderr)
+    if not active_platforms:
+        failure_reasons.append("All platforms are currently paused (check data/pause_state.json or run scripts/unpause.py).")
+    else:
+        if tw_id and tw_sec:
+            try:
+                candidates = scout_twitch_gta6_clips(tw_id, tw_sec, limit=40)
+                print(f"[scout:twitch-api] Found {len(candidates)} fresh (<24h, English, >=18s) GTA 6 Twitch clips.")
+            except Exception as exc:
+                print(f"[warn] Twitch API scout failed ({type(exc).__name__}); using zero-key Twitch direct scout.", file=sys.stderr)
 
-    if len(candidates) < args.clip_count * 3:
-        tw_direct = scout_twitch_direct_clips(limit=24)
-        print(f"[scout:twitch-direct] Found {len(tw_direct)} Twitch streamer clips (zero-key, cloud-safe).")
-        candidates.extend(tw_direct)
+        if len(candidates) < args.clip_count * 3:
+            tw_direct = scout_twitch_direct_clips(limit=max(10, args.clip_count * 4))
+            print(f"[scout:twitch-direct] Found {len(tw_direct)} Twitch streamer clips (zero-key, cloud-safe).")
+            candidates.extend(tw_direct)
 
-    if len(candidates) < args.clip_count:
-        yt_cands = scout_youtube_gta6_clips(limit=12)
-        print(f"[scout:youtube] Found {len(yt_cands)} YouTube fallback clips.")
-        candidates.extend(yt_cands)
+        if len(candidates) < args.clip_count:
+            yt_cands = scout_youtube_gta6_clips(limit=12)
+            print(f"[scout:youtube] Found {len(yt_cands)} YouTube fallback clips.")
+            candidates.extend(yt_cands)
 
-    if candidates:
+    if candidates and active_platforms:
         post_num = next_post_number()
+        attempts = 0
+        max_attempts = max(6, args.clip_count * 3)
         for clip_meta in candidates:
-            if len(produced) >= args.clip_count:
+            if len(produced) >= args.clip_count or attempts >= max_attempts:
                 break
             cid = clip_meta["id"]
             if cid in seen_set:
                 continue
+            attempts += 1
 
             streamer = clip_meta.get("broadcaster_name") or "streamer"
             streamer_key = streamer.lower()
@@ -658,12 +687,13 @@ def main() -> int:
                 out_mp4 = Path(render_info["out"])
                 slot_iso, date_str, time_str = find_next_open_slot(now_wat)
 
-                # Validate & queue through safe_publish.py
+                # Validate & queue through safe_publish.py (ONLY for active non-paused platforms!)
                 pub_cmd = [
                     sys.executable, str(ROOT_DIR / "scripts/safe_publish.py"),
                     "--post-id", post_id,
                     "--video", str(out_mp4),
                     "--caption", copy["caption"],
+                    "--platforms", *active_platforms,
                     "--scheduled-time", slot_iso,
                     "--ig-first-comment", copy["ig_first_comment"],
                 ]
@@ -700,6 +730,7 @@ def main() -> int:
                         post_id, date_str, time_str, copy["hook"],
                         render_info["duration_sec"], f"@{streamer} ({src_plat})",
                         f"proofs/{post_id}_proof.png",
+                        platforms=active_platforms,
                     )
                     append_log_entry(
                         post_id, f"{date_str} {time_str}", streamer, clip_url,
@@ -742,6 +773,8 @@ def main() -> int:
         lines = [
             f"Daily 10 AM WAT Drop Complete ({now_wat.strftime('%Y-%m-%d')})",
             f"Clips delivered today: {len(produced)} (~{args.target_sec:.0f}s each)",
+            f"Active platforms: {', '.join(active_platforms) or 'none'}"
+            + (f" (Paused 24h: {', '.join(paused_platforms)})" if paused_platforms else ""),
             f"Total tracked views: {payload['totals']['views']:,} | Followers: {payload['totals']['followers']:,}",
         ]
         for p in produced:
