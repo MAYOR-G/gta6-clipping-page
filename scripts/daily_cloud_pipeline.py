@@ -22,6 +22,7 @@ Security: reads all keys strictly from environment variables and NEVER prints an
 from __future__ import annotations
 
 import argparse
+import concurrent.futures
 import csv
 import json
 import os
@@ -67,13 +68,28 @@ DAILY_WAT_SLOTS = [
 ]
 
 UNSAFE_TITLE_RE = re.compile(
-    r"\b(nsfw|naked|strip|sex|porn|boob|ass|slur|leak|datamine|spoiler|ending|final mission|giveaway|no commentary|full game walkthrough)\b",
+    r"\b(nsfw|naked|strip|strip club|lap dance|private dance|bricked|sex|porn|boob|titty|onlyfans|ass|slur|leak|datamine|spoiler|ending|final mission|giveaway|no commentary|full game walkthrough)\b",
     flags=re.IGNORECASE,
 )
 
 EXCLUDED_CHANNELS = {"mkiceandfire", "ug_z", "ugz"}
 
-# Popular GTA 6 YouTube/Twitch streamers & funny-moment searches used when Twitch keys are not configured
+# Default zero-key Twitch streamer watchlist (downloads cleanly on GitHub Actions with ZERO YouTube bot blocks!)
+# Override or expand anytime via GitHub Repository Variable: TWITCH_STREAMERS="ohnepixel,xqc,caseoh_,..."
+DEFAULT_TWITCH_STREAMERS = [
+    "caseoh_",
+    "kaicenat",
+    "xqc",
+    "ohnepixel",
+    "jynxzi",
+    "squeex",
+    "fanum",
+    "summit1g",
+    "agent00",
+    "jasontheween",
+]
+
+# Local-only fallback YouTube searches (skipped in cloud when Twitch direct already supplies clips)
 YT_SCOUT_QUERIES = [
     "ohnepixel gta 6 funny",
     "ishowspeed gta 6 funny clip",
@@ -178,6 +194,79 @@ def scout_twitch_gta6_clips(client_id: str, client_secret: str, limit: int = 30)
             continue
         filtered.append(c)
     return filtered
+
+
+def get_twitch_streamers() -> list[str]:
+    streamers = list(DEFAULT_TWITCH_STREAMERS)
+    extra = os.environ.get("TWITCH_STREAMERS", "").strip()
+    if extra:
+        for item in extra.split(","):
+            h = item.strip().lstrip("@").lower()
+            if h and h not in streamers:
+                streamers.append(h)
+    return streamers
+
+
+def scout_twitch_direct_clips(limit: int = 12) -> list[dict[str, Any]]:
+    """Zero-key, zero-2FA parallel Twitch clip scouting via yt-dlp (no YouTube bot gate on GitHub Actions!)."""
+    seen_ids: set[str] = set()
+    found: list[dict[str, Any]] = []
+    streamers = get_twitch_streamers()
+
+    def fetch_streamer(args_pair: tuple[str, str]) -> list[dict[str, Any]]:
+        handle, time_range = args_pair
+        url = f"https://www.twitch.tv/{handle}/clips?filter=clips&range={time_range}"
+        try:
+            out = subprocess.check_output(
+                ["yt-dlp", "--flat-playlist", "--playlist-end", "4", "--dump-json", "--no-warnings", url],
+                text=True,
+                timeout=15,
+            )
+        except Exception:
+            return []
+        batch = []
+        for line in out.strip().splitlines():
+            if not line.strip():
+                continue
+            try:
+                d = json.loads(line)
+            except Exception:
+                continue
+            clip_url = d.get("url") or d.get("webpage_url") or ""
+            cid = str(d.get("id") or "")
+            dur = float(d.get("duration") or 0)
+            title = d.get("title") or ""
+            if not cid or not clip_url or dur < 18.0 or dur > 65.0:
+                continue
+            if UNSAFE_TITLE_RE.search(title):
+                continue
+            batch.append({
+                "id": f"tw_{cid}",
+                "broadcaster_name": handle,
+                "source_platform": "Twitch",
+                "title": title,
+                "url": clip_url,
+                "duration": dur,
+                "created_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+            })
+        return batch
+
+    # Check 24hr across all streamers in parallel first (~5-8s total), then 7d if needed
+    for time_range in ("24hr", "7d"):
+        if len(found) >= limit:
+            break
+        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as ex:
+            results = list(ex.map(fetch_streamer, [(h, time_range) for h in streamers]))
+        for batch in results:
+            for item in batch:
+                if item["id"] not in seen_ids:
+                    seen_ids.add(item["id"])
+                    found.append(item)
+                    if len(found) >= limit:
+                        found.sort(key=lambda x: abs(x["duration"] - 28.0))
+                        return found
+    found.sort(key=lambda x: abs(x["duration"] - 28.0))
+    return found
 
 
 def get_scout_queries() -> list[str]:
@@ -311,7 +400,7 @@ def generate_copy_with_openrouter(streamer: str, clip_title: str) -> dict[str, s
                     "X-Title": "Leonida Chaos Clipping Pipeline",
                 },
             )
-            with urllib.request.urlopen(req, timeout=30) as resp:
+            with urllib.request.urlopen(req, timeout=15) as resp:
                 body = json.loads(resp.read().decode("utf-8"))
             raw = body["choices"][0]["message"]["content"]
             m_json = re.search(r"\{.*\}", raw, flags=re.DOTALL)
@@ -374,26 +463,14 @@ def download_clip(url: str, out_mp4: Path) -> Path:
         "yt-dlp",
         "-f", "bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]/best",
         "--merge-output-format", "mp4",
-        "--extractor-args", "youtube:player_client=tv_embedded,android_vr,ios,web",
         "--no-warnings",
         "-o", str(out_mp4),
         url,
     ]
-    cookies_b64 = os.environ.get("YT_COOKIES_B64", "").strip()
-    cookie_file: Path | None = None
-    if cookies_b64:
-        import base64
-        cookie_file = RAW_DIR / "yt_cookies.txt"
-        cookie_file.write_bytes(base64.b64decode(cookies_b64))
-        cmd.extend(["--cookies", str(cookie_file)])
-    try:
-        proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=120)
-        if proc.returncode != 0 or not out_mp4.exists():
-            err_tail = (proc.stderr or proc.stdout or "unknown download error").strip().splitlines()[-1][:220]
-            raise RuntimeError(err_tail)
-    finally:
-        if cookie_file and cookie_file.exists():
-            cookie_file.unlink(missing_ok=True)
+    proc = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, timeout=120)
+    if proc.returncode != 0 or not out_mp4.exists():
+        err_tail = (proc.stderr or proc.stdout or "unknown download error").strip().splitlines()[-1][:220]
+        raise RuntimeError(err_tail)
     return out_mp4
 
 
@@ -463,8 +540,9 @@ def main() -> int:
     now_wat = datetime.now(WAT)
     print(f"=== Daily Cloud Pipeline Starting: {now_wat.isoformat()} (target={args.clip_count} clips @ ~{args.target_sec:.0f}s) ===")
 
-    # 1. Sync stats (never fails the pipeline if handles/keys aren't set yet)
-    subprocess.run([sys.executable, str(ROOT_DIR / "scripts/sync_stats.py")], check=False)
+    # 1. Sync stats (skipped on --dry-run to save Scrape Creators credits)
+    if not args.dry_run:
+        subprocess.run([sys.executable, str(ROOT_DIR / "scripts/sync_stats.py")], check=False)
 
     # 2. Health check & stuck-post protocol
     health = run_health_check(apply_pauses=not args.dry_run)
@@ -487,13 +565,18 @@ def main() -> int:
     if tw_id and tw_sec:
         try:
             candidates = scout_twitch_gta6_clips(tw_id, tw_sec, limit=40)
-            print(f"[scout:twitch] Found {len(candidates)} fresh (<24h, English, >=18s) GTA 6 Twitch clips.")
+            print(f"[scout:twitch-api] Found {len(candidates)} fresh (<24h, English, >=18s) GTA 6 Twitch clips.")
         except Exception as exc:
-            print(f"[warn] Twitch scout failed ({type(exc).__name__}); falling back to zero-key YouTube scout.", file=sys.stderr)
+            print(f"[warn] Twitch API scout failed ({type(exc).__name__}); using zero-key Twitch direct scout.", file=sys.stderr)
+
+    if len(candidates) < args.clip_count * 3:
+        tw_direct = scout_twitch_direct_clips(limit=24)
+        print(f"[scout:twitch-direct] Found {len(tw_direct)} Twitch streamer clips (zero-key, cloud-safe).")
+        candidates.extend(tw_direct)
 
     if len(candidates) < args.clip_count:
-        yt_cands = scout_youtube_gta6_clips(limit=24)
-        print(f"[scout:youtube] Found {len(yt_cands)} fresh GTA 6 YouTube streamer clips (zero-key mode).")
+        yt_cands = scout_youtube_gta6_clips(limit=12)
+        print(f"[scout:youtube] Found {len(yt_cands)} YouTube fallback clips.")
         candidates.extend(yt_cands)
 
     if candidates:

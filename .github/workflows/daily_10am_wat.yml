@@ -55,9 +55,9 @@ jobs:
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           SCRAPE_CREATORS_API_KEY: ${{ secrets.SCRAPE_CREATORS_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
-          YT_COOKIES_B64: ${{ secrets.YT_COOKIES_B64 }}
           OPENROUTER_MODEL: ${{ vars.OPENROUTER_MODEL || 'google/gemma-4-31b-it:free' }}
           PAGE_NAME: ${{ vars.PAGE_NAME || 'Leonida Chaos' }}
+          TWITCH_STREAMERS: ${{ vars.TWITCH_STREAMERS }}
           EXTRA_SCOUT_QUERIES: ${{ vars.EXTRA_SCOUT_QUERIES }}
           YT_CHANNEL_URL: ${{ vars.YT_CHANNEL_URL }}
           TIKTOK_HANDLE: ${{ vars.TIKTOK_HANDLE }}
