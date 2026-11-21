@@ -2,8 +2,8 @@ name: Daily 10 AM WAT GTA 6 Clip Drop & Dashboard
 
 on:
   schedule:
-    # 09:00 UTC = 10:00 AM WAT (UTC+1) every single day
-    - cron: "0 9 * * *"
+    # 08:37 UTC = 09:37 AM WAT (off-peak minute avoids GitHub's :00 rush-hour cron delay so clips land ~10:00 AM WAT)
+    - cron: "37 8 * * *"
   workflow_dispatch:
     inputs:
       clip_count:

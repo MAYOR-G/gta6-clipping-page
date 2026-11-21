@@ -2,8 +2,8 @@ name: Sync Live Stats & Refresh Dashboard (Every 6h)
 
 on:
   schedule:
-    # Runs 4x daily (01:00, 07:00, 13:00, 19:00 WAT) to keep dashboard views/likes/followers fresh
-    - cron: "0 0,6,12,18 * * *"
+    # Runs 4x daily at off-peak minute :23 to avoid GitHub's :00 cron queue backlog
+    - cron: "23 0,6,12,18 * * *"
   workflow_dispatch:
 
 permissions:
