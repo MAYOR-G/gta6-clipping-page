@@ -218,6 +218,86 @@ Every published/queued clip AND every rejected scout candidate is logged here so
 
 ---
 
+
+### GTA-012 — @kaicenat (Cloud Auto 30s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-22 19:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 30.04s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `GTA 6 STRIP CLUB SCENE`
+- **Punchline:** `STREAMER REACTS`
+- **Source URL & Created At:** `https://www.twitch.tv/kaicenat/clip/StylishFairChowderDoritosChip-SQ1GCE6-ymT6ih7l` (2026-11-22T16:38:05Z)
+- **Credit:** `@kaicenat (Twitch)`
+- **Proof Frame:** `proofs/GTA-012_proof.png`
+- **Send Test:** send to your gamer friend and type 'this is crazy'
+- **IG First Comment:** `what would you do in this club?`
+
+---
+
+
+### GTA-013 — @agent00 (Cloud Auto 30s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-22 22:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 30.10s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `GTA 6 MARATHON FINALE SHOCK`
+- **Punchline:** `OH MY GOD`
+- **Source URL & Created At:** `https://www.twitch.tv/agent00/clip/CleanTenaciousGrouseStinkyCheese-dn0DFiBwxPrEcH2K` (2026-11-22T16:38:05Z)
+- **Credit:** `@agent00 (Twitch)`
+- **Proof Frame:** `proofs/GTA-013_proof.png`
+- **Send Test:** send to your gaming friend and type 'this is insane'
+- **IG First Comment:** `what would you do in that moment`
+
+---
+
+
+### GTA-014 — @fanum (Cloud Auto 30s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-23 01:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 30.04s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `GTA 6 PHONE INTERFACE REVEAL`
+- **Punchline:** `CUTE PHONE MOMENT`
+- **Source URL & Created At:** `https://www.twitch.tv/fanum/clip/SingleTastySnakeBCWarrior-bCc9W9ENzaV5_V26` (2026-11-22T16:38:05Z)
+- **Credit:** `@fanum (Twitch)`
+- **Proof Frame:** `proofs/GTA-014_proof.png`
+- **Send Test:** your mom 'lol'
+- **IG First Comment:** `did you see the phone interface?`
+
+---
+
+
+### GTA-015 — @squeex (Cloud Auto 30s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-23 04:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 30.04s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `GTA 6 PLANE CRASH FAIL`
+- **Punchline:** `WASTED IMMEDIATELY`
+- **Source URL & Created At:** `https://www.twitch.tv/squeex/clip/KindRelatedChoughNinjaGrumpy-aOpI3_NZkrKQSkd1` (2026-11-22T16:38:05Z)
+- **Credit:** `@squeex (Twitch)`
+- **Proof Frame:** `proofs/GTA-015_proof.png`
+- **Send Test:** Send to your gaming friend who types 'land the aircraft immediately!'
+- **IG First Comment:** `What would you crash first in GTA 6?`
+
+---
+
+
+### GTA-016 — @esfandtv (Cloud Auto 30s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-23 07:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 30.01s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `GRANDMA WATCHES GTA 6 NEWS`
+- **Punchline:** `GRANDMA IN THE`
+- **Source URL & Created At:** `https://www.twitch.tv/esfandtv/clip/EndearingObliqueAsparagusCclamChamp-xiPS0FxuXXwDUq-S` (2026-11-22T16:38:05Z)
+- **Credit:** `@esfandtv (Twitch)`
+- **Proof Frame:** `proofs/GTA-016_proof.png`
+- **Send Test:** send to a friend who types 'grandma in the'
+- **IG First Comment:** `what game would you watch with your grandma?`
+
+---
+
 ## Scout Rejects Log
 
 *(Record rejected candidates with URL/ID and reason so the 2-hour routine skips them immediately.)*
