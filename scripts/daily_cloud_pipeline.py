@@ -825,6 +825,11 @@ def main() -> int:
                     raw_mp4.unlink(missing_ok=True)
                     seen_set.add(cid)
                     continue
+                if UNSAFE_TITLE_RE.search(f"{copy.get('hook','')} {copy.get('visual_summary','')} {copy.get('caption','')}"):
+                    print(f"[skip] {cid} (@{streamer}) rejected by content safety check on vision summary.")
+                    raw_mp4.unlink(missing_ok=True)
+                    seen_set.add(cid)
+                    continue
 
                 # Save visual proof frame (middle of clip)
                 PROOFS_DIR.mkdir(parents=True, exist_ok=True)

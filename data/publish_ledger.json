@@ -439,6 +439,72 @@
       "scheduled_time_utc": "2026-11-23T06:30:00+00:00",
       "created_at_utc": "2026-11-22T16:44:56.928037+00:00",
       "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-017",
+      "platform": "instagram",
+      "account_id": "clip-ig-unconfigured",
+      "backend": "queue",
+      "video_sha256": "2de21333d7414b8151afb6ae107378658fb8f07e02582e3541de18fee57c9350",
+      "caption_first_line": "gta 6 tv setup is wild \ud83c\udfae",
+      "scheduled_time_utc": "2026-11-23T12:30:00+00:00",
+      "created_at_utc": "2026-11-23T10:18:49.542065+00:00",
+      "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-017",
+      "platform": "tiktok",
+      "account_id": "clip-tiktok-unconfigured",
+      "backend": "queue",
+      "video_sha256": "2de21333d7414b8151afb6ae107378658fb8f07e02582e3541de18fee57c9350",
+      "caption_first_line": "gta 6 tv setup is wild \ud83c\udfae",
+      "scheduled_time_utc": "2026-11-23T12:30:00+00:00",
+      "created_at_utc": "2026-11-23T10:18:49.542065+00:00",
+      "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-017",
+      "platform": "youtube",
+      "account_id": "clip-youtube-unconfigured",
+      "backend": "queue",
+      "video_sha256": "2de21333d7414b8151afb6ae107378658fb8f07e02582e3541de18fee57c9350",
+      "caption_first_line": "gta 6 tv setup is wild \ud83c\udfae",
+      "scheduled_time_utc": "2026-11-23T12:30:00+00:00",
+      "created_at_utc": "2026-11-23T10:18:49.542065+00:00",
+      "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-018",
+      "platform": "instagram",
+      "account_id": "clip-ig-unconfigured",
+      "backend": "queue",
+      "video_sha256": "94f81c5ab603402aae4a01f77b9e79ad0e59152b94ae4cf0638758854c64ee3d",
+      "caption_first_line": "driving a truck on the beach \ud83c\udfd6\ufe0f",
+      "scheduled_time_utc": "2026-11-23T15:30:00+00:00",
+      "created_at_utc": "2026-11-23T10:19:53.847535+00:00",
+      "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-018",
+      "platform": "tiktok",
+      "account_id": "clip-tiktok-unconfigured",
+      "backend": "queue",
+      "video_sha256": "94f81c5ab603402aae4a01f77b9e79ad0e59152b94ae4cf0638758854c64ee3d",
+      "caption_first_line": "driving a truck on the beach \ud83c\udfd6\ufe0f",
+      "scheduled_time_utc": "2026-11-23T15:30:00+00:00",
+      "created_at_utc": "2026-11-23T10:19:53.847535+00:00",
+      "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-018",
+      "platform": "youtube",
+      "account_id": "clip-youtube-unconfigured",
+      "backend": "queue",
+      "video_sha256": "94f81c5ab603402aae4a01f77b9e79ad0e59152b94ae4cf0638758854c64ee3d",
+      "caption_first_line": "driving a truck on the beach \ud83c\udfd6\ufe0f",
+      "scheduled_time_utc": "2026-11-23T15:30:00+00:00",
+      "created_at_utc": "2026-11-23T10:19:53.847535+00:00",
+      "status": "queued_local"
     }
   ]
 }

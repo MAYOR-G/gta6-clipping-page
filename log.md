@@ -298,6 +298,38 @@ Every published/queued clip AND every rejected scout candidate is logged here so
 
 ---
 
+
+### GTA-017 — @TimTheTatman (Cloud Auto 30s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-23 13:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 30.04s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `GTA 6 TV IS CRAZY`
+- **Punchline:** `VISIT LEONIDA`
+- **Source URL & Created At:** `https://www.youtube.com/watch?v=TnHX9lN5YGw` (2026-11-23T10:17:37Z)
+- **Credit:** `@TimTheTatman (Twitch)`
+- **Proof Frame:** `proofs/GTA-017_proof.png`
+- **Send Test:** Send to your gamer friend and type 'we need this setup'.
+- **IG First Comment:** `what would you watch on your gta tv`
+
+---
+
+
+### GTA-018 — @TypicalGamer (Cloud Auto 30s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-23 16:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 30.04s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `GTA 6 BEACH TRUCK CHAOS`
+- **Punchline:** `TRUCK ON SAND`
+- **Source URL & Created At:** `https://www.youtube.com/watch?v=l-UFji0mwKk` (2026-11-23T10:17:39Z)
+- **Credit:** `@TypicalGamer (Twitch)`
+- **Proof Frame:** `proofs/GTA-018_proof.png`
+- **Send Test:** Send to your friend who loves beach vehicles and type 'beach mode activated'
+- **IG First Comment:** `Would you drive a truck on the beach?`
+
+---
+
 ## Scout Rejects Log
 
 *(Record rejected candidates with URL/ID and reason so the 2-hour routine skips them immediately.)*

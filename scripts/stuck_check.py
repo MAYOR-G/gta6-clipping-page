@@ -23,6 +23,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import re
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any
@@ -72,6 +73,18 @@ def parse_iso(val: str) -> datetime | None:
         return dt.astimezone(timezone.utc)
     except Exception:
         return None
+
+
+def parse_first_read_utc(notes: str) -> datetime | None:
+    """Extract the earliest read(YYYY-MM-DDTHH:MMZ) timestamp so freshly posted clips don't false-trigger stuck checks."""
+    matches = re.findall(r"read\((\d{4}-\d{2}-\d{2}T\d{2}:\d{2}Z)\)", notes or "")
+    parsed: list[datetime] = []
+    for m in matches:
+        try:
+            parsed.append(datetime.strptime(m, "%Y-%m-%dT%H:%MZ").replace(tzinfo=timezone.utc))
+        except Exception:
+            pass
+    return min(parsed) if parsed else None
 
 
 def parse_int(val: str | None) -> int | None:
@@ -129,7 +142,10 @@ def run_health_check(
         views = latest_views(r)
         notes = r.get("notes") or ""
         is_live = ("http://" in notes or "https://" in notes) or (views is not None)
-        age_h = (now - dt).total_seconds() / 3600.0 if dt else 0.0
+        first_seen = parse_first_read_utc(notes)
+        # If the user uploaded a clip after its recommended slot, measure age from when it was first seen live
+        effective_dt = max(dt, first_seen) if (dt and first_seen) else (first_seen or dt)
+        age_h = (now - effective_dt).total_seconds() / 3600.0 if effective_dt else 0.0
         min_age = STUCK_MIN_AGE_BY_PLATFORM.get(p, STUCK_MIN_AGE_HOURS)
         is_stuck = bool(is_live and views is not None and age_h >= min_age and views < STUCK_PLAYS_THRESHOLD)
         by_platform[p].append({
