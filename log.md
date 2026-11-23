@@ -362,6 +362,54 @@ Every published/queued clip AND every rejected scout candidate is logged here so
 
 ---
 
+
+### GTA-021 — @caseoh_ (Cloud Auto 30s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-24 01:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 30.04s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `CASEOH GTA 6 CAR CRASH`
+- **Punchline:** `CAR SMASHED`
+- **Source URL & Created At:** `https://www.twitch.tv/caseoh_/clip/SmoggyCleverMosquitoTBTacoRight-RVBfPSPbe5p5k44q` (2026-11-23T20:31:14Z)
+- **Credit:** `@caseoh_ (Twitch)`
+- **Proof Frame:** `proofs/GTA-021_proof.png`
+- **Send Test:** send to your gamer friend and type 'this is insane'
+- **IG First Comment:** `what would you do if your car got hit like that`
+
+---
+
+
+### GTA-022 — @jasontheween (Cloud Auto 30s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-24 04:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 30.04s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `JASON THE WEEN GTA 6 CRASH CHAOS`
+- **Punchline:** `POLICE CAR WRECKED`
+- **Source URL & Created At:** `https://www.twitch.tv/jasontheween/clip/OpenObliviousCattleSmoocherZ-tNCz6IkNNj-yoN2_` (2026-11-23T20:31:14Z)
+- **Credit:** `@jasontheween (Twitch)`
+- **Proof Frame:** `proofs/GTA-022_proof.png`
+- **Send Test:** send to your gta squad and type 'we need to try this'
+- **IG First Comment:** `have you ever caused a pileup like this in gta?`
+
+---
+
+
+### GTA-023 — @xqc (Cloud Auto 30s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-24 07:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 30.04s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `STREAMER NAME GTA 6 MECHANIC JUST BROKE`
+- **Punchline:** `BROKEN PROMISE`
+- **Source URL & Created At:** `https://www.twitch.tv/xqc/clip/DullPrettyCaterpillarKappaWealth-_PBk2Ut1sJ0GUkqc` (2026-11-23T20:31:13Z)
+- **Credit:** `@xqc (Twitch)`
+- **Proof Frame:** `proofs/GTA-023_proof.png`
+- **Send Test:** xqc to friend: 'did you see that?'
+- **IG First Comment:** `did you see that glitch?`
+
+---
+
 ## Scout Rejects Log
 
 *(Record rejected candidates with URL/ID and reason so the 2-hour routine skips them immediately.)*

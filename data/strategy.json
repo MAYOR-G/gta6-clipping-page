@@ -1,5 +1,5 @@
 {
-  "updated_at_utc": "2026-11-23T17:40:47.894630+00:00",
+  "updated_at_utc": "2026-11-23T20:31:12.436109+00:00",
   "model_used": "nvidia/nemotron-3.5-super-vl:free",
   "min_virality_score": 8,
   "recommended_target_sec": 15,
@@ -9,30 +9,30 @@
     "caseoh",
     "jynxzi",
     "fanum",
-    "lacy"
+    "lirik"
   ],
   "winning_patterns": [
-    "Short 13-15 second clips with all-caps hooks referencing specific streamer names and game glitches outperformed longer 30 second clips by over 2x median views.",
-    "YouTube Shorts drives 90% of total views, making it the primary distribution channel for faceless GTA 6 clipping content.",
-    "Physics breaks and crashing moments generate significantly higher engagement than static news reactions or generic gameplay scenes."
+    "Short 13-15 second clips with all-caps hooks referencing a specific streamer promise or broken game mechanic outperformed 30-second clips by nearly 2x median views.",
+    "Clips featuring ohnepixel drove 11,010 views because the hook targeted a high-stakes community complaint about game stability rather than generic gameplay.",
+    "YouTube Shorts dominated total views (10,285 vs 3,680 TikTok and 2,217 Instagram), making it the primary distribution channel for GTA 6 chaos clips."
   ],
   "avoid_patterns": [
-    "Reject 30-second clips featuring strip club scenes or generic news reactions that consistently receive under 10 views.",
-    "Avoid low-energy streamer reactions without visible shock or physical gameplay anomalies.",
-    "Do not post clips longer than 22 seconds unless they contain a major physics break or streamer meltdown."
+    "Reject 30-second strip club or adult venue scenes, as the Kai Cenat clip generated only 1 total view across all platforms.",
+    "Avoid generic streamer reactions without a visible physics glitch or broken game moment, since xQc's non-glitch physics clip underperformed at 370 views.",
+    "Do not post clips longer than 22 seconds unless they contain continuous high-action chaos, because medium 23-35s clips had a median of only 273 views versus 531.5 for shorts."
   ],
-  "hook_style_guidance": "Write Frame-1 hooks using all-caps, the streamer's name, and a specific GTA 6 glitch or broken mechanic to create immediate curiosity and retention.",
-  "daily_brief": "The biggest win was a 13.71 second ohnepixel clip about GTA 6 crashing that earned 10,910 views, while the biggest leak was a 30 second kaicenat strip club clip that earned only 1 view. Tomorrow, prioritize short physics break clips under 22 seconds and distribute primarily to YouTube Shorts.",
+  "hook_style_guidance": "Write Frame-1 hooks as all-caps, streamer-named accusations about a specific broken GTA 6 promise or glitch, such as STREAMER NAME GTA 6 MECHANIC JUST BROKE, to trigger immediate curiosity and retention.",
+  "daily_brief": "The biggest win was the ohnepixel crashing clip hitting 11,010 views with a 13.7-second all-caps hook, while the biggest leak was the 30-second Kai Cenat strip club scene earning only 1 view. Tomorrow, cut all clips to 13-16 seconds and prioritize ohnepixel and xQc physics glitch content for YouTube Shorts first.",
   "scorecard_snapshot": {
     "total_clips_live": 15,
-    "median_clip_views": 324,
+    "median_clip_views": 327,
     "top_post_id": "GTA-001",
-    "top_post_views": 10910,
+    "top_post_views": 11010,
     "short_vs_medium": {
       "short_12_22s_count": 6,
-      "short_12_22s_median": 521.0,
+      "short_12_22s_median": 531.5,
       "medium_23_35s_count": 9,
-      "medium_23_35s_median": 247
+      "medium_23_35s_median": 273
     }
   }
 }
