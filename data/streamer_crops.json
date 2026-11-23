@@ -22,7 +22,17 @@
   },
   "jynxzi": {
     "layout": "stack",
-    "facecam": [10, 680, 420, 390],
-    "game": [440, 60, 1440, 980]
+    "facecam": [1346, 646, 564, 424],
+    "game": [190, 44, 1080, 972]
+  },
+  "fanum": {
+    "layout": "stack",
+    "facecam": [10, 436, 424, 226],
+    "game": [540, 44, 972, 972]
+  },
+  "timthetatman": {
+    "layout": "stack",
+    "facecam": [10, 10, 464, 306],
+    "game": [560, 44, 972, 972]
   }
 }

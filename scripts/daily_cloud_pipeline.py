@@ -455,6 +455,178 @@ def build_4frame_strip_b64(video_path: Path, src_dur: float) -> str | None:
         return None
 
 
+def probe_video_dimensions(video_path: Path) -> tuple[int, int]:
+    """Return (width, height) of the video stream via ffprobe."""
+    out = subprocess.check_output([
+        "ffprobe", "-v", "error", "-select_streams", "v:0",
+        "-show_entries", "stream=width,height", "-of", "csv=s=x:p=0", str(video_path),
+    ], text=True, timeout=15).strip()
+    parts = out.splitlines()[0].split("x")
+    return int(parts[0]), int(parts[1])
+
+
+def build_grid_frame_b64(video_path: Path, src_dur: float) -> str | None:
+    """Extract 1 clean mid-clip 640x360 frame with a labeled 10% yellow coordinate grid for razor-sharp facecam detection."""
+    try:
+        from PIL import ImageDraw  # local import keeps top-level imports light
+
+        ts = max(0.5, min(src_dur - 0.5, src_dur * 0.5))
+        raw = subprocess.check_output([
+            "ffmpeg", "-y", "-ss", f"{ts:.2f}", "-i", str(video_path),
+            "-frames:v", "1", "-vf", "scale=640:360",
+            "-f", "image2pipe", "-vcodec", "mjpeg", "-"
+        ], stderr=subprocess.DEVNULL, timeout=15)
+        im = Image.open(io.BytesIO(raw)).convert("RGB")
+        draw = ImageDraw.Draw(im)
+        for pct in range(10, 100, 10):
+            x = int(640 * pct / 100)
+            y = int(360 * pct / 100)
+            draw.line([(x, 0), (x, 360)], fill=(255, 255, 0), width=1)
+            draw.line([(0, y), (640, y)], fill=(255, 255, 0), width=1)
+            draw.rectangle([x - 10, 0, x + 12, 12], fill=(0, 0, 0))
+            draw.text((x - 8, 1), str(pct), fill=(255, 255, 0))
+            draw.rectangle([0, y - 6, 18, y + 6], fill=(0, 0, 0))
+            draw.text((2, y - 5), str(pct), fill=(255, 255, 0))
+        buf = io.BytesIO()
+        im.save(buf, format="JPEG", quality=75)
+        return base64.b64encode(buf.getvalue()).decode("ascii")
+    except Exception:
+        return None
+
+
+def normalize_box_pct(raw_box: Any) -> list[float] | None:
+    """Normalize [x1, y1, x2, y2] from 0..1, 0..100, or 0..1000 into valid 0..100 percentages."""
+    if not isinstance(raw_box, (list, tuple)) or len(raw_box) != 4:
+        return None
+    try:
+        vals = [float(v) for v in raw_box]
+    except Exception:
+        return None
+    mx = max(vals)
+    if mx <= 1.0:
+        vals = [v * 100.0 for v in vals]
+    elif mx > 100.0:
+        vals = [v / 10.0 for v in vals]
+    x1, y1, x2, y2 = [max(0.0, min(100.0, v)) for v in vals]
+    w_pct, h_pct = x2 - x1, y2 - y1
+    if w_pct < 10.0 or h_pct < 12.0 or w_pct > 52.0 or h_pct > 58.0:
+        return None
+    return [round(x1, 1), round(y1, 1), round(x2, 1), round(y2, 1)]
+
+
+def detect_facecam_with_openrouter(grid_b64: str | None, streamer: str) -> dict[str, Any]:
+    """Use free OpenRouter vision models on the 10% coordinate-grid frame to detect & locate a real human facecam."""
+    default = {"has_facecam": False, "facecam_corner": "none", "facecam_box_pct": None, "checked": False}
+    api_key = os.environ.get("OPENROUTER_API_KEY", "").strip()
+    if not api_key or not grid_b64:
+        return default
+
+    primary_model = os.environ.get("OPENROUTER_MODEL", "nvidia/nemotron-3.5-super-vl:free").strip()
+    models = []
+    for m in (
+        primary_model,
+        "nvidia/nemotron-3.5-super-vl:free",
+        "nvidia/nemotron-3-nano-omni-30b-a3b-reasoning:free",
+        "openrouter/free",
+        "google/gemma-4-31b-it:free",
+    ):
+        if m and m not in models:
+            models.append(m)
+
+    prompt = (
+        f"This 16:9 gaming frame from @{streamer} has a yellow 10% coordinate grid (0 to 100 along X left-to-right and Y top-to-bottom).\n"
+        "Detect whether there is a REAL human streamer facecam/webcam box overlaid on the screen.\n"
+        "Return STRICT JSON ONLY: {\"has_facecam\": bool, \"facecam_corner\": \"top-left|top-right|bottom-left|bottom-right|middle-left|middle-right|none\", \"facecam_box_pct\": [x1, y1, x2, y2] or null}.\n"
+        "Rules:\n"
+        "- Use the yellow 0-100 grid numbers to give the tight bounding box [x1, y1, x2, y2] of ONLY the real human streamer's webcam rectangle.\n"
+        "- EXCLUDE chat overlays, donation banners outside the webcam, and EXCLUDE the game minimap!\n"
+        "- If there is NO real human webcam overlay (pure gameplay or animated avatar only), set has_facecam=false and facecam_box_pct=null."
+    )
+
+    for model in models:
+        payload = {
+            "model": model,
+            "messages": [{"role": "user", "content": [
+                {"type": "text", "text": prompt},
+                {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{grid_b64}"}},
+            ]}],
+            "temperature": 0.1,
+            "reasoning": {"effort": "none"},
+        }
+        try:
+            req = urllib.request.Request(
+                "https://openrouter.ai/api/v1/chat/completions",
+                data=json.dumps(payload).encode("utf-8"),
+                method="POST",
+                headers={
+                    "Authorization": f"Bearer {api_key}",
+                    "Content-Type": "application/json",
+                    "HTTP-Referer": "https://github.com/MAYOR-G/gta6-clipping-page",
+                    "X-Title": "Leonida Chaos Facecam Detector",
+                },
+            )
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                body = json.loads(resp.read().decode("utf-8"))
+            raw = body["choices"][0]["message"].get("content") or ""
+            if not raw.strip():
+                continue
+            m_json = re.search(r"\{.*\}", raw, flags=re.DOTALL)
+            parsed = json.loads(m_json.group(0) if m_json else raw)
+            has_cam = bool(parsed.get("has_facecam", False))
+            box_pct = normalize_box_pct(parsed.get("facecam_box_pct")) if has_cam else None
+            return {
+                "has_facecam": bool(has_cam and box_pct is not None),
+                "facecam_corner": str(parsed.get("facecam_corner") or "none").strip().lower(),
+                "facecam_box_pct": box_pct,
+                "checked": True,
+                "model_used": model,
+            }
+        except Exception:
+            continue
+    return default
+
+
+def compute_stack_crops(src_w: int, src_h: int, box_pct: list[float]) -> tuple[list[int], list[int]]:
+    """
+    Convert a detected [x1, y1, x2, y2] percentage facecam box into exact pixel [x, y, w, h] crops
+    for stack layout (top 40% = 1080x720 crisp streamer facecam, bottom 60% = 1080x1200 clean gameplay).
+    """
+    x1, y1, x2, y2 = box_pct
+    # Trim ~1% inward to exclude harsh webcam border lines while keeping full face/headroom
+    inset_x = min(1.0, (x2 - x1) * 0.04)
+    inset_y = min(1.0, (y2 - y1) * 0.04)
+    fx1 = int(src_w * max(0.0, x1 + inset_x) / 100.0)
+    fy1 = int(src_h * max(0.0, y1 + inset_y) / 100.0)
+    fx2 = int(src_w * min(100.0, x2 - inset_x) / 100.0)
+    fy2 = int(src_h * min(100.0, y2 - inset_y) / 100.0)
+
+    fw = max(120, (fx2 - fx1) // 2 * 2)
+    fh = max(100, (fy2 - fy1) // 2 * 2)
+    fx = max(0, min(src_w - fw, fx1 // 2 * 2))
+    fy = max(0, min(src_h - fh, fy1 // 2 * 2))
+
+    # Gameplay crop (target ~0.90 aspect ratio to match 1080x1200 bottom section, avoiding facecam & chat edges)
+    gy = int(src_h * 0.04) // 2 * 2
+    gh = int(src_h * 0.88) // 2 * 2
+    target_gw = int(gh * 0.92) // 2 * 2  # close to 1080:1200 without over-zooming
+
+    cam_cx = (x1 + x2) / 2.0
+    if cam_cx < 50.0:
+        # Facecam is on the LEFT -> push gameplay window to the right of the webcam, keeping right-side Twitch chat out
+        safe_left = int(src_w * min(0.32, (x2 / 100.0) * 0.92))
+        safe_right = int(src_w * 0.88)
+    else:
+        # Facecam is on the RIGHT -> keep gameplay on left/center clear of the webcam
+        safe_left = int(src_w * 0.05)
+        safe_right = int(src_w * max(0.68, (x1 / 100.0) * 1.02))
+
+    avail_w = max(320, (safe_right - safe_left) // 2 * 2)
+    gw = min(target_gw, avail_w) // 2 * 2
+    gx = (safe_left + (avail_w - gw) // 2) // 2 * 2
+    gx = max(0, min(src_w - gw, gx))
+    return [fx, fy, fw, fh], [gx, gy, gw, gh]
+
+
 def generate_copy_with_openrouter(
     streamer: str,
     clip_title: str,
@@ -696,9 +868,10 @@ def main() -> int:
     args = parser.parse_args()
 
     require_gta6 = os.environ.get("REQUIRE_GTA6_ONLY", "true").strip().lower() not in ("0", "false", "no")
+    require_facecam = os.environ.get("REQUIRE_FACECAM", "true").strip().lower() not in ("0", "false", "no")
     tagged_streamers = [s.strip() for s in args.streamers.split(",") if s.strip()]
     now_wat = datetime.now(WAT)
-    print(f"=== Pipeline Starting: {now_wat.isoformat()} (source={args.source}, target={args.clip_count} clips @ ~{args.target_sec:.0f}s, require_gta6={require_gta6}) ===")
+    print(f"=== Pipeline Starting: {now_wat.isoformat()} (source={args.source}, target={args.clip_count} clips @ ~{args.target_sec:.0f}s, require_gta6={require_gta6}, require_facecam={require_facecam}) ===")
 
     # 1. Sync stats (skipped on --dry-run to save Scrape Creators credits)
     if not args.dry_run:
@@ -831,6 +1004,41 @@ def main() -> int:
                     seen_set.add(cid)
                     continue
 
+                # Dynamic facecam detection on a 10% grid frame -> ensures 40% streamer face on top + 60% gameplay below!
+                src_w, src_h = probe_video_dimensions(raw_mp4)
+                if src_h > src_w and require_facecam:
+                    print(f"[skip] {cid} (@{streamer}) rejected: source is already vertical ({src_w}x{src_h}), not widescreen stream w/ facecam.")
+                    raw_mp4.unlink(missing_ok=True)
+                    seen_set.add(cid)
+                    continue
+
+                grid_b64 = build_grid_frame_b64(raw_mp4, src_dur)
+                cam_info = detect_facecam_with_openrouter(grid_b64, streamer)
+                print(
+                    f"[facecam] {post_id} @{streamer} ({src_w}x{src_h}): has_facecam={cam_info['has_facecam']} "
+                    f"corner={cam_info['facecam_corner']} box_pct={cam_info['facecam_box_pct']}"
+                )
+
+                facecam_crop: list[int] | None = None
+                game_crop: list[int] | None = None
+                if cam_info["has_facecam"] and cam_info["facecam_box_pct"]:
+                    facecam_crop, game_crop = compute_stack_crops(src_w, src_h, cam_info["facecam_box_pct"])
+                elif not cam_info["checked"]:
+                    # Vision API unavailable: fall back to static preset scaled to actual clip resolution
+                    crop_cfg = crops.get(streamer_key)
+                    if crop_cfg and crop_cfg.get("layout") == "stack":
+                        sx, sy = src_w / 1920.0, src_h / 1080.0
+                        fc = crop_cfg["facecam"]
+                        gc = crop_cfg["game"]
+                        facecam_crop = [int(fc[0] * sx) // 2 * 2, int(fc[1] * sy) // 2 * 2, int(fc[2] * sx) // 2 * 2, int(fc[3] * sy) // 2 * 2]
+                        game_crop = [int(gc[0] * sx) // 2 * 2, int(gc[1] * sy) // 2 * 2, int(gc[2] * sx) // 2 * 2, int(gc[3] * sy) // 2 * 2]
+
+                if require_facecam and (not facecam_crop or not game_crop):
+                    print(f"[skip] {cid} (@{streamer}) rejected: no real streamer facecam detected (REQUIRE_FACECAM=true).")
+                    raw_mp4.unlink(missing_ok=True)
+                    seen_set.add(cid)
+                    continue
+
                 # Save visual proof frame (middle of clip)
                 PROOFS_DIR.mkdir(parents=True, exist_ok=True)
                 proof_png = PROOFS_DIR / f"{post_id}_proof.png"
@@ -853,13 +1061,12 @@ def main() -> int:
                 slowmo_start = max(body_start + 8.0, payoff_end - 2.6)
                 slowmo_end = min(body_end - 0.6, slowmo_start + 0.8)
 
-                crop_cfg = crops.get(streamer_key)
-
+                use_stack = bool(facecam_crop and game_crop)
                 spec: dict[str, Any] = {
                     "src": str(raw_mp4.resolve()),
                     "out": str((RENDERS_DIR / f"{post_id}.mp4").resolve()),
                     "credit": f"@{streamer} ({src_plat})",
-                    "layout": crop_cfg["layout"] if crop_cfg else "full",
+                    "layout": "stack" if use_stack else "full",
                     "teaser": {"start": round(teaser_start, 2), "end": round(teaser_end, 2)},
                     "teaser_text": copy["hook"],
                     "keep": [[round(body_start, 2), round(body_end, 2)]],
@@ -873,9 +1080,9 @@ def main() -> int:
                     ],
                     "volume": 1.25,
                 }
-                if crop_cfg:
-                    spec["facecam"] = crop_cfg["facecam"]
-                    spec["game"] = crop_cfg["game"]
+                if use_stack:
+                    spec["facecam"] = facecam_crop
+                    spec["game"] = game_crop
 
                 SPECS_DIR.mkdir(parents=True, exist_ok=True)
                 spec_path = SPECS_DIR / f"{post_id}.json"
