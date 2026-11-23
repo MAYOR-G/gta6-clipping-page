@@ -196,6 +196,7 @@ def deterministic_strategy(summary: dict[str, Any]) -> dict[str, Any]:
         "updated_at_utc": datetime.now(timezone.utc).isoformat(),
         "model_used": "deterministic-fallback",
         "min_virality_score": 7,
+        "recommended_target_sec": 18,
         "priority_streamers": priority_streamers,
         "winning_patterns": [
             "Instant-karma vehicle crashes, police chases, robberies, and explosive physics fails within the first 2 seconds",
@@ -240,6 +241,7 @@ def synthesize_strategy_with_openrouter(summary: dict[str, Any]) -> dict[str, An
         "- priority_streamers: array of 4 to 6 lowercase streamer handles (from winners or high-energy GTA 6 creators) to scout first\n"
         "- hook_style_guidance: 1 concrete sentence telling the copywriter how to write higher-retention Frame-1 hooks\n"
         "- min_virality_score: integer 7 or 8 (strictness threshold out of 10)\n"
+        "- recommended_target_sec: integer 15 to 26 (optimal clip length in seconds backed by short_vs_medium data)\n"
         "- daily_brief: 2 concise, plain-English sentences summarizing today's biggest win, biggest leak, and exact adjustment for tomorrow\n"
         "No markdown fences, no emojis, strict JSON only."
     )
@@ -277,11 +279,14 @@ def synthesize_strategy_with_openrouter(summary: dict[str, Any]) -> dict[str, An
             prio = [x for x in prio if x][:6]
             min_v = int(parsed.get("min_virality_score") or 7)
             min_v = max(6, min(8, min_v))
+            rec_sec = int(parsed.get("recommended_target_sec") or 18)
+            rec_sec = max(15, min(26, rec_sec))
 
             return {
                 "updated_at_utc": datetime.now(timezone.utc).isoformat(),
                 "model_used": model,
                 "min_virality_score": min_v,
+                "recommended_target_sec": rec_sec,
                 "priority_streamers": prio or fallback["priority_streamers"],
                 "winning_patterns": win_p or fallback["winning_patterns"],
                 "avoid_patterns": avoid_p or fallback["avoid_patterns"],

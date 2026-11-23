@@ -7,13 +7,13 @@ on:
   workflow_dispatch:
     inputs:
       clip_count:
-        description: "How many ~30s clips to produce and send to Telegram today (5 different streamers)"
+        description: "How many punchy ~18s clips to produce and send to Telegram today (5 different streamers)"
         required: false
         default: "5"
       target_sec:
-        description: "Target clip duration in seconds (default: 30)"
+        description: "Target clip duration in seconds (default: 18, or 'auto' for AI-optimized length)"
         required: false
-        default: "30"
+        default: "18"
       dry_run:
         description: "Validate without sending to Telegram or mutating state"
         type: boolean
@@ -62,12 +62,12 @@ jobs:
           EXTRA_SCOUT_QUERIES: ${{ vars.EXTRA_SCOUT_QUERIES }}
           REQUIRE_GTA6_ONLY: ${{ vars.REQUIRE_GTA6_ONLY || 'true' }}
           REQUIRE_FACECAM: ${{ vars.REQUIRE_FACECAM || 'true' }}
-          MIN_VIRALITY_SCORE: ${{ vars.MIN_VIRALITY_SCORE || '7' }}
+          MIN_VIRALITY_SCORE: ${{ vars.MIN_VIRALITY_SCORE }}
           YT_CHANNEL_URL: ${{ vars.YT_CHANNEL_URL }}
           TIKTOK_HANDLE: ${{ vars.TIKTOK_HANDLE }}
           IG_HANDLE: ${{ vars.IG_HANDLE }}
           DAILY_CLIP_COUNT: ${{ inputs.clip_count || vars.DAILY_CLIP_COUNT || '5' }}
-          TARGET_CLIP_SEC: ${{ inputs.target_sec || vars.TARGET_CLIP_SEC || '30' }}
+          TARGET_CLIP_SEC: ${{ inputs.target_sec || vars.TARGET_CLIP_SEC || '18' }}
         run: |
           ARGS="--clip-count ${DAILY_CLIP_COUNT} --target-sec ${TARGET_CLIP_SEC}"
           if [ "${{ inputs.dry_run }}" = "true" ]; then

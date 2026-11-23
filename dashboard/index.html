@@ -1069,7 +1069,7 @@
             </div>
             <div class="kv-row">
               <span class="kv-k">Target clip length</span>
-              <span class="kv-v">30.0s (5 clips/day)</span>
+              <span class="kv-v" id="health-target-len">18.0s (5 clips/day)</span>
             </div>
             <div class="kv-row">
               <span class="kv-k">Quality gates</span>
@@ -1198,7 +1198,7 @@
   <script>
 /* === DASHBOARD_DATA_START === */
 const DASHBOARD_DATA = {
-  "generated_at_utc": "2026-11-23T12:00:28.264293+00:00",
+  "generated_at_utc": "2026-11-23T12:08:23.472209+00:00",
   "page_name": "Leonida Chaos",
   "timezone": "WAT (UTC+1)",
   "platforms": {
@@ -1604,9 +1604,10 @@ const DASHBOARD_DATA = {
     }
   ],
   "strategy": {
-    "updated_at_utc": "2026-11-23T11:58:28.650192+00:00",
+    "updated_at_utc": "2026-11-23T12:08:23.388599+00:00",
     "model_used": "nvidia/nemotron-3.5-super-vl:free",
     "min_virality_score": 8,
+    "recommended_target_sec": 15,
     "priority_streamers": [
       "ohnepixel",
       "xqc",
@@ -1616,17 +1617,17 @@ const DASHBOARD_DATA = {
       "fanum"
     ],
     "winning_patterns": [
-      "Short 13-15 second clips with all-caps streamer-name hooks dominate, as shown by ohnepixel's 10,867 views versus the 346 median.",
-      "Physics-breaking and glitch moments generate the highest engagement, evidenced by the top two clips focusing on crashing and broken physics.",
-      "YouTube Shorts is the primary traffic driver for breakout hits, contributing 9,857 of 10,867 views for the top clip while TikTok and Instagram remain secondary."
+      "Short 12-22 second clips with a median of 621 views outperformed medium 23-35 second clips at 346 views, proving fast pacing wins.",
+      "Clips featuring high-drama streamer reactions like 'promised no crashing' or 'physics broke' drove 10x more views than generic gameplay.",
+      "YouTube Shorts delivered 73% of total views (10,124), making it the primary growth engine over TikTok and Instagram."
     ],
     "avoid_patterns": [
-      "Reject marathon finale or long-form event recaps that lack a specific in-game glitch or reaction, as seen in the 1-view Agent 00 clip.",
-      "Avoid clips longer than 20 seconds without a rapid payoff, since the 30-second Jynxzi clip underperformed compared to 13-15 second winners.",
-      "Do not post generic streamer reactions without a clear GTA 6 visual hook or conflict in the first 3 seconds."
+      "Reject marathon finale or long-form event recaps that lack a single explosive moment, as seen in the 1-view Agent 00 flop.",
+      "Avoid clips longer than 30 seconds with slow buildup, which consistently underperform against sub-22 second hooks.",
+      "Do not post low-energy streamer moments with no visible shock, rage, or physical comedy in the first 3 seconds."
     ],
-    "hook_style_guidance": "Write Frame-1 hooks as all-caps, streamer-first declarations of a specific GTA 6 glitch or failure to trigger immediate curiosity and retention.",
-    "daily_brief": "The ohnepixel crash clip was the biggest win, driving nearly 10k views on YouTube Shorts alone. The biggest leak is the 30-second generic marathon clip that received only 1 view. Tomorrow, prioritize 13-15 second physics glitch clips from high-energy streamers and post them first to YouTube Shorts.",
+    "hook_style_guidance": "Write Frame-1 hooks as all-caps, streamer-name-first claims of a specific GTA 6 failure or broken mechanic to trigger immediate curiosity.",
+    "daily_brief": "The biggest win was a 13.71-second ohnepixel crash clip hitting 10,867 views, mostly on YouTube Shorts. The biggest leak was posting 30-second slow builds that earned 1 to 6 views. Tomorrow, cut all clips to 15 seconds and lead with a streamer screaming about a GTA 6 glitch.",
     "scorecard_snapshot": {
       "total_clips_live": 11,
       "median_clip_views": 346,
@@ -3234,13 +3235,13 @@ const DASHBOARD_DATA = {
     }
   ],
   "health": {
-    "checked_at_utc": "2026-11-23T12:00:28.259222+00:00",
+    "checked_at_utc": "2026-11-23T12:08:23.466673+00:00",
     "stuck_posts": [
       {
         "platform": "instagram",
         "post_id": "GTA-002",
         "dt_utc": "2026-11-20T15:30:00+00:00",
-        "age_hours": 68.51,
+        "age_hours": 68.64,
         "views": 3,
         "is_live": true,
         "is_stuck": true,
@@ -3250,7 +3251,7 @@ const DASHBOARD_DATA = {
         "platform": "instagram",
         "post_id": "GTA-013",
         "dt_utc": "2026-11-22T21:30:00+00:00",
-        "age_hours": 1.74,
+        "age_hours": 1.87,
         "views": 1,
         "is_live": true,
         "is_stuck": true,
@@ -3260,7 +3261,7 @@ const DASHBOARD_DATA = {
         "platform": "tiktok",
         "post_id": "GTA-013",
         "dt_utc": "2026-11-22T21:30:00+00:00",
-        "age_hours": 1.74,
+        "age_hours": 1.87,
         "views": 0,
         "is_live": true,
         "is_stuck": true,
@@ -3270,7 +3271,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-002",
         "dt_utc": "2026-11-20T15:30:00+00:00",
-        "age_hours": 68.51,
+        "age_hours": 68.64,
         "views": 6,
         "is_live": true,
         "is_stuck": true,
@@ -3280,7 +3281,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-003",
         "dt_utc": "2026-11-20T18:30:00+00:00",
-        "age_hours": 64.47,
+        "age_hours": 64.61,
         "views": 6,
         "is_live": true,
         "is_stuck": true,
@@ -3290,7 +3291,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-004",
         "dt_utc": "2026-11-21T12:30:00+00:00",
-        "age_hours": 46.89,
+        "age_hours": 47.02,
         "views": 2,
         "is_live": true,
         "is_stuck": true,
@@ -3300,7 +3301,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-005",
         "dt_utc": "2026-11-21T15:30:00+00:00",
-        "age_hours": 40.56,
+        "age_hours": 40.69,
         "views": 5,
         "is_live": true,
         "is_stuck": true,
@@ -3310,7 +3311,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-006",
         "dt_utc": "2026-11-21T18:30:00+00:00",
-        "age_hours": 40.56,
+        "age_hours": 40.69,
         "views": 4,
         "is_live": true,
         "is_stuck": true,
@@ -3320,7 +3321,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-009",
         "dt_utc": "2026-11-22T03:30:00+00:00",
-        "age_hours": 32.51,
+        "age_hours": 32.64,
         "views": 4,
         "is_live": true,
         "is_stuck": true,
@@ -3330,7 +3331,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-011",
         "dt_utc": "2026-11-22T09:30:00+00:00",
-        "age_hours": 19.37,
+        "age_hours": 19.51,
         "views": 6,
         "is_live": true,
         "is_stuck": true,

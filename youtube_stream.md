@@ -14,7 +14,7 @@ Run a local YouTube-only GTA 6 streamer clip drop for my Leonida Chaos clipping 
 
 Project folder: /Users/mayorg/Documents/MAYOR G PROJECT/gta6-clipping-page
 Target clip count: 2
-Target clip duration: 30 seconds each
+Target clip duration: 18 seconds each
 Target YouTube-only streamers: random
 (Optional: replace "random" above with specific names, e.g. IShowSpeed, TypicalGamer, DarkViperAU, Valkyrae, Ludwig, TimTheTatman, CouRage, Caylus, Wynnsanity, LazarBeam, Berleezy, RDCworldGaming, Slogo, DrDisrespect)
 
@@ -54,15 +54,15 @@ Then run the built-in YouTube-only streamer mode in `scripts/daily_cloud_pipelin
 
 - **Random 2 YouTube-only streamers:**
   ```bash
-  python3 scripts/daily_cloud_pipeline.py --source youtube --clip-count 2 --target-sec 30
+  python3 scripts/daily_cloud_pipeline.py --source youtube --clip-count 2 --target-sec 18
   ```
 - **Tagged specific YouTube-only streamers (e.g., IShowSpeed + TypicalGamer):**
   ```bash
-  python3 scripts/daily_cloud_pipeline.py --source youtube --clip-count 2 --target-sec 30 --streamers "IShowSpeed,TypicalGamer"
+  python3 scripts/daily_cloud_pipeline.py --source youtube --clip-count 2 --target-sec 18 --streamers "IShowSpeed,TypicalGamer"
   ```
 - **Dry run (preview without sending to Telegram or mutating tracking files):**
   ```bash
-  python3 scripts/daily_cloud_pipeline.py --source youtube --clip-count 2 --target-sec 30 --dry-run
+  python3 scripts/daily_cloud_pipeline.py --source youtube --clip-count 2 --target-sec 18 --dry-run
   ```
 
 ### 3. Curated YouTube-Only / YouTube-Primary GTA 6 Streamer Roster

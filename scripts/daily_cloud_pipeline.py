@@ -307,7 +307,7 @@ def scout_twitch_direct_clips(
                 "created_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             })
         # Rank by real Twitch view_count DESC so the most viral clips get checked FIRST!
-        batch.sort(key=lambda x: (x["view_count"], -abs(x["duration"] - 36.0)), reverse=True)
+        batch.sort(key=lambda x: (x["view_count"], -abs(x["duration"] - 24.0)), reverse=True)
         return handle, batch
 
     for time_range in ("24hr", "7d"):
@@ -896,7 +896,8 @@ def main() -> int:
     load_local_dotenv()
     parser = argparse.ArgumentParser(description="Daily 10:00 AM WAT headless cloud & local YouTube-streamer pipeline.")
     parser.add_argument("--clip-count", type=int, default=int(os.environ.get("DAILY_CLIP_COUNT", "5")))
-    parser.add_argument("--target-sec", type=float, default=float(os.environ.get("TARGET_CLIP_SEC", "30.0")))
+    parser.add_argument("--target-sec", type=str, default=os.environ.get("TARGET_CLIP_SEC", "18"),
+                        help="Target clip duration in seconds (default: 18, or 'auto' to follow AI optimizer)")
     parser.add_argument("--source", choices=("auto", "twitch", "youtube"), default="auto",
                         help="Clip source: auto/twitch (cloud default) or youtube (local Mac YouTube-only streamers)")
     parser.add_argument("--streamers", type=str, default="",
@@ -908,7 +909,7 @@ def main() -> int:
     require_facecam = os.environ.get("REQUIRE_FACECAM", "true").strip().lower() not in ("0", "false", "no")
     tagged_streamers = [s.strip() for s in args.streamers.split(",") if s.strip()]
     now_wat = datetime.now(WAT)
-    print(f"=== Pipeline Starting: {now_wat.isoformat()} (source={args.source}, target={args.clip_count} clips @ ~{args.target_sec:.0f}s, require_gta6={require_gta6}, require_facecam={require_facecam}) ===")
+    print(f"=== Pipeline Starting: {now_wat.isoformat()} (source={args.source}, target={args.clip_count} clips @ {args.target_sec}s, require_gta6={require_gta6}, require_facecam={require_facecam}) ===")
 
     # 1. Sync stats (skipped on --dry-run to save Scrape Creators credits)
     if not args.dry_run:
@@ -926,7 +927,14 @@ def main() -> int:
     except Exception as exc:
         print(f"[warn] AI optimizer skipped ({type(exc).__name__}); using saved strategy.", file=sys.stderr)
 
-    min_virality_score = int(os.environ.get("MIN_VIRALITY_SCORE", str(strategy.get("min_virality_score", 7))))
+    env_min_v = os.environ.get("MIN_VIRALITY_SCORE", "").strip()
+    min_virality_score = int(env_min_v) if env_min_v.isdigit() else int(strategy.get("min_virality_score", 7))
+    if str(args.target_sec).strip().lower() == "auto":
+        target_sec = float(strategy.get("recommended_target_sec", 18))
+    else:
+        target_sec = float(args.target_sec)
+    target_sec = max(14.0, min(35.0, target_sec))
+    print(f"[strategy-active] Effective target_sec={target_sec:.0f}s | min_virality_score>={min_virality_score}/10")
 
     # 2. Health check & stuck-post protocol (determine active non-paused platforms BEFORE downloading anything!)
     health = run_health_check(apply_pauses=not args.dry_run)
@@ -971,7 +979,7 @@ def main() -> int:
     if not active_platforms:
         failure_reasons.append("All platforms are currently paused (check data/pause_state.json or run scripts/unpause.py).")
     elif args.source == "youtube":
-        min_src = max(22.0, args.target_sec - 5.0)
+        min_src = max(14.0, target_sec - 4.0)
         yt_cands = scout_youtube_gta6_clips(
             limit=max(16, args.clip_count * 6),
             streamers=tagged_streamers or None,
@@ -988,7 +996,7 @@ def main() -> int:
                 print(f"[warn] Twitch API scout failed ({type(exc).__name__}); using zero-key Twitch direct scout.", file=sys.stderr)
 
         if len(candidates) < args.clip_count * 4:
-            min_src = max(20.0, args.target_sec - 5.0)
+            min_src = max(14.0, target_sec - 4.0)
             tw_direct = scout_twitch_direct_clips(
                 limit=max(30, args.clip_count * 7),
                 min_duration=min_src,
@@ -1030,7 +1038,7 @@ def main() -> int:
                 raw_mp4 = RAW_DIR / f"{cid}.mp4"
                 download_clip(clip_url, raw_mp4)
                 src_dur = probe_duration(raw_mp4)
-                if src_dur < max(19.0, args.target_sec - 6.0):
+                if src_dur < max(13.5, target_sec - 4.5):
                     raw_mp4.unlink(missing_ok=True)
                     seen_set.add(cid)
                     continue
@@ -1111,19 +1119,19 @@ def main() -> int:
                     "-i", str(raw_mp4), "-frames:v", "1", str(proof_png),
                 ], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-                # Build ~30-second payoff-first spec:
-                # 2.5s teaser from climax + 0.14s flash + ~26.5s setup-to-payoff + 0.8s slow-mo boost ~= 30.0s
-                payoff_end = max(min(src_dur - 0.3, args.target_sec + 12.0), min(src_dur - 0.3, 24.0))
-                teaser_dur = 2.5
-                teaser_start = max(10.0, payoff_end - teaser_dur - 0.5)
+                # Build punchy payoff-first spec (scales cleanly for 15-30s targets, default 18s sweet spot):
+                # 2.4s teaser from climax + 0.14s flash + tight setup-to-payoff + 0.7s slow-mo ~= target_sec
+                payoff_end = min(src_dur - 0.3, max(target_sec + 6.0, min(src_dur - 0.3, 24.0)))
+                teaser_dur = 2.4
+                teaser_start = max(4.0, payoff_end - teaser_dur - 0.4)
                 teaser_end = min(payoff_end, teaser_start + teaser_dur)
 
-                body_raw_len = max(18.0, args.target_sec - teaser_dur - 0.14 - 0.8)
+                body_raw_len = max(10.0, target_sec - teaser_dur - 0.14 - 0.7)
                 body_start = max(0.0, payoff_end - body_raw_len)
                 body_end = payoff_end
 
-                slowmo_start = max(body_start + 8.0, payoff_end - 2.6)
-                slowmo_end = min(body_end - 0.6, slowmo_start + 0.8)
+                slowmo_start = max(body_start + 4.5, payoff_end - 2.3)
+                slowmo_end = min(body_end - 0.5, slowmo_start + 0.7)
 
                 use_stack = bool(facecam_crop and game_crop)
                 spec: dict[str, Any] = {
@@ -1245,7 +1253,7 @@ def main() -> int:
     if tg_ready and not args.dry_run:
         lines = [
             f"Daily 10 AM WAT Drop Complete ({now_wat.strftime('%Y-%m-%d')})",
-            f"Clips delivered today: {len(produced)} (~{args.target_sec:.0f}s each)",
+            f"Clips delivered today: {len(produced)} (~{target_sec:.0f}s each, virality>={min_virality_score}/10)",
             f"Active platforms: {', '.join(active_platforms) or 'none'}"
             + (f" (Paused 24h: {', '.join(paused_platforms)})" if paused_platforms else ""),
             f"Total tracked views: {payload['totals']['views']:,} | Followers: {payload['totals']['followers']:,}",
