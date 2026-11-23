@@ -1,5 +1,5 @@
 {
-  "updated_at_utc": "2026-11-23T12:08:23.388599+00:00",
+  "updated_at_utc": "2026-11-23T12:14:12.776749+00:00",
   "model_used": "nvidia/nemotron-3.5-super-vl:free",
   "min_virality_score": 8,
   "recommended_target_sec": 15,
@@ -9,30 +9,30 @@
     "caseoh",
     "jynxzi",
     "kaicenat",
-    "fanum"
+    "lirik"
   ],
   "winning_patterns": [
-    "Short 12-22 second clips with a median of 621 views outperformed medium 23-35 second clips at 346 views, proving fast pacing wins.",
-    "Clips featuring high-drama streamer reactions like 'promised no crashing' or 'physics broke' drove 10x more views than generic gameplay.",
-    "YouTube Shorts delivered 73% of total views (10,124), making it the primary growth engine over TikTok and Instagram."
+    "Short 13-15 second clips with high-energy streamer reactions outperform longer 30 second clips by a 2.4x median view margin",
+    "Hooks that promise a specific failure or broken mechanic (crashing, physics, painting) generate significantly higher YouTube views than generic scene descriptions",
+    "Clips featuring ohnepixel and xQc dominate top views, indicating that established streamer brand recognition drives initial click-through more than the specific in-game event"
   ],
   "avoid_patterns": [
-    "Reject marathon finale or long-form event recaps that lack a single explosive moment, as seen in the 1-view Agent 00 flop.",
-    "Avoid clips longer than 30 seconds with slow buildup, which consistently underperform against sub-22 second hooks.",
-    "Do not post low-energy streamer moments with no visible shock, rage, or physical comedy in the first 3 seconds."
+    "Reject 30 second clips with slow buildup and no immediate payoff, as seen in the 1 view GTA-012 flop",
+    "Avoid generic location-based hooks like strip club scenes that lack a conflict, mistake, or streamer reaction",
+    "Do not post clips with zero likes, shares, or comments as they indicate zero audience resonance and algorithmic death"
   ],
-  "hook_style_guidance": "Write Frame-1 hooks as all-caps, streamer-name-first claims of a specific GTA 6 failure or broken mechanic to trigger immediate curiosity.",
-  "daily_brief": "The biggest win was a 13.71-second ohnepixel crash clip hitting 10,867 views, mostly on YouTube Shorts. The biggest leak was posting 30-second slow builds that earned 1 to 6 views. Tomorrow, cut all clips to 15 seconds and lead with a streamer screaming about a GTA 6 glitch.",
+  "hook_style_guidance": "Write Frame-1 hooks that state a specific broken promise, glitch, or mistake in all caps to create immediate curiosity and conflict within the first second.",
+  "daily_brief": "The biggest win was ohnepixel's crashing clip hitting 10,910 views with a 13.7 second runtime, while the biggest leak was Kai Cenat's strip club clip getting only 1 view due to a generic hook and slow pace. Tomorrow, prioritize 15-second clips of high-energy streamers reacting to GTA 6 bugs with conflict-driven all-caps hooks.",
   "scorecard_snapshot": {
-    "total_clips_live": 11,
+    "total_clips_live": 13,
     "median_clip_views": 346,
     "top_post_id": "GTA-001",
-    "top_post_views": 10867,
+    "top_post_views": 10910,
     "short_vs_medium": {
       "short_12_22s_count": 6,
       "short_12_22s_median": 621.0,
-      "medium_23_35s_count": 5,
-      "medium_23_35s_median": 346
+      "medium_23_35s_count": 7,
+      "medium_23_35s_median": 260
     }
   }
 }
