@@ -330,6 +330,38 @@ Every published/queued clip AND every rejected scout candidate is logged here so
 
 ---
 
+
+### GTA-019 — @Berleezy (Cloud Auto 30s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-23 19:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 30.04s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `GTA 6 STREET GAMEPLAY REACTION`
+- **Punchline:** `WALKING THROUGH TRAFFIC`
+- **Source URL & Created At:** `https://www.youtube.com/watch?v=Rp7dlcUkLRM` (2026-11-23T10:40:40Z)
+- **Credit:** `@Berleezy (Twitch)`
+- **Proof Frame:** `proofs/GTA-019_proof.png`
+- **Send Test:** send to your gamer friend and type 'gta 6 streets'
+- **IG First Comment:** `would you walk in the middle of the street like this?`
+
+---
+
+
+### GTA-020 — @IShowSpeed (Cloud Auto 30s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-23 22:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 30.04s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `GTA 6 LOOKALIKE MOMENT`
+- **Punchline:** `NO WAY THAT IS HIM`
+- **Source URL & Created At:** `https://www.youtube.com/watch?v=tiBb0GZ6aQQ` (2026-11-23T10:51:38Z)
+- **Credit:** `@IShowSpeed (Twitch)`
+- **Proof Frame:** `proofs/GTA-020_proof.png`
+- **Send Test:** Send to your friend: 'bro speed actually found his twin in gta 6'
+- **IG First Comment:** `who would you send this to`
+
+---
+
 ## Scout Rejects Log
 
 *(Record rejected candidates with URL/ID and reason so the 2-hour routine skips them immediately.)*

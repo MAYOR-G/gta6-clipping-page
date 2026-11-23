@@ -1113,6 +1113,9 @@ def main() -> int:
                     out_mp4.unlink(missing_ok=True)
                     continue
 
+                # Once safe_publish commits this post_id to the ledger, advance post_num so retries never collide
+                post_num += 1
+
                 # Deliver to Telegram in structured 5-part format
                 delivered_tg = False
                 if tg_ready and not args.dry_run:
@@ -1153,7 +1156,6 @@ def main() -> int:
                 })
                 used_streamers_today.add(streamer_key)
                 seen_set.add(cid)
-                post_num += 1
 
                 # Disk hygiene: remove heavy raw & rendered MP4 right after delivery so repo stays clean
                 raw_mp4.unlink(missing_ok=True)

@@ -505,6 +505,72 @@
       "scheduled_time_utc": "2026-11-23T15:30:00+00:00",
       "created_at_utc": "2026-11-23T10:19:53.847535+00:00",
       "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-019",
+      "platform": "instagram",
+      "account_id": "clip-ig-unconfigured",
+      "backend": "queue",
+      "video_sha256": "bdee17e1f3b36e8f904c3acda04981b4d6dd7056ca37fd4834edc6250a4f9b46",
+      "caption_first_line": "just walking down the road \ud83d\ude02",
+      "scheduled_time_utc": "2026-11-23T18:30:00+00:00",
+      "created_at_utc": "2026-11-23T10:42:31.724597+00:00",
+      "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-019",
+      "platform": "tiktok",
+      "account_id": "clip-tiktok-unconfigured",
+      "backend": "queue",
+      "video_sha256": "bdee17e1f3b36e8f904c3acda04981b4d6dd7056ca37fd4834edc6250a4f9b46",
+      "caption_first_line": "just walking down the road \ud83d\ude02",
+      "scheduled_time_utc": "2026-11-23T18:30:00+00:00",
+      "created_at_utc": "2026-11-23T10:42:31.724597+00:00",
+      "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-019",
+      "platform": "youtube",
+      "account_id": "clip-youtube-unconfigured",
+      "backend": "queue",
+      "video_sha256": "bdee17e1f3b36e8f904c3acda04981b4d6dd7056ca37fd4834edc6250a4f9b46",
+      "caption_first_line": "just walking down the road \ud83d\ude02",
+      "scheduled_time_utc": "2026-11-23T18:30:00+00:00",
+      "created_at_utc": "2026-11-23T10:42:31.724597+00:00",
+      "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-020",
+      "platform": "instagram",
+      "account_id": "clip-ig-unconfigured",
+      "backend": "queue",
+      "video_sha256": "2c929fa03a721636088cb7265b660a7866669d430495ae712e9e0e04472758e2",
+      "caption_first_line": "speed found his twin in gta 6 \ud83d\ude33",
+      "scheduled_time_utc": "2026-11-23T21:30:00+00:00",
+      "created_at_utc": "2026-11-23T10:44:26.762792+00:00",
+      "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-020",
+      "platform": "tiktok",
+      "account_id": "clip-tiktok-unconfigured",
+      "backend": "queue",
+      "video_sha256": "2c929fa03a721636088cb7265b660a7866669d430495ae712e9e0e04472758e2",
+      "caption_first_line": "speed found his twin in gta 6 \ud83d\ude33",
+      "scheduled_time_utc": "2026-11-23T21:30:00+00:00",
+      "created_at_utc": "2026-11-23T10:44:26.762792+00:00",
+      "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-020",
+      "platform": "youtube",
+      "account_id": "clip-youtube-unconfigured",
+      "backend": "queue",
+      "video_sha256": "2c929fa03a721636088cb7265b660a7866669d430495ae712e9e0e04472758e2",
+      "caption_first_line": "speed found his twin in gta 6 \ud83d\ude33",
+      "scheduled_time_utc": "2026-11-23T21:30:00+00:00",
+      "created_at_utc": "2026-11-23T10:44:26.762792+00:00",
+      "status": "queued_local"
     }
   ]
 }

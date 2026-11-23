@@ -22,6 +22,7 @@ import json
 import mimetypes
 import os
 import sys
+import time
 import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
@@ -72,8 +73,16 @@ def _multipart_post(endpoint: str, field_name: str, file_path: Path, extra_field
         method="POST",
         headers={"Content-Type": f"multipart/form-data; boundary={boundary}"},
     )
-    with urllib.request.urlopen(req, timeout=timeout) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+    last_exc: Exception | None = None
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(req, timeout=timeout) as resp:
+                return json.loads(resp.read().decode("utf-8"))
+        except Exception as exc:
+            last_exc = exc
+            if attempt < 2:
+                time.sleep(2.5 * (attempt + 1))
+    raise last_exc  # type: ignore[misc]
 
 
 def send_message(text: str, dry_run: bool = False) -> dict[str, Any]:
@@ -86,8 +95,16 @@ def send_message(text: str, dry_run: bool = False) -> dict[str, Any]:
         data=data,
         method="POST",
     )
-    with urllib.request.urlopen(req, timeout=30) as resp:
-        return json.loads(resp.read().decode("utf-8"))
+    last_exc: Exception | None = None
+    for attempt in range(3):
+        try:
+            with urllib.request.urlopen(req, timeout=30) as resp:
+                return json.loads(resp.read().decode("utf-8"))
+        except Exception as exc:
+            last_exc = exc
+            if attempt < 2:
+                time.sleep(2.0 * (attempt + 1))
+    raise last_exc  # type: ignore[misc]
 
 
 def send_video(video_path: Path, caption: str = "", dry_run: bool = False) -> dict[str, Any]:
