@@ -1,0 +1,37 @@
+{
+  "updated_at_utc": "2026-11-23T11:58:28.650192+00:00",
+  "model_used": "nvidia/nemotron-3.5-super-vl:free",
+  "min_virality_score": 8,
+  "priority_streamers": [
+    "ohnepixel",
+    "xqc",
+    "caseoh",
+    "jynxzi",
+    "kaicenat",
+    "fanum"
+  ],
+  "winning_patterns": [
+    "Short 13-15 second clips with all-caps streamer-name hooks dominate, as shown by ohnepixel's 10,867 views versus the 346 median.",
+    "Physics-breaking and glitch moments generate the highest engagement, evidenced by the top two clips focusing on crashing and broken physics.",
+    "YouTube Shorts is the primary traffic driver for breakout hits, contributing 9,857 of 10,867 views for the top clip while TikTok and Instagram remain secondary."
+  ],
+  "avoid_patterns": [
+    "Reject marathon finale or long-form event recaps that lack a specific in-game glitch or reaction, as seen in the 1-view Agent 00 clip.",
+    "Avoid clips longer than 20 seconds without a rapid payoff, since the 30-second Jynxzi clip underperformed compared to 13-15 second winners.",
+    "Do not post generic streamer reactions without a clear GTA 6 visual hook or conflict in the first 3 seconds."
+  ],
+  "hook_style_guidance": "Write Frame-1 hooks as all-caps, streamer-first declarations of a specific GTA 6 glitch or failure to trigger immediate curiosity and retention.",
+  "daily_brief": "The ohnepixel crash clip was the biggest win, driving nearly 10k views on YouTube Shorts alone. The biggest leak is the 30-second generic marathon clip that received only 1 view. Tomorrow, prioritize 13-15 second physics glitch clips from high-energy streamers and post them first to YouTube Shorts.",
+  "scorecard_snapshot": {
+    "total_clips_live": 11,
+    "median_clip_views": 346,
+    "top_post_id": "GTA-001",
+    "top_post_views": 10867,
+    "short_vs_medium": {
+      "short_12_22s_count": 6,
+      "short_12_22s_median": 621.0,
+      "medium_23_35s_count": 5,
+      "medium_23_35s_median": 346
+    }
+  }
+}

@@ -19,7 +19,7 @@
       /* Three text roles only */
       --text-primary: #ededed;
       --text-secondary: #a1a1a6;
-      --text-muted: #85858b;
+      --text-muted: #93939a;
 
       /* Single Vice-dusk broadcast accent + toned semantic roles */
       --accent: #e86f3a;
@@ -706,6 +706,147 @@
     .stream-name { font-size: 13px; font-weight: 500; color: var(--text-primary); }
     .stream-req { font-size: 12px; color: var(--text-muted); }
 
+    /* GSC-Style Clickable Metric Cards */
+    .kpi-cell.gsc-tab {
+      cursor: pointer;
+      position: relative;
+      border-top: 2px solid transparent;
+      transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+      text-align: left;
+      width: 100%;
+      background: transparent;
+      border-left: 0;
+      border-bottom: 0;
+    }
+    .kpi-cell.gsc-tab:hover { background: var(--bg-raised); }
+    .kpi-cell.gsc-tab.active {
+      background: var(--bg-raised);
+      border-top-color: var(--gsc-color, var(--accent));
+    }
+    .kpi-cell.gsc-tab .kpi-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .kpi-swatch {
+      width: 8px;
+      height: 8px;
+      border-radius: 2px;
+      background: var(--gsc-color, var(--accent));
+      opacity: 0.45;
+    }
+    .kpi-cell.gsc-tab.active .kpi-swatch { opacity: 1; }
+
+    /* Chart Controls, Legend & Interactive Tooltip */
+    .chart-controls-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .chart-controls-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .legend-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .legend-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 26px;
+      padding: 0 10px;
+      border-radius: var(--r-tag);
+      border: 1px solid var(--hairline-strong);
+      background: var(--bg-sidebar);
+      color: var(--text-primary);
+      font-size: 12px;
+      cursor: pointer;
+      transition: opacity var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+    }
+    .legend-chip.off { opacity: 0.38; color: var(--text-muted); }
+    .legend-dot { width: 8px; height: 8px; border-radius: 99px; flex-shrink: 0; }
+
+    .chart-wrap { position: relative; }
+    .chart-tooltip {
+      position: absolute;
+      top: 8px;
+      right: 12px;
+      background: #101012;
+      border: 1px solid var(--hairline-strong);
+      border-radius: var(--r-control);
+      padding: 10px 12px;
+      font-size: 12px;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 120ms var(--ease);
+      min-width: 172px;
+      z-index: 4;
+    }
+    .chart-tooltip.visible { opacity: 1; }
+    .tt-date { font-weight: 600; color: var(--text-primary); margin-bottom: 6px; font-variant-numeric: tabular-nums; }
+    .tt-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 2px 0; font-variant-numeric: tabular-nums; }
+    .tt-lbl { display: inline-flex; align-items: center; gap: 6px; color: var(--text-secondary); }
+    .tt-val { color: var(--text-primary); font-weight: 500; }
+
+    /* AI Self-Improvement Card */
+    .ai-brief-box {
+      padding: 12px 14px;
+      background: var(--bg-sidebar);
+      border: 1px solid var(--hairline-strong);
+      border-left: 3px solid var(--accent);
+      border-radius: var(--r-control);
+      font-size: 13px;
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+    .ai-meta-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Pagination & See-More Footer */
+    .table-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      padding-top: 12px;
+      border-top: 1px solid var(--hairline);
+    }
+    .pager-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .btn-link-accent {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      height: 32px;
+      padding: 0 12px;
+      border-radius: var(--r-control);
+      border: 1px solid var(--accent-dim);
+      background: var(--accent-surface);
+      color: var(--text-primary);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: border-color var(--dur-fast) var(--ease);
+    }
+    .btn-link-accent:hover { border-color: var(--accent); }
+
     .section-hidden { display: none !important; }
 
     /* Responsive Tablet & Mobile (Zero Horizontal Overflow) */
@@ -820,45 +961,67 @@
         </div>
       </header>
 
-      <section class="kpi-strip" aria-label="Key metrics" data-section="overview">
-        <div class="kpi-cell lead">
-          <div class="kpi-label">Total plays</div>
+      <section class="kpi-strip" aria-label="Performance metric cards" data-section="overview" id="gsc-metric-cards">
+        <button class="kpi-cell gsc-tab lead active" data-gsc="views" style="--gsc-color:#e86f3a" type="button">
+          <div class="kpi-label kpi-badge"><span class="kpi-swatch"></span>Total views</div>
           <div class="kpi-val" id="kpi-views">0</div>
           <div class="kpi-sub" id="kpi-views-sub">0 platform rows tracked</div>
-        </div>
-        <div class="kpi-cell">
-          <div class="kpi-label">Share rate</div>
-          <div class="kpi-val" id="kpi-share">-</div>
-          <div class="kpi-sub" id="kpi-share-sub">Target 1.0% at 24h</div>
-        </div>
-        <div class="kpi-cell">
-          <div class="kpi-label">Followers</div>
+        </button>
+        <button class="kpi-cell gsc-tab" data-gsc="likes" style="--gsc-color:#22d3ee" type="button">
+          <div class="kpi-label kpi-badge"><span class="kpi-swatch"></span>Total likes</div>
+          <div class="kpi-val" id="kpi-likes">0</div>
+          <div class="kpi-sub" id="kpi-likes-sub">Click to view likes trend</div>
+        </button>
+        <button class="kpi-cell gsc-tab" data-gsc="followers" style="--gsc-color:#4cc38a" type="button">
+          <div class="kpi-label kpi-badge"><span class="kpi-swatch"></span>Followers</div>
           <div class="kpi-val" id="kpi-followers">0</div>
           <div class="kpi-sub" id="kpi-followers-sub">Combined channels</div>
-        </div>
-        <div class="kpi-cell">
-          <div class="kpi-label">Queued drops</div>
-          <div class="kpi-val" id="kpi-queue">0</div>
-          <div class="kpi-sub" id="kpi-queue-sub">10:00 WAT cloud schedule</div>
-        </div>
+        </button>
+        <button class="kpi-cell gsc-tab" data-gsc="shares" style="--gsc-color:#d99b38" type="button">
+          <div class="kpi-label kpi-badge"><span class="kpi-swatch"></span>Shares &amp; rate</div>
+          <div class="kpi-val" id="kpi-share">0</div>
+          <div class="kpi-sub" id="kpi-share-sub">Target 1.0% share rate</div>
+        </button>
       </section>
 
       <section class="row-main" data-section="overview">
         <div class="card">
-          <div class="card-head">
+          <div class="chart-controls-bar">
             <div>
-              <h2 class="card-title" id="chart-heading">Clip performance by post</h2>
-              <div class="card-meta" id="chart-subtitle">Plays per clip across selected scope</div>
+              <h2 class="card-title" id="chart-heading">Views trend across platforms</h2>
+              <div class="card-meta" id="chart-subtitle">Hover chart to inspect daily YouTube, TikTok &amp; Instagram totals</div>
             </div>
-            <div class="segmented" role="tablist" aria-label="Chart metric" id="metric-tabs">
-              <button class="seg-btn active" data-metric="views" type="button" role="tab" aria-selected="true">Plays</button>
-              <button class="seg-btn" data-metric="share_rate" type="button" role="tab" aria-selected="false">Share %</button>
-              <button class="seg-btn" data-metric="length_sec" type="button" role="tab" aria-selected="false">Duration</button>
+            <div class="chart-controls-right">
+              <div class="segmented" role="tablist" aria-label="Chart mode" id="chart-mode-tabs">
+                <button class="seg-btn active" data-mode="trend" type="button" role="tab" aria-selected="true">Trend lines</button>
+                <button class="seg-btn" data-mode="posts" type="button" role="tab" aria-selected="false">By clip</button>
+              </div>
+              <div class="segmented" role="tablist" aria-label="Granularity" id="granularity-tabs">
+                <button class="seg-btn active" data-gran="daily" type="button" role="tab" aria-selected="true">Daily</button>
+                <button class="seg-btn" data-gran="weekly" type="button" role="tab" aria-selected="false">Weekly</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="chart-controls-bar" style="margin-top:2px">
+            <div class="legend-bar" id="platform-legend" aria-label="Toggle platform lines">
+              <button class="legend-chip" data-line="youtube" type="button"><span class="legend-dot" style="background:#e5484d"></span>YouTube</button>
+              <button class="legend-chip" data-line="tiktok" type="button"><span class="legend-dot" style="background:#22d3ee"></span>TikTok</button>
+              <button class="legend-chip" data-line="instagram" type="button"><span class="legend-dot" style="background:#e86f3a"></span>Instagram</button>
+            </div>
+            <div class="segmented" role="tablist" aria-label="Date range" id="range-tabs">
+              <button class="seg-btn" data-range="5d" type="button" role="tab" aria-selected="false">5D</button>
+              <button class="seg-btn" data-range="7d" type="button" role="tab" aria-selected="false">7D</button>
+              <button class="seg-btn" data-range="28d" type="button" role="tab" aria-selected="false">28D</button>
+              <button class="seg-btn" data-range="3m" type="button" role="tab" aria-selected="false">3M</button>
+              <button class="seg-btn" data-range="6m" type="button" role="tab" aria-selected="false">6M</button>
+              <button class="seg-btn active" data-range="all" type="button" role="tab" aria-selected="true">Overall</button>
             </div>
           </div>
 
           <div class="chart-wrap">
-            <svg class="chart-svg" id="perf-chart" viewBox="0 0 720 268" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Clip performance chart"></svg>
+            <svg class="chart-svg" id="perf-chart" viewBox="0 0 720 276" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Platform performance chart"></svg>
+            <div class="chart-tooltip" id="chart-tooltip"></div>
           </div>
 
           <div class="wat-strip-block">
@@ -899,7 +1062,7 @@
           </div>
 
           <div class="sub-block">
-            <div class="sub-block-label">Cloud drop schedule</div>
+            <div class="sub-block-label">Self-improving cloud desk</div>
             <div class="kv-row">
               <span class="kv-k">GitHub Actions cron</span>
               <span class="kv-v">10:00 WAT daily</span>
@@ -909,25 +1072,36 @@
               <span class="kv-v">30.0s (5 clips/day)</span>
             </div>
             <div class="kv-row">
-              <span class="kv-k">Delivery channel</span>
-              <span class="kv-v">Telegram 5-part</span>
+              <span class="kv-k">Quality gates</span>
+              <span class="kv-v" id="health-gates">40/60 Cam · Virality &gt;=7</span>
             </div>
           </div>
         </div>
       </section>
 
+      <section class="card" data-section="overview" id="ai-strategy-card">
+        <div class="card-head">
+          <div>
+            <h2 class="card-title">AI self-improvement strategy</h2>
+            <div class="card-meta" id="ai-strategy-meta">Auto-learned from live scoreboard across YouTube, TikTok &amp; Instagram</div>
+          </div>
+          <div class="ai-meta-row" id="ai-strategy-tags"></div>
+        </div>
+        <div class="ai-brief-box" id="ai-brief-text">Loading latest AI performance diagnosis...</div>
+      </section>
+
       <section class="row-equal" data-section="overview">
         <div class="card">
           <div class="card-head">
-            <h2 class="card-title">Working signals</h2>
-            <span class="card-meta">Evidence from latest reads</span>
+            <h2 class="card-title">Double down (winning signals)</h2>
+            <span class="card-meta">Fed into next clip scout</span>
           </div>
           <ul class="signal-list" id="working-list"></ul>
         </div>
         <div class="card">
           <div class="card-head">
-            <h2 class="card-title">Attention needed</h2>
-            <span class="card-meta">Next adjustments</span>
+            <h2 class="card-title">Auto-reject (attention needed)</h2>
+            <span class="card-meta">Filtered by vision gate</span>
           </div>
           <ul class="signal-list" id="not-working-list"></ul>
         </div>
@@ -936,10 +1110,13 @@
       <section class="card" data-section="overview clips">
         <div class="table-toolbar">
           <div>
-            <h2 class="card-title">Clip log &amp; queue</h2>
+            <h2 class="card-title" id="clips-section-title">Recent clips</h2>
             <div class="card-meta" id="table-count">0 rows</div>
           </div>
-          <input class="search-input" id="clip-search" type="search" placeholder="Search streamer, hook, or ID" aria-label="Search clips" />
+          <div class="pager-controls">
+            <input class="search-input" id="clip-search" type="search" placeholder="Search streamer, hook, or ID" aria-label="Search clips" />
+            <button class="btn-link-accent" id="see-all-clips-btn" type="button">See all clips →</button>
+          </div>
         </div>
 
         <div class="clip-drawer" id="clip-drawer" aria-live="polite"></div>
@@ -963,6 +1140,11 @@
             </thead>
             <tbody id="clips-tbody"></tbody>
           </table>
+        </div>
+
+        <div class="table-footer" id="table-footer">
+          <span class="card-meta" id="pager-info">Showing latest clips</span>
+          <div class="pager-controls" id="pager-buttons"></div>
         </div>
       </section>
 
@@ -1016,7 +1198,7 @@
   <script>
 /* === DASHBOARD_DATA_START === */
 const DASHBOARD_DATA = {
-  "generated_at_utc": "2026-11-23T11:02:37.272622+00:00",
+  "generated_at_utc": "2026-11-23T12:00:28.264293+00:00",
   "page_name": "Leonida Chaos",
   "timezone": "WAT (UTC+1)",
   "platforms": {
@@ -1298,6 +1480,165 @@ const DASHBOARD_DATA = {
     "comments": 2,
     "followers": 1,
     "posts": 60
+  },
+  "timeseries": [
+    {
+      "date": "2026-11-20",
+      "youtube": {
+        "views": 1711,
+        "views_delta": 1711,
+        "likes": 7,
+        "likes_delta": 7,
+        "shares": 0,
+        "followers": 0,
+        "posts": 3
+      },
+      "tiktok": {
+        "views": 389,
+        "views_delta": 389,
+        "likes": 8,
+        "likes_delta": 8,
+        "shares": 0,
+        "followers": 0,
+        "posts": 3
+      },
+      "instagram": {
+        "views": 366,
+        "views_delta": 366,
+        "likes": 3,
+        "likes_delta": 3,
+        "shares": 0,
+        "followers": 0,
+        "posts": 3
+      }
+    },
+    {
+      "date": "2026-11-21",
+      "youtube": {
+        "views": 6818,
+        "views_delta": 5107,
+        "likes": 24,
+        "likes_delta": 17,
+        "shares": 0,
+        "followers": 0,
+        "posts": 7
+      },
+      "tiktok": {
+        "views": 2088,
+        "views_delta": 1699,
+        "likes": 38,
+        "likes_delta": 30,
+        "shares": 1,
+        "followers": 0,
+        "posts": 7
+      },
+      "instagram": {
+        "views": 1320,
+        "views_delta": 954,
+        "likes": 12,
+        "likes_delta": 9,
+        "shares": 0,
+        "followers": 0,
+        "posts": 7
+      }
+    },
+    {
+      "date": "2026-11-22",
+      "youtube": {
+        "views": 9644,
+        "views_delta": 2826,
+        "likes": 35,
+        "likes_delta": 11,
+        "shares": 0,
+        "followers": 0,
+        "posts": 13
+      },
+      "tiktok": {
+        "views": 3362,
+        "views_delta": 1274,
+        "likes": 56,
+        "likes_delta": 18,
+        "shares": 2,
+        "followers": 0,
+        "posts": 13
+      },
+      "instagram": {
+        "views": 1661,
+        "views_delta": 341,
+        "likes": 17,
+        "likes_delta": 5,
+        "shares": 0,
+        "followers": 0,
+        "posts": 13
+      }
+    },
+    {
+      "date": "2026-11-23",
+      "youtube": {
+        "views": 10124,
+        "views_delta": 480,
+        "likes": 37,
+        "likes_delta": 2,
+        "shares": 0,
+        "followers": 1,
+        "posts": 20
+      },
+      "tiktok": {
+        "views": 3418,
+        "views_delta": 56,
+        "likes": 56,
+        "likes_delta": 0,
+        "shares": 2,
+        "followers": 0,
+        "posts": 20
+      },
+      "instagram": {
+        "views": 1662,
+        "views_delta": 1,
+        "likes": 17,
+        "likes_delta": 0,
+        "shares": 0,
+        "followers": 0,
+        "posts": 20
+      }
+    }
+  ],
+  "strategy": {
+    "updated_at_utc": "2026-11-23T11:58:28.650192+00:00",
+    "model_used": "nvidia/nemotron-3.5-super-vl:free",
+    "min_virality_score": 8,
+    "priority_streamers": [
+      "ohnepixel",
+      "xqc",
+      "caseoh",
+      "jynxzi",
+      "kaicenat",
+      "fanum"
+    ],
+    "winning_patterns": [
+      "Short 13-15 second clips with all-caps streamer-name hooks dominate, as shown by ohnepixel's 10,867 views versus the 346 median.",
+      "Physics-breaking and glitch moments generate the highest engagement, evidenced by the top two clips focusing on crashing and broken physics.",
+      "YouTube Shorts is the primary traffic driver for breakout hits, contributing 9,857 of 10,867 views for the top clip while TikTok and Instagram remain secondary."
+    ],
+    "avoid_patterns": [
+      "Reject marathon finale or long-form event recaps that lack a specific in-game glitch or reaction, as seen in the 1-view Agent 00 clip.",
+      "Avoid clips longer than 20 seconds without a rapid payoff, since the 30-second Jynxzi clip underperformed compared to 13-15 second winners.",
+      "Do not post generic streamer reactions without a clear GTA 6 visual hook or conflict in the first 3 seconds."
+    ],
+    "hook_style_guidance": "Write Frame-1 hooks as all-caps, streamer-first declarations of a specific GTA 6 glitch or failure to trigger immediate curiosity and retention.",
+    "daily_brief": "The ohnepixel crash clip was the biggest win, driving nearly 10k views on YouTube Shorts alone. The biggest leak is the 30-second generic marathon clip that received only 1 view. Tomorrow, prioritize 13-15 second physics glitch clips from high-energy streamers and post them first to YouTube Shorts.",
+    "scorecard_snapshot": {
+      "total_clips_live": 11,
+      "median_clip_views": 346,
+      "top_post_id": "GTA-001",
+      "top_post_views": 10867,
+      "short_vs_medium": {
+        "short_12_22s_count": 6,
+        "short_12_22s_median": 621.0,
+        "medium_23_35s_count": 5,
+        "medium_23_35s_median": 346
+      }
+    }
   },
   "clips": [
     {
@@ -2893,23 +3234,43 @@ const DASHBOARD_DATA = {
     }
   ],
   "health": {
-    "checked_at_utc": "2026-11-23T11:02:37.267289+00:00",
+    "checked_at_utc": "2026-11-23T12:00:28.259222+00:00",
     "stuck_posts": [
       {
         "platform": "instagram",
         "post_id": "GTA-002",
         "dt_utc": "2026-11-20T15:30:00+00:00",
-        "age_hours": 67.54,
+        "age_hours": 68.51,
         "views": 3,
         "is_live": true,
         "is_stuck": true,
         "hook": "GTA 6 PHYSICS JUST BROKE XQC"
       },
       {
+        "platform": "instagram",
+        "post_id": "GTA-013",
+        "dt_utc": "2026-11-22T21:30:00+00:00",
+        "age_hours": 1.74,
+        "views": 1,
+        "is_live": true,
+        "is_stuck": true,
+        "hook": "GTA 6 MARATHON FINALE SHOCK"
+      },
+      {
+        "platform": "tiktok",
+        "post_id": "GTA-013",
+        "dt_utc": "2026-11-22T21:30:00+00:00",
+        "age_hours": 1.74,
+        "views": 0,
+        "is_live": true,
+        "is_stuck": true,
+        "hook": "GTA 6 MARATHON FINALE SHOCK"
+      },
+      {
         "platform": "youtube",
         "post_id": "GTA-002",
         "dt_utc": "2026-11-20T15:30:00+00:00",
-        "age_hours": 67.54,
+        "age_hours": 68.51,
         "views": 6,
         "is_live": true,
         "is_stuck": true,
@@ -2919,7 +3280,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-003",
         "dt_utc": "2026-11-20T18:30:00+00:00",
-        "age_hours": 63.51,
+        "age_hours": 64.47,
         "views": 6,
         "is_live": true,
         "is_stuck": true,
@@ -2929,7 +3290,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-004",
         "dt_utc": "2026-11-21T12:30:00+00:00",
-        "age_hours": 45.93,
+        "age_hours": 46.89,
         "views": 2,
         "is_live": true,
         "is_stuck": true,
@@ -2939,7 +3300,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-005",
         "dt_utc": "2026-11-21T15:30:00+00:00",
-        "age_hours": 39.59,
+        "age_hours": 40.56,
         "views": 5,
         "is_live": true,
         "is_stuck": true,
@@ -2949,7 +3310,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-006",
         "dt_utc": "2026-11-21T18:30:00+00:00",
-        "age_hours": 39.59,
+        "age_hours": 40.56,
         "views": 4,
         "is_live": true,
         "is_stuck": true,
@@ -2959,7 +3320,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-009",
         "dt_utc": "2026-11-22T03:30:00+00:00",
-        "age_hours": 31.54,
+        "age_hours": 32.51,
         "views": 4,
         "is_live": true,
         "is_stuck": true,
@@ -2969,7 +3330,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-011",
         "dt_utc": "2026-11-22T09:30:00+00:00",
-        "age_hours": 18.41,
+        "age_hours": 19.37,
         "views": 6,
         "is_live": true,
         "is_stuck": true,
@@ -2979,8 +3340,10 @@ const DASHBOARD_DATA = {
     "unconfirmed_scheduled": [],
     "platforms_two_in_a_row": [],
     "ig_ceiling_alert": false,
-    "urgent_alert_even_overnight": false,
-    "recommended_actions": [],
+    "urgent_alert_even_overnight": true,
+    "recommended_actions": [
+      "CRITICAL: All active platforms are stuck simultaneously -> PAUSE ALL and alert human immediately (even overnight)."
+    ],
     "pause_state": {
       "paused_all": false,
       "platforms": {
@@ -3039,15 +3402,23 @@ const DASHBOARD_DATA = {
 /* === DASHBOARD_DATA_END === */
 
     const D = DASHBOARD_DATA;
-    const hasLiveViews = (D.clips || []).some((c) => (c.views || 0) > 0);
+    const PLAT_COLORS = { youtube: "#e5484d", tiktok: "#22d3ee", instagram: "#e86f3a" };
+    const PLAT_LABELS = { youtube: "YouTube", tiktok: "TikTok", instagram: "Instagram" };
     const state = {
       platform: "all",
-      metric: hasLiveViews ? "views" : "length_sec",
+      gscMetric: "views",      // views | likes | followers | shares
+      chartMode: "trend",      // trend | posts
+      range: "all",            // 5d | 7d | 28d | 3m | 6m | all
+      granularity: "daily",    // daily | weekly
+      visibleLines: { youtube: true, tiktok: true, instagram: true },
       view: "overview",
       query: "",
       sortKey: "post_id",
       sortDir: "desc",
-      selectedKey: null
+      selectedKey: null,
+      page: 1,
+      pageSize: 12,
+      showAllRows: false
     };
 
     const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
@@ -3058,6 +3429,12 @@ const DASHBOARD_DATA = {
       const d = new Date(iso);
       if (Number.isNaN(d.getTime())) return iso;
       return d.toISOString().replace("T", " ").slice(0, 16) + " UTC";
+    };
+    const shortDate = (dStr) => {
+      const m = String(dStr || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (!m) return dStr || "";
+      const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      return `${months[Number(m[2]) - 1]} ${Number(m[3])}`;
     };
 
     function filteredClips() {
@@ -3084,16 +3461,34 @@ const DASHBOARD_DATA = {
       return list;
     }
 
-    function syncMetricTabs() {
-      document.querySelectorAll("#metric-tabs .seg-btn").forEach((b) => {
-        const isAct = b.getAttribute("data-metric") === state.metric;
-        b.classList.toggle("active", isAct);
-        b.setAttribute("aria-selected", isAct ? "true" : "false");
+    function syncControlTabs() {
+      document.querySelectorAll("#gsc-metric-cards .gsc-tab").forEach((b) => {
+        b.classList.toggle("active", b.getAttribute("data-gsc") === state.gscMetric);
+      });
+      document.querySelectorAll("#chart-mode-tabs .seg-btn").forEach((b) => {
+        const act = b.getAttribute("data-mode") === state.chartMode;
+        b.classList.toggle("active", act);
+        b.setAttribute("aria-selected", act ? "true" : "false");
+      });
+      document.querySelectorAll("#granularity-tabs .seg-btn").forEach((b) => {
+        const act = b.getAttribute("data-gran") === state.granularity;
+        b.classList.toggle("active", act);
+        b.setAttribute("aria-selected", act ? "true" : "false");
+      });
+      document.querySelectorAll("#range-tabs .seg-btn").forEach((b) => {
+        const act = b.getAttribute("data-range") === state.range;
+        b.classList.toggle("active", act);
+        b.setAttribute("aria-selected", act ? "true" : "false");
+      });
+      document.querySelectorAll("#platform-legend .legend-chip").forEach((b) => {
+        const p = b.getAttribute("data-line");
+        const active = state.platform === "all" ? !!state.visibleLines[p] : state.platform === p;
+        b.classList.toggle("off", !active);
       });
     }
 
     function renderChrome() {
-      const cleanName = (D.page_name || "Vice City Chaos").split("—")[0].split("-")[0].trim();
+      const cleanName = (D.page_name || "Leonida Chaos").split("—")[0].split("-")[0].trim();
       document.getElementById("sidebar-name").textContent = cleanName;
       document.getElementById("sidebar-tz").textContent = D.timezone || "WAT (UTC+1)";
       document.getElementById("sidebar-updated").textContent = "Updated " + shortUtc(D.generated_at_utc);
@@ -3111,147 +3506,269 @@ const DASHBOARD_DATA = {
     function renderKpisAndFinding() {
       const scoped = (D.clips || []).filter((c) => state.platform === "all" || c.platform === state.platform);
       const views = scoped.reduce((s, c) => s + (c.views || 0), 0);
+      const likes = scoped.reduce((s, c) => s + (c.likes || 0), 0);
       const shares = scoped.reduce((s, c) => s + (c.shares || 0), 0);
       const sharePct = views > 0 ? (shares / views) * 100 : null;
+      const likePct = views > 0 ? (likes / views) * 100 : null;
 
       const followers = state.platform === "all"
         ? Object.values(D.platforms || {}).reduce((s, p) => s + (p.followers || 0), 0)
         : (D.platforms?.[state.platform]?.followers || 0);
 
-      const queuedCount = (D.queue || []).filter((q) => state.platform === "all" || q.platform === state.platform).length;
       const uniquePosts = new Set(scoped.map((c) => c.post_id)).size;
 
       document.getElementById("kpi-views").textContent = fmtInt(views);
-      document.getElementById("kpi-views-sub").textContent = `${uniquePosts} clip${uniquePosts === 1 ? "" : "s"} across ${scoped.length} platform rows`;
+      document.getElementById("kpi-views-sub").textContent = `${uniquePosts} clip${uniquePosts === 1 ? "" : "s"} across ${scoped.length} rows`;
 
-      document.getElementById("kpi-share").textContent = sharePct === null ? "-" : sharePct.toFixed(2) + "%";
+      document.getElementById("kpi-likes").textContent = fmtInt(likes);
+      document.getElementById("kpi-likes-sub").textContent = likePct === null ? "Awaiting first reads" : `${likePct.toFixed(2)}% like rate`;
+
+      document.getElementById("kpi-followers").textContent = fmtInt(followers);
+      document.getElementById("kpi-followers-sub").textContent = state.platform === "all" ? "Combined IG, TikTok, YouTube" : `${PLAT_LABELS[state.platform] || state.platform} total`;
+
+      document.getElementById("kpi-share").textContent = fmtInt(shares);
       document.getElementById("kpi-share-sub").innerHTML = sharePct === null
         ? "Awaiting first 24h reads"
         : sharePct >= 1.0
-          ? `<span class="good">+${(sharePct - 1.0).toFixed(2)}% vs 1.0% target</span>`
-          : `<span class="bad">${(sharePct - 1.0).toFixed(2)}% vs 1.0% target</span>`;
-
-      document.getElementById("kpi-followers").textContent = fmtInt(followers);
-      document.getElementById("kpi-followers-sub").textContent = state.platform === "all" ? "Combined IG, TikTok, YouTube" : `${state.platform} channel total`;
-
-      document.getElementById("kpi-queue").textContent = fmtInt(queuedCount);
-      document.getElementById("kpi-queue-sub").textContent = "Validated in publish ledger";
+          ? `<span class="good">${sharePct.toFixed(2)}% rate (above 1.0%)</span>`
+          : `<span>${sharePct.toFixed(2)}% rate · target 1.0%</span>`;
 
       const finding = document.getElementById("page-finding");
       if (views === 0) {
-        finding.textContent = `${uniquePosts} test clips (${queuedCount} platform slots) are queued and verified. Live plays and share rates sync after publishing`;
+        finding.textContent = `${uniquePosts} clips queued and verified across Instagram, TikTok, and YouTube Shorts`;
       } else {
         const best = scoped.slice().sort((a, b) => (b.views || 0) - (a.views || 0))[0];
-        finding.textContent = `${best.post_id} (${best.credit}) leads at ${fmtInt(best.views)} plays and ${fmtPct(best.share_rate, best.views)} share rate`;
+        finding.textContent = `${best.post_id} (${best.credit}) leads at ${fmtInt(best.views)} views · ${fmtInt(likes)} total likes across ${uniquePosts} clips`;
       }
     }
 
-    function renderChart() {
-      syncMetricTabs();
-      const svg = document.getElementById("perf-chart");
-      const scoped = (D.clips || []).filter((c) => state.platform === "all" || c.platform === state.platform);
-
-      const byPost = new Map();
-      scoped.forEach((c) => {
-        if (!byPost.has(c.post_id)) {
-          byPost.set(c.post_id, { post_id: c.post_id, credit: c.credit, views: 0, likes: 0, shares: 0, length_sec: Number(c.length_sec || 0) });
-        }
-        const agg = byPost.get(c.post_id);
-        agg.views += c.views || 0;
-        agg.likes += c.likes || 0;
-        agg.shares += c.shares || 0;
-      });
-      const items = Array.from(byPost.values()).slice(-10);
-
-      const values = items.map((it) => {
-        if (state.metric === "share_rate") return it.views > 0 ? (it.shares / it.views) * 100 : 0;
-        if (state.metric === "length_sec") return it.length_sec;
-        return it.views;
-      });
-
-      const W = 720, H = 268;
-      const padL = 50, padR = 16, padT = 22, padB = 34;
-      const plotW = W - padL - padR;
-      const plotH = H - padT - padB;
-
-      const rawMax = Math.max(0, ...values);
-      const isZero = rawMax === 0;
-      let niceMax = 1000;
-      if (state.metric === "length_sec") {
-        niceMax = Math.max(24, Math.ceil(rawMax / 6) * 6);
-      } else if (state.metric === "share_rate") {
-        niceMax = isZero ? 2.0 : Math.ceil((rawMax * 1.25) / 0.5) * 0.5;
-      } else {
-        niceMax = isZero ? 1000 : Math.ceil((rawMax * 1.25) / 50) * 50;
+    function getScopedTimeSeries() {
+      let pts = (D.timeseries || []).slice();
+      if (!pts.length) return [];
+      const rangeDays = { "5d": 5, "7d": 7, "28d": 28, "3m": 90, "6m": 180 }[state.range];
+      if (rangeDays && pts.length > 0) {
+        const lastDate = new Date(pts[pts.length - 1].date + "T00:00:00Z");
+        const cutoff = new Date(lastDate.getTime() - (rangeDays - 1) * 86400000);
+        pts = pts.filter((pt) => new Date(pt.date + "T00:00:00Z") >= cutoff);
       }
+      if (state.granularity === "weekly" && pts.length > 1) {
+        const byWeek = new Map();
+        pts.forEach((pt) => {
+          const d = new Date(pt.date + "T00:00:00Z");
+          const day = d.getUTCDay() || 7;
+          const monday = new Date(d.getTime() - (day - 1) * 86400000);
+          const wk = monday.toISOString().slice(0, 10);
+          // Latest cumulative snapshot in that week
+          byWeek.set(wk, { ...pt, date: wk, label: "Wk " + shortDate(wk) });
+        });
+        return Array.from(byWeek.values());
+      }
+      return pts.map((pt) => ({ ...pt, label: shortDate(pt.date) }));
+    }
+
+    function renderChart() {
+      syncControlTabs();
+      const svg = document.getElementById("perf-chart");
+      const tooltip = document.getElementById("chart-tooltip");
+      tooltip.classList.remove("visible");
 
       const heading = document.getElementById("chart-heading");
       const subtitle = document.getElementById("chart-subtitle");
-      if (state.metric === "length_sec") {
-        heading.textContent = "Queued clip duration vs 20s target";
-        subtitle.textContent = "Verified render length in seconds (switch to Plays once live)";
-      } else if (state.metric === "share_rate") {
-        heading.textContent = "Share rate by post";
-        subtitle.textContent = isZero ? "Awaiting live 24h share reads (1.0% growth target shown)" : "Shares divided by plays across tracked posts";
-      } else {
-        heading.textContent = "Plays by post";
-        subtitle.textContent = isZero ? "Scale ready for live 2h and 24h reads from scoreboard.csv" : `Total plays across last ${items.length} clips`;
-      }
+      const metricNames = { views: "Views", likes: "Likes", followers: "Followers", shares: "Shares" };
+      const activePlats = ["youtube", "tiktok", "instagram"].filter((p) =>
+        state.platform === "all" ? !!state.visibleLines[p] : state.platform === p
+      );
 
-      let out = "";
-      const steps = 4;
-      for (let i = 0; i <= steps; i++) {
-        const y = padT + (plotH * i) / steps;
-        const val = niceMax * (1 - i / steps);
-        const label = state.metric === "views"
-          ? Math.round(val).toLocaleString("en-US")
-          : state.metric === "length_sec"
-            ? Math.round(val) + "s"
-            : val.toFixed(1) + "%";
-        out += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="${i === steps ? '#2e2e34' : '#202024'}" stroke-width="1" />`;
-        out += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="#85858b" font-size="11">${label}</text>`;
-      }
+      if (state.chartMode === "posts") {
+        // Per-clip bar breakdown mode
+        const scoped = (D.clips || []).filter((c) => state.platform === "all" || c.platform === state.platform);
+        const byPost = new Map();
+        scoped.forEach((c) => {
+          if (!byPost.has(c.post_id)) {
+            byPost.set(c.post_id, { post_id: c.post_id, credit: c.credit, views: 0, likes: 0, shares: 0 });
+          }
+          const agg = byPost.get(c.post_id);
+          agg.views += c.views || 0;
+          agg.likes += c.likes || 0;
+          agg.shares += c.shares || 0;
+        });
+        const items = Array.from(byPost.values()).slice(-10);
+        const mKey = state.gscMetric === "followers" ? "views" : state.gscMetric;
+        const values = items.map((it) => it[mKey] || 0);
+        const W = 720, H = 276, padL = 52, padR = 16, padT = 22, padB = 38;
+        const plotW = W - padL - padR, plotH = H - padT - padB;
+        const rawMax = Math.max(0, ...values);
+        const niceMax = rawMax === 0 ? 10 : Math.ceil((rawMax * 1.2) / Math.max(1, Math.pow(10, Math.floor(Math.log10(Math.max(1, rawMax))) - 1))) * Math.max(1, Math.pow(10, Math.floor(Math.log10(Math.max(1, rawMax))) - 1));
 
-      // Reference line (20s target for duration, 1.0% target for share rate)
-      if (state.metric === "length_sec" && niceMax >= 20) {
-        const ty = padT + plotH * (1 - 20 / niceMax);
-        out += `<line x1="${padL}" y1="${ty}" x2="${W - padR}" y2="${ty}" stroke="#e86f3a" stroke-dasharray="4 4" stroke-width="1" opacity="0.8" />`;
-        out += `<text x="${W - padR}" y="${ty - 5}" text-anchor="end" fill="#e86f3a" font-size="11">20s target</text>`;
-      } else if (state.metric === "share_rate" && niceMax >= 1.0) {
-        const ty = padT + plotH * (1 - 1.0 / niceMax);
-        out += `<line x1="${padL}" y1="${ty}" x2="${W - padR}" y2="${ty}" stroke="#e86f3a" stroke-dasharray="4 4" stroke-width="1" opacity="0.8" />`;
-        out += `<text x="${W - padR}" y="${ty - 5}" text-anchor="end" fill="#e86f3a" font-size="11">1.0% target</text>`;
-      }
+        heading.textContent = `${metricNames[mKey] || "Views"} by clip (last ${items.length})`;
+        subtitle.textContent = "Click any KPI card above to switch metric, or switch back to Trend lines";
 
-      if (items.length === 0) {
-        out += `<text x="${padL + plotW / 2}" y="${padT + plotH / 2}" text-anchor="middle" fill="#85858b" font-size="13">No clips in selected scope</text>`;
-      } else {
-        const slotW = plotW / items.length;
-        const barW = Math.min(68, Math.max(24, slotW * 0.44));
+        let out = "";
+        for (let i = 0; i <= 4; i++) {
+          const y = padT + (plotH * i) / 4;
+          const val = niceMax * (1 - i / 4);
+          out += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="${i === 4 ? '#2e2e34' : '#202024'}" stroke-width="1" />`;
+          out += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="#85858b" font-size="11">${Math.round(val).toLocaleString("en-US")}</text>`;
+        }
+        const slotW = plotW / Math.max(1, items.length);
+        const barW = Math.min(54, Math.max(20, slotW * 0.46));
         const maxIdx = values.indexOf(rawMax);
-
         items.forEach((it, idx) => {
           const val = values[idx];
           const cx = padL + slotW * idx + slotW / 2;
-          const x = cx - barW / 2;
-          const bh = isZero ? 4 : Math.max(6, (val / niceMax) * plotH);
+          const bh = rawMax === 0 ? 4 : Math.max(4, (val / niceMax) * plotH);
           const y = padT + plotH - bh;
-          const isLead = !isZero && idx === maxIdx;
-          const fill = isLead ? "#e86f3a" : (isZero ? "#2e2e34" : "#8b4728");
-          out += `<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${bh.toFixed(1)}" rx="2" fill="${fill}" />`;
-          const valLabel = isZero
-            ? "queued"
-            : state.metric === "views"
-              ? fmtInt(val)
-              : state.metric === "length_sec"
-                ? val.toFixed(1) + "s"
-                : val.toFixed(1) + "%";
-          out += `<text x="${cx.toFixed(1)}" y="${(y - 6).toFixed(1)}" text-anchor="middle" fill="${isLead ? '#ededed' : '#a1a1a6'}" font-size="11">${valLabel}</text>`;
-          out += `<text x="${cx.toFixed(1)}" y="${H - 12}" text-anchor="middle" fill="#a1a1a6" font-size="11">${esc(it.post_id)} · ${esc(it.credit.split(' ')[0])}</text>`;
+          const isLead = rawMax > 0 && idx === maxIdx;
+          out += `<rect x="${(cx - barW / 2).toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${bh.toFixed(1)}" rx="3" fill="${isLead ? '#e86f3a' : (val > 0 ? '#8b4728' : '#2e2e34')}" />`;
+          out += `<text x="${cx.toFixed(1)}" y="${(y - 6).toFixed(1)}" text-anchor="middle" fill="${isLead ? '#ededed' : '#a1a1a6'}" font-size="10">${val > 0 ? fmtInt(val) : '0'}</text>`;
+          out += `<text x="${cx.toFixed(1)}" y="${H - 14}" text-anchor="middle" fill="#a1a1a6" font-size="10">${esc(it.post_id)}</text>`;
         });
+        svg.innerHTML = out;
+        return;
       }
 
+      // Google Search Console-style Multi-Line Trend Chart across YouTube, TikTok & Instagram
+      const pts = getScopedTimeSeries();
+      const rangeLabels = { "5d": "Last 5 days", "7d": "Last 7 days", "28d": "Last 28 days", "3m": "Last 3 months", "6m": "Last 6 months", "all": "Overall" };
+      heading.textContent = `${metricNames[state.gscMetric] || "Views"} trend · ${rangeLabels[state.range] || "Overall"}`;
+      subtitle.textContent = `${state.granularity === "weekly" ? "Weekly" : "Daily"} cumulative comparison across YouTube, TikTok & Instagram (hover points to inspect)`;
+
+      const W = 720, H = 276, padL = 54, padR = 22, padT = 20, padB = 38;
+      const plotW = W - padL - padR, plotH = H - padT - padB;
+
+      let allVals = [];
+      pts.forEach((pt) => {
+        activePlats.forEach((p) => allVals.push(Number(pt[p]?.[state.gscMetric] || 0)));
+      });
+      const rawMax = Math.max(0, ...allVals);
+      let niceMax = 4;
+      if (rawMax > 0) {
+        const mag = Math.pow(10, Math.floor(Math.log10(rawMax)));
+        const unit = rawMax <= 10 ? 1 : Math.max(1, mag / 5);
+        niceMax = Math.ceil((rawMax * 1.15) / (unit * 4)) * (unit * 4);
+      }
+
+      let out = "";
+      for (let i = 0; i <= 4; i++) {
+        const y = padT + (plotH * i) / 4;
+        const val = niceMax * (1 - i / 4);
+        const lbl = niceMax <= 8 ? val.toFixed(val % 1 === 0 ? 0 : 1) : Math.round(val).toLocaleString("en-US");
+        out += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="${i === 4 ? '#2e2e34' : '#202024'}" stroke-width="1" />`;
+        out += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="#85858b" font-size="11">${lbl}</text>`;
+      }
+
+      if (!pts.length || !activePlats.length) {
+        out += `<text x="${padL + plotW / 2}" y="${padT + plotH / 2}" text-anchor="middle" fill="#85858b" font-size="13">No data points in selected filter</text>`;
+        svg.innerHTML = out;
+        return;
+      }
+
+      const xFor = (idx) => pts.length === 1 ? padL + plotW / 2 : padL + (plotW * idx) / (pts.length - 1);
+      const yFor = (val) => padT + plotH - (niceMax > 0 ? (val / niceMax) * plotH : 0);
+
+      // Subtle vertical crosshair placeholder
+      out += `<line id="chart-crosshair" x1="0" y1="${padT}" x2="0" y2="${padT + plotH}" stroke="#3f3f46" stroke-dasharray="3 3" stroke-width="1" opacity="0" />`;
+
+      // Draw 3 smooth-clean polylines + subtle area fills + data dots
+      activePlats.forEach((p) => {
+        const col = PLAT_COLORS[p];
+        const coords = pts.map((pt, i) => [xFor(i), yFor(Number(pt[p]?.[state.gscMetric] || 0))]);
+        if (coords.length > 1) {
+          const linePath = coords.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
+          const areaPath = `${linePath} L${coords[coords.length - 1][0].toFixed(1)},${(padT + plotH).toFixed(1)} L${coords[0][0].toFixed(1)},${(padT + plotH).toFixed(1)} Z`;
+          out += `<path d="${areaPath}" fill="${col}" opacity="0.06" />`;
+          out += `<path d="${linePath}" fill="none" stroke="${col}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />`;
+        }
+        coords.forEach(([x, y], idx) => {
+          out += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${pts.length <= 14 ? 3.5 : 2.5}" fill="${col}" stroke="#19191b" stroke-width="1.5" data-pt-idx="${idx}" />`;
+        });
+      });
+
+      // X-axis date labels (auto-skip so labels never overlap)
+      const maxTicks = 7;
+      const tickStep = Math.max(1, Math.ceil(pts.length / maxTicks));
+      pts.forEach((pt, idx) => {
+        if (idx % tickStep === 0 || idx === pts.length - 1) {
+          const x = xFor(idx);
+          const anc = idx === 0 && pts.length > 1 ? "start" : idx === pts.length - 1 && pts.length > 1 ? "end" : "middle";
+          out += `<text x="${x.toFixed(1)}" y="${H - 12}" text-anchor="${anc}" fill="#85858b" font-size="11">${esc(pt.label)}</text>`;
+        }
+      });
+
+      // Invisible hover columns for crisp GSC-style scrubbing
+      const colW = pts.length === 1 ? plotW : plotW / Math.max(1, pts.length - 1);
+      pts.forEach((pt, idx) => {
+        const cx = xFor(idx);
+        const rx = Math.max(padL, cx - colW / 2);
+        const rw = Math.min(W - padR - rx, colW);
+        out += `<rect x="${rx.toFixed(1)}" y="${padT}" width="${Math.max(12, rw).toFixed(1)}" height="${plotH}" fill="transparent" class="hover-band" data-idx="${idx}" style="cursor:crosshair" />`;
+      });
+
       svg.innerHTML = out;
+
+      const crosshair = svg.querySelector("#chart-crosshair");
+      svg.querySelectorAll(".hover-band").forEach((band) => {
+        band.addEventListener("mouseenter", () => {
+          const idx = Number(band.getAttribute("data-idx"));
+          const pt = pts[idx];
+          const cx = xFor(idx);
+          if (crosshair) {
+            crosshair.setAttribute("x1", cx.toFixed(1));
+            crosshair.setAttribute("x2", cx.toFixed(1));
+            crosshair.setAttribute("opacity", "1");
+          }
+          tooltip.innerHTML = `
+            <div class="tt-date">${esc(pt.label)} · ${esc(metricNames[state.gscMetric] || "Views")}</div>
+            ${activePlats.map((p) => {
+              const v = Number(pt[p]?.[state.gscMetric] || 0);
+              return `<div class="tt-row"><span class="tt-lbl"><span class="legend-dot" style="background:${PLAT_COLORS[p]}"></span>${PLAT_LABELS[p]}</span><span class="tt-val">${fmtInt(v)}</span></div>`;
+            }).join("")}
+          `;
+          tooltip.classList.add("visible");
+        });
+      });
+      svg.addEventListener("mouseleave", () => {
+        if (crosshair) crosshair.setAttribute("opacity", "0");
+        tooltip.classList.remove("visible");
+      });
+    }
+
+    function renderStrategyAndSignals() {
+      const st = D.strategy || {};
+      const briefEl = document.getElementById("ai-brief-text");
+      const metaEl = document.getElementById("ai-strategy-meta");
+      const tagsEl = document.getElementById("ai-strategy-tags");
+      const gatesEl = document.getElementById("health-gates");
+
+      const minV = st.min_virality_score || 7;
+      if (gatesEl) gatesEl.textContent = `40/60 Cam · Virality >=${minV}/10`;
+      if (briefEl) {
+        briefEl.textContent = st.daily_brief || "AI optimizer analyzes your live YouTube, TikTok, and Instagram performance on every run to prioritize high-action viral scenes.";
+      }
+      if (metaEl) {
+        metaEl.textContent = st.updated_at_utc
+          ? `Last learned ${shortUtc(st.updated_at_utc)} via ${st.model_used || "OpenRouter free AI"}`
+          : "Self-improving loop active (OpenRouter free AI)";
+      }
+      if (tagsEl) {
+        const prio = (st.priority_streamers || []).slice(0, 4);
+        tagsEl.innerHTML = [
+          `<span class="tag-quiet accent">Virality gate &gt;=${minV}/10</span>`,
+          `<span class="tag-quiet good">40/60 Facecam stack</span>`,
+          ...(prio.length ? [`<span class="tag-quiet">Priority: ${esc(prio.join(", "))}</span>`] : [])
+        ].join("");
+      }
+
+      const cleanCopy = (s) => String(s || "").replace(/\s+—\s+/g, ", ").replace(/\.$/, "");
+      const wins = (st.winning_patterns && st.winning_patterns.length) ? st.winning_patterns : (D.working || []);
+      const avoids = (st.avoid_patterns && st.avoid_patterns.length) ? st.avoid_patterns : (D.not_working || []);
+
+      document.getElementById("working-list").innerHTML = wins.length
+        ? wins.map((x) => `<li>${esc(cleanCopy(x))}</li>`).join("")
+        : `<li>No verified winning signals yet</li>`;
+      document.getElementById("not-working-list").innerHTML = avoids.length
+        ? avoids.map((x) => `<li>${esc(cleanCopy(x))}</li>`).join("")
+        : `<li>No issues flagged in latest check</li>`;
     }
 
     function renderWatRuler() {
@@ -3337,27 +3854,55 @@ const DASHBOARD_DATA = {
       document.getElementById("health-ig-band").textContent = h.ig_ceiling_alert ? "Flagged (EXP-R6)" : "Normal";
     }
 
-    function renderSignals() {
-      const cleanCopy = (s) => String(s || "").replace(/\s+—\s+/g, ", ").replace(/\.$/, "");
-      document.getElementById("working-list").innerHTML = (D.working || []).length
-        ? D.working.map((x) => `<li>${esc(cleanCopy(x))}</li>`).join("")
-        : `<li>No verified winning signals yet</li>`;
-      document.getElementById("not-working-list").innerHTML = (D.not_working || []).length
-        ? D.not_working.map((x) => `<li>${esc(cleanCopy(x))}</li>`).join("")
-        : `<li>No issues flagged in latest check</li>`;
+    function switchView(nextView) {
+      state.view = nextView;
+      document.querySelectorAll(".nav-btn").forEach((b) => {
+        b.classList.toggle("active", b.getAttribute("data-view") === nextView);
+      });
+      applyView();
+      renderTable();
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
 
     function renderTable() {
-      const rows = filteredClips();
-      document.getElementById("table-count").textContent = `${rows.length} row${rows.length === 1 ? "" : "s"}`;
-      const tbody = document.getElementById("clips-tbody");
+      const allRows = filteredClips();
+      const isOverview = state.view === "overview";
+      const titleEl = document.getElementById("clips-section-title");
+      const seeAllBtn = document.getElementById("see-all-clips-btn");
+      const searchEl = document.getElementById("clip-search");
+      const pagerInfo = document.getElementById("pager-info");
+      const pagerBtns = document.getElementById("pager-buttons");
 
-      if (!rows.length) {
+      if (titleEl) titleEl.textContent = isOverview ? "Recent clips (preview)" : "All clips & queue";
+      if (seeAllBtn) {
+        seeAllBtn.style.display = isOverview ? "inline-flex" : "none";
+        seeAllBtn.textContent = `See all ${allRows.length} rows →`;
+      }
+      if (searchEl) searchEl.style.display = isOverview ? "none" : "block";
+
+      let visibleRows = allRows;
+      if (isOverview) {
+        visibleRows = allRows.slice(0, 6);
+      } else if (!state.showAllRows) {
+        const totalPages = Math.max(1, Math.ceil(allRows.length / state.pageSize));
+        state.page = Math.max(1, Math.min(state.page, totalPages));
+        const start = (state.page - 1) * state.pageSize;
+        visibleRows = allRows.slice(start, start + state.pageSize);
+      }
+
+      document.getElementById("table-count").textContent = isOverview
+        ? `Showing latest ${visibleRows.length} of ${allRows.length} rows`
+        : `${allRows.length} row${allRows.length === 1 ? "" : "s"}`;
+
+      const tbody = document.getElementById("clips-tbody");
+      if (!visibleRows.length) {
         tbody.innerHTML = `<tr><td colspan="11" class="muted">No matching clips in scoreboard.csv</td></tr>`;
+        if (pagerInfo) pagerInfo.textContent = "0 rows";
+        if (pagerBtns) pagerBtns.innerHTML = "";
         return;
       }
 
-      tbody.innerHTML = rows.map((c) => {
+      tbody.innerHTML = visibleRows.map((c) => {
         const key = `${c.post_id}::${c.platform}`;
         const isSel = state.selectedKey === key;
         const shareStr = fmtPct(c.share_rate, c.views);
@@ -3377,15 +3922,47 @@ const DASHBOARD_DATA = {
         </tr>`;
       }).join("");
 
+      if (isOverview) {
+        if (pagerInfo) pagerInfo.textContent = `Showing latest ${visibleRows.length} of ${allRows.length} tracked rows on Overview`;
+        if (pagerBtns) {
+          pagerBtns.innerHTML = `<button class="btn-link-accent" id="footer-see-all" type="button">Open full Clips page (${allRows.length} rows) →</button>`;
+          const b = document.getElementById("footer-see-all");
+          if (b) b.addEventListener("click", () => switchView("clips"));
+        }
+      } else {
+        const totalPages = Math.max(1, Math.ceil(allRows.length / state.pageSize));
+        if (state.showAllRows) {
+          if (pagerInfo) pagerInfo.textContent = `Showing all ${allRows.length} rows`;
+          if (pagerBtns) {
+            pagerBtns.innerHTML = `<button class="seg-btn" id="pager-paginate" type="button">Paginate (${state.pageSize}/page)</button>`;
+            document.getElementById("pager-paginate")?.addEventListener("click", () => { state.showAllRows = false; state.page = 1; renderTable(); });
+          }
+        } else {
+          const start = (state.page - 1) * state.pageSize + 1;
+          const end = Math.min(allRows.length, state.page * state.pageSize);
+          if (pagerInfo) pagerInfo.textContent = `Showing ${start}-${end} of ${allRows.length} · Page ${state.page} of ${totalPages}`;
+          if (pagerBtns) {
+            pagerBtns.innerHTML = `
+              <button class="seg-btn" id="pager-prev" type="button" ${state.page <= 1 ? 'disabled style="opacity:.4;cursor:default"' : ''}>← Prev</button>
+              <button class="seg-btn" id="pager-next" type="button" ${state.page >= totalPages ? 'disabled style="opacity:.4;cursor:default"' : ''}>Next →</button>
+              <button class="seg-btn" id="pager-all" type="button">Show all</button>
+            `;
+            document.getElementById("pager-prev")?.addEventListener("click", () => { if (state.page > 1) { state.page--; renderTable(); } });
+            document.getElementById("pager-next")?.addEventListener("click", () => { if (state.page < totalPages) { state.page++; renderTable(); } });
+            document.getElementById("pager-all")?.addEventListener("click", () => { state.showAllRows = true; renderTable(); });
+          }
+        }
+      }
+
       tbody.querySelectorAll("tr.clickable").forEach((tr) => {
         tr.addEventListener("click", () => {
           const key = tr.getAttribute("data-key");
           state.selectedKey = state.selectedKey === key ? null : key;
           renderTable();
-          renderDrawer(rows);
+          renderDrawer(allRows);
         });
       });
-      renderDrawer(rows);
+      renderDrawer(allRows);
     }
 
     function renderDrawer(rows) {
@@ -3475,20 +4052,17 @@ const DASHBOARD_DATA = {
       renderChart();
       renderWatRuler();
       renderPlatformsAndHealth();
-      renderSignals();
+      renderStrategyAndSignals();
       renderTable();
       renderExperimentsAndMonetization();
       applyView();
     }
 
     document.querySelectorAll(".nav-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll(".nav-btn").forEach((b) => b.classList.remove("active"));
-        btn.classList.add("active");
-        state.view = btn.getAttribute("data-view");
-        applyView();
-      });
+      btn.addEventListener("click", () => switchView(btn.getAttribute("data-view")));
     });
+
+    document.getElementById("see-all-clips-btn")?.addEventListener("click", () => switchView("clips"));
 
     document.querySelectorAll("#platform-tabs .seg-btn").forEach((btn) => {
       btn.addEventListener("click", () => {
@@ -3499,21 +4073,66 @@ const DASHBOARD_DATA = {
         btn.classList.add("active");
         btn.setAttribute("aria-selected", "true");
         state.platform = btn.getAttribute("data-platform");
+        state.page = 1;
         renderKpisAndFinding();
         renderChart();
         renderTable();
       });
     });
 
-    document.querySelectorAll("#metric-tabs .seg-btn").forEach((btn) => {
+    document.querySelectorAll("#gsc-metric-cards .gsc-tab").forEach((btn) => {
       btn.addEventListener("click", () => {
-        state.metric = btn.getAttribute("data-metric");
+        state.gscMetric = btn.getAttribute("data-gsc");
         renderChart();
+      });
+    });
+
+    document.querySelectorAll("#chart-mode-tabs .seg-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        state.chartMode = btn.getAttribute("data-mode");
+        renderChart();
+      });
+    });
+
+    document.querySelectorAll("#granularity-tabs .seg-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        state.granularity = btn.getAttribute("data-gran");
+        renderChart();
+      });
+    });
+
+    document.querySelectorAll("#range-tabs .seg-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        state.range = btn.getAttribute("data-range");
+        renderChart();
+      });
+    });
+
+    document.querySelectorAll("#platform-legend .legend-chip").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const p = btn.getAttribute("data-line");
+        if (state.platform !== "all") {
+          state.platform = "all";
+          document.querySelectorAll("#platform-tabs .seg-btn").forEach((b) => {
+            const act = b.getAttribute("data-platform") === "all";
+            b.classList.toggle("active", act);
+            b.setAttribute("aria-selected", act ? "true" : "false");
+          });
+          state.visibleLines = { youtube: true, tiktok: true, instagram: true };
+        } else {
+          const onCount = Object.values(state.visibleLines).filter(Boolean).length;
+          if (state.visibleLines[p] && onCount === 1) return; // keep at least 1 line visible
+          state.visibleLines[p] = !state.visibleLines[p];
+        }
+        renderKpisAndFinding();
+        renderChart();
+        renderTable();
       });
     });
 
     document.getElementById("clip-search").addEventListener("input", (e) => {
       state.query = e.target.value;
+      state.page = 1;
       renderTable();
     });
 

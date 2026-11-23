@@ -36,3 +36,10 @@ Dated lessons from every research pass and 2-hour cycle, plus the active experim
   - Subtitles + credit alone fail originality checks on IG, TikTok, and YouTube; context-adding on-screen hook/punchline text + payoff-first recut + clean facecam/gameplay crop are mandatory.
   - YouTube's *Reused Content* policy is stricter for YPP ad monetization than IG/TikTok distribution — treat YouTube Shorts as a free reach/brand funnel first.
 - **Action / Change:** Encoded 6 standing production rules in `playbook.md`, automated caption/ledger/pause/quarantine guardrails in `scripts/safe_publish.py`, and queued `EXP-R1` through `EXP-R6`.
+
+### AI Self-Improvement Review (2026-11-23)
+- **Model:** `nvidia/nemotron-3.5-super-vl:free` | **Virality Gate:** `>= 8/10`
+- **Brief:** The ohnepixel crash clip was the biggest win, driving nearly 10k views on YouTube Shorts alone. The biggest leak is the 30-second generic marathon clip that received only 1 view. Tomorrow, prioritize 13-15 second physics glitch clips from high-energy streamers and post them first to YouTube Shorts.
+- **Priority Creators:** ohnepixel, xqc, caseoh, jynxzi, kaicenat, fanum
+- **Double Down:** Short 13-15 second clips with all-caps streamer-name hooks dominate, as shown by ohnepixel's 10,867 views versus the 346 median.; Physics-breaking and glitch moments generate the highest engagement, evidenced by the top two clips focusing on crashing and broken physics.; YouTube Shorts is the primary traffic driver for breakout hits, contributing 9,857 of 10,867 views for the top clip while TikTok and Instagram remain secondary.
+- **Reject / Avoid:** Reject marathon finale or long-form event recaps that lack a specific in-game glitch or reaction, as seen in the 1-view Agent 00 clip.; Avoid clips longer than 20 seconds without a rapid payoff, since the 30-second Jynxzi clip underperformed compared to 13-15 second winners.; Do not post generic streamer reactions without a clear GTA 6 visual hook or conflict in the first 3 seconds.

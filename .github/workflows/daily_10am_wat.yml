@@ -62,6 +62,7 @@ jobs:
           EXTRA_SCOUT_QUERIES: ${{ vars.EXTRA_SCOUT_QUERIES }}
           REQUIRE_GTA6_ONLY: ${{ vars.REQUIRE_GTA6_ONLY || 'true' }}
           REQUIRE_FACECAM: ${{ vars.REQUIRE_FACECAM || 'true' }}
+          MIN_VIRALITY_SCORE: ${{ vars.MIN_VIRALITY_SCORE || '7' }}
           YT_CHANNEL_URL: ${{ vars.YT_CHANNEL_URL }}
           TIKTOK_HANDLE: ${{ vars.TIKTOK_HANDLE }}
           IG_HANDLE: ${{ vars.IG_HANDLE }}

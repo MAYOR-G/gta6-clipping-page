@@ -44,6 +44,7 @@ from PIL import Image
 ROOT_DIR = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT_DIR / "scripts"))
 
+from ai_optimizer import STRATEGY_PATH, run_optimizer  # noqa: E402
 from clip import EMOJI_RE, probe_duration, render_clip  # noqa: E402
 from dashboard_data import build_dashboard_payload, update_dashboard_html  # noqa: E402
 from stuck_check import run_health_check  # noqa: E402
@@ -247,25 +248,32 @@ def get_twitch_streamers() -> list[str]:
     return streamers
 
 
-def scout_twitch_direct_clips(limit: int = 20, min_duration: float = 24.0) -> list[dict[str, Any]]:
+def scout_twitch_direct_clips(
+    limit: int = 20,
+    min_duration: float = 24.0,
+    priority_streamers: list[str] | None = None,
+) -> list[dict[str, Any]]:
     """
     Zero-key, zero-2FA parallel Twitch clip scouting via yt-dlp.
-    Shuffles streamer order daily and interleaves round-robin across streamers so
-    every daily drop features DIFFERENT creators instead of repeating one streamer.
+    Pulls top clips per streamer, sorts by REAL Twitch view_count DESC (certified viral moments first!),
+    boosts AI-learned priority streamers from data/strategy.json, and interleaves round-robin.
     """
     seen_ids: set[str] = set()
     by_streamer: dict[str, list[dict[str, Any]]] = {}
     streamers = get_twitch_streamers()
-    # Deterministic daily shuffle so different streamers lead each day
     rng = random.Random(datetime.now(WAT).strftime("%Y-%m-%d"))
     rng.shuffle(streamers)
+    if priority_streamers:
+        prio_set = [s.lower() for s in priority_streamers if s.lower() in streamers]
+        rest = [s for s in streamers if s not in prio_set]
+        streamers = prio_set + rest
 
     def fetch_streamer(args_pair: tuple[str, str]) -> tuple[str, list[dict[str, Any]]]:
         handle, time_range = args_pair
         url = f"https://www.twitch.tv/{handle}/clips?filter=clips&range={time_range}"
         try:
             out = subprocess.check_output(
-                ["yt-dlp", "--flat-playlist", "--playlist-end", "6", "--dump-json", "--no-warnings", url],
+                ["yt-dlp", "--flat-playlist", "--playlist-end", "10", "--dump-json", "--no-warnings", url],
                 text=True,
                 timeout=15,
             )
@@ -282,6 +290,7 @@ def scout_twitch_direct_clips(limit: int = 20, min_duration: float = 24.0) -> li
             clip_url = d.get("url") or d.get("webpage_url") or ""
             cid = str(d.get("id") or "")
             dur = float(d.get("duration") or 0)
+            views = int(d.get("view_count") or 0)
             title = d.get("title") or ""
             if not cid or not clip_url or dur < min_duration or dur > 65.0:
                 continue
@@ -294,10 +303,11 @@ def scout_twitch_direct_clips(limit: int = 20, min_duration: float = 24.0) -> li
                 "title": title,
                 "url": clip_url,
                 "duration": dur,
+                "view_count": views,
                 "created_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             })
-        # Prefer clips near ~32-45s (plenty of footage for a clean 30s payoff-first edit)
-        batch.sort(key=lambda x: abs(x["duration"] - 36.0))
+        # Rank by real Twitch view_count DESC so the most viral clips get checked FIRST!
+        batch.sort(key=lambda x: (x["view_count"], -abs(x["duration"] - 36.0)), reverse=True)
         return handle, batch
 
     for time_range in ("24hr", "7d"):
@@ -633,15 +643,20 @@ def generate_copy_with_openrouter(
     strip_b64: str | None = None,
     require_gta6: bool = True,
     source_platform: str = "Twitch",
+    strategy: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """
     Use fast free OpenRouter vision-language models (nemotron-3.5-super-vl:free / nemotron-3-nano-omni / openrouter/free)
-    with reasoning disabled for ~1.5s responses to SEE the actual 4 video frames, verify real GTA gameplay
-    (rejecting football/FIFA pitches, IRL, shooters, etc.), and write hooks/captions strictly grounded in the frames.
+    with reasoning disabled for ~1.5s responses to SEE the actual 4 video frames, verify real GTA gameplay,
+    score virality (1-10) & scene energy (rejecting boring phone/menu/idle clips), and write hooks/captions
+    guided by data/strategy.json from the self-improving AI optimizer.
     """
     handle_clean = re.sub(r"[^A-Za-z0-9_]", "", streamer.lower()) or "streamer"
     fallback = {
         "is_gta6": True,
+        "virality_score": 7,
+        "scene_energy": "high_action",
+        "reject_reason": "",
         "game_detected": "GTA 6" if require_gta6 else "Gaming",
         "visual_summary": f"Clip from @{streamer}: {clip_title}",
         "hook": clean_burned_text("GTA 6 CHAOS HIT INSTANTLY" if require_gta6 else "THIS STREAMER MOMENT WENT WILD", "THIS STREAMER MOMENT WENT WILD"),
@@ -668,14 +683,26 @@ def generate_copy_with_openrouter(
             vision_models.append(m)
     text_fallbacks = ["nvidia/nemotron-3.5-lightning:free", "openrouter/free"]
 
+    strat = strategy or {}
+    win_str = "; ".join(strat.get("winning_patterns") or ["instant-karma crashes, chases, sudden fails, shocked reactions"])
+    avoid_str = "; ".join(strat.get("avoid_patterns") or ["opening phone/menus, slow walking, idle talking with no payoff"])
+    hook_guide = strat.get("hook_style_guidance") or "Lead with a punchy tension/irony hook that makes viewers stop scrolling."
+
     prompt = (
         f"You are reviewing a 2x2 grid of 4 sequential frames from a gaming stream clip (today is Nov 2026 and GTA 6 just launched).\n"
-        f"Streamer: @{streamer} (Twitch). Original clip title: {clip_title!r}.\n"
-        f"CRITICAL ACCURACY RULES:\n"
+        f"Streamer: @{streamer} ({source_platform}). Original clip title: {clip_title!r}.\n"
+        f"SELF-IMPROVING PAGE STRATEGY (learned from our live YouTube/TikTok/IG analytics):\n"
+        f"- DOUBLE DOWN ON: {win_str}\n"
+        f"- STRICTLY REJECT: {avoid_str}\n"
+        f"- HOOK STYLE: {hook_guide}\n"
+        f"CRITICAL ACCURACY & VIRALITY RULES:\n"
         f"1. Describe ONLY what is LITERALLY visible in the 4 frames. NEVER invent cars, driving, police, Lucia, Jason, or physics glitches if they are NOT actually visible on screen.\n"
-        f"2. Set is_gta6=true if the frames show Grand Theft Auto open-world gameplay (cars/highways, Vice City/Leonida/city streets, GTA characters/NPCs, police, open-world third-person/first-person GTA action — note: GTA 6 just released and resembles modern GTA V visually, so treat any modern GTA gameplay as is_gta6=true).\n"
+        f"2. Set is_gta6=true if the frames show Grand Theft Auto open-world gameplay (cars/highways, Vice City/Leonida/city streets, GTA characters/NPCs, police, open-world third-person/first-person GTA action — treat any modern GTA gameplay as is_gta6=true).\n"
         f"3. Set is_gta6=false for football/soccer/FIFA pitches, sports games, CS/Valorant/FPS shooters, Fortnite, Minecraft/2D/horror games, pure IRL/Just Chatting streams without GTA gameplay, or menu-only screens.\n"
-        f"Return STRICT JSON ONLY with keys: is_gta6 (boolean), game_detected (short string), visual_summary (1 short sentence of what is literally on screen), hook, punchline, caption_line, ig_first_comment, send_test.\n"
+        f"4. BE STRICT ON VIRALITY (virality_score 1-10 & scene_energy):\n"
+        f"   - Give 8-10 ('high_action' or 'funny_reaction') ONLY for visually gripping, chaotic, or laugh-out-loud moments (crashes, chases, explosions, wild NPC fights, robberies, hilarious physics fails, huge shocked streamer reaction).\n"
+        f"   - Give 1-5 ('slow_menu' or 'boring_idle') for opening an in-game phone/map/UI, browsing menus/shops quietly, standing around talking, or slow walking/driving with no obvious chaos or visual payoff.\n"
+        f"Return STRICT JSON ONLY with keys: is_gta6 (boolean), virality_score (int 1-10), scene_energy ('high_action'|'funny_reaction'|'slow_menu'|'boring_idle'), reject_reason (string, empty if good), game_detected (short string), visual_summary (1 short sentence of what is literally on screen), hook, punchline, caption_line, ig_first_comment, send_test.\n"
         f"Copy rules:\n"
         f"- hook: 4 to 7 words ALL CAPS, NO emoji, accurately matches what is ACTUALLY in the frames (include 'GTA 6' ONLY if is_gta6 is true).\n"
         f"- punchline: 2 to 5 words ALL CAPS, NO emoji, matching the actual reaction/moment.\n"
@@ -696,7 +723,7 @@ def generate_copy_with_openrouter(
         payload = {
             "model": model,
             "messages": [{"role": "user", "content": content}],
-            "temperature": 0.4,
+            "temperature": 0.35,
             "reasoning": {"effort": "none"},
         }
         try:
@@ -724,6 +751,13 @@ def generate_copy_with_openrouter(
                 is_gta6 = bool(parsed.get("is_gta6", False)) or ("gta" in game_det.lower()) or ("grand theft auto" in game_det.lower())
             else:
                 is_gta6 = True
+            try:
+                v_score = max(1, min(10, int(parsed.get("virality_score") or 7)))
+            except Exception:
+                v_score = 7
+            scene_energy = str(parsed.get("scene_energy") or "high_action").strip().lower()
+            reject_reason = str(parsed.get("reject_reason") or "").strip()
+
             hook = clean_burned_text(parsed.get("hook", ""), fallback["hook"])
             punch = clean_burned_text(parsed.get("punchline", ""), fallback["punchline"])
             cap_line = (parsed.get("caption_line") or "bro did not expect that 💀").strip()
@@ -736,6 +770,9 @@ def generate_copy_with_openrouter(
             caption = f"{cap_line}\n\nCredit: @{streamer} ({source_platform})\n\n{tag1} #{handle_clean} {tag3} #gaming #funnymoments"
             return {
                 "is_gta6": is_gta6,
+                "virality_score": v_score,
+                "scene_energy": scene_energy,
+                "reject_reason": reject_reason,
                 "game_detected": "GTA 6" if is_gta6 else game_det,
                 "visual_summary": str(parsed.get("visual_summary") or clip_title).strip(),
                 "hook": hook,
@@ -877,6 +914,20 @@ def main() -> int:
     if not args.dry_run:
         subprocess.run([sys.executable, str(ROOT_DIR / "scripts/sync_stats.py")], check=False)
 
+    # 1.5 Self-improving AI optimizer: analyze scoreboard.csv -> update data/strategy.json & learning.md
+    strategy: dict[str, Any] = load_json(STRATEGY_PATH, {})
+    try:
+        strategy = run_optimizer()
+        print(
+            f"[ai-optimizer] Updated strategy ({strategy.get('model_used')}): "
+            f"virality_gate>={strategy.get('min_virality_score', 7)} | "
+            f"priority={strategy.get('priority_streamers', [])[:4]}"
+        )
+    except Exception as exc:
+        print(f"[warn] AI optimizer skipped ({type(exc).__name__}); using saved strategy.", file=sys.stderr)
+
+    min_virality_score = int(os.environ.get("MIN_VIRALITY_SCORE", str(strategy.get("min_virality_score", 7))))
+
     # 2. Health check & stuck-post protocol (determine active non-paused platforms BEFORE downloading anything!)
     health = run_health_check(apply_pauses=not args.dry_run)
     pause_state = health.get("pause_state") or {}
@@ -938,8 +989,12 @@ def main() -> int:
 
         if len(candidates) < args.clip_count * 4:
             min_src = max(20.0, args.target_sec - 5.0)
-            tw_direct = scout_twitch_direct_clips(limit=max(24, args.clip_count * 6), min_duration=min_src)
-            print(f"[scout:twitch-direct] Found {len(tw_direct)} round-robin Twitch clips across {len({c['broadcaster_name'] for c in tw_direct})} streamers.")
+            tw_direct = scout_twitch_direct_clips(
+                limit=max(30, args.clip_count * 7),
+                min_duration=min_src,
+                priority_streamers=strategy.get("priority_streamers"),
+            )
+            print(f"[scout:twitch-direct] Found {len(tw_direct)} view-ranked round-robin Twitch clips across {len({c['broadcaster_name'] for c in tw_direct})} streamers.")
             candidates.extend(tw_direct)
 
         if args.source == "auto" and len(candidates) < args.clip_count:
@@ -980,7 +1035,7 @@ def main() -> int:
                     seen_set.add(cid)
                     continue
 
-                # Vision check on 4 real frames BEFORE cutting: verifies real GTA 6 & writes grounded copy!
+                # Vision check on 4 real frames BEFORE cutting: verifies real GTA 6, scores virality & writes grounded copy!
                 strip_b64 = build_4frame_strip_b64(raw_mp4, src_dur)
                 copy = generate_copy_with_openrouter(
                     streamer,
@@ -988,13 +1043,22 @@ def main() -> int:
                     strip_b64=strip_b64,
                     require_gta6=require_gta6,
                     source_platform=src_plat,
+                    strategy=strategy,
                 )
+                v_score = int(copy.get("virality_score") or 7)
+                s_energy = str(copy.get("scene_energy") or "high_action")
                 print(
                     f"[vision] {post_id} @{streamer}: is_gta6={copy['is_gta6']} ({copy['game_detected']}) | "
-                    f"hook={copy['hook']!r} | seen={copy['visual_summary'][:80]!r}"
+                    f"virality={v_score}/10 ({s_energy}) | hook={copy['hook']!r} | seen={copy['visual_summary'][:70]!r}"
                 )
                 if require_gta6 and not copy.get("is_gta6", True):
                     print(f"[skip] {cid} (@{streamer}) rejected by vision check: detected {copy['game_detected']!r}, not GTA 6.")
+                    raw_mp4.unlink(missing_ok=True)
+                    seen_set.add(cid)
+                    continue
+                if v_score < min_virality_score or s_energy in ("slow_menu", "boring_idle"):
+                    reason = copy.get("reject_reason") or f"low energy ({s_energy}, {v_score}/10 < {min_virality_score})"
+                    print(f"[skip] {cid} (@{streamer}) rejected by virality gate: {reason}")
                     raw_mp4.unlink(missing_ok=True)
                     seen_set.add(cid)
                     continue

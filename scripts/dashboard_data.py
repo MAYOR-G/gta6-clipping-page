@@ -33,6 +33,8 @@ from stuck_check import run_health_check  # noqa: E402
 SCOREBOARD_PATH = ROOT_DIR / "scoreboard.csv"
 LEARNING_PATH = ROOT_DIR / "learning.md"
 LEDGER_PATH = ROOT_DIR / "data" / "publish_ledger.json"
+DAILY_METRICS_PATH = ROOT_DIR / "data" / "daily_metrics.json"
+STRATEGY_PATH = ROOT_DIR / "data" / "strategy.json"
 DASHBOARD_HTML = ROOT_DIR / "dashboard" / "index.html"
 
 START_MARKER = "/* === DASHBOARD_DATA_START === */"
@@ -74,6 +76,111 @@ def parse_experiments(learning_md: Path) -> list[dict[str, str]]:
                     "kill_condition": cols[5],
                 })
     return exps
+
+
+def parse_read_history_by_day(notes: str) -> dict[str, int]:
+    """Extract latest view count per UTC date from read(YYYY-MM-DDTHH:MMZ):v=NNN tags in notes."""
+    out: dict[str, int] = {}
+    for day_str, val_str in re.findall(r"read\((\d{4}-\d{2}-\d{2})T\d{2}:\d{2}Z\):v=(\d+)", notes or ""):
+        try:
+            out[day_str] = max(out.get(day_str, 0), int(val_str))
+        except ValueError:
+            pass
+    return out
+
+
+def update_daily_metrics(
+    rows: list[dict[str, str]],
+    platform_totals: dict[str, dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """
+    Maintain real daily platform snapshots in data/daily_metrics.json (views, likes, shares, followers, posts).
+    Backfills historical days from scoreboard.csv read(...) logs if missing, and refreshes today's live snapshot.
+    """
+    saved: dict[str, Any] = {"days": {}}
+    if DAILY_METRICS_PATH.exists():
+        try:
+            saved = json.loads(DAILY_METRICS_PATH.read_text(encoding="utf-8"))
+        except Exception:
+            saved = {"days": {}}
+    days_map: dict[str, dict[str, dict[str, int]]] = saved.setdefault("days", {})
+
+    today_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    all_dates: set[str] = {today_str}
+    per_row_reads: list[tuple[str, str, dict[str, int], dict[str, str]]] = []
+    for r in rows:
+        plat = (r.get("platform") or "").strip().lower()
+        d_str = (r.get("date") or "").strip()
+        reads = parse_read_history_by_day(r.get("notes") or "")
+        if re.match(r"^\d{4}-\d{2}-\d{2}$", d_str) and d_str <= today_str:
+            all_dates.add(d_str)
+        for rd in reads:
+            if rd <= today_str:
+                all_dates.add(rd)
+        per_row_reads.append((plat, d_str, reads, r))
+
+    sorted_dates = sorted(all_dates)
+    for d in sorted_dates:
+        if d == today_str:
+            # Always write fresh authoritative snapshot for today
+            days_map[d] = {
+                p: {
+                    "views": int(platform_totals[p]["views"]),
+                    "likes": int(platform_totals[p]["likes"]),
+                    "shares": int(platform_totals[p]["shares"]),
+                    "followers": int(platform_totals[p]["followers"]),
+                    "posts": int(platform_totals[p]["posts"]),
+                }
+                for p in ("youtube", "tiktok", "instagram")
+            }
+            continue
+        if d in days_map:
+            continue
+        # Backfill historical day d from read(...) logs + post dates up to day d
+        snap: dict[str, dict[str, int]] = {
+            p: {"views": 0, "likes": 0, "shares": 0, "followers": 0, "posts": 0}
+            for p in ("youtube", "tiktok", "instagram")
+        }
+        for plat, post_date, reads, r in per_row_reads:
+            if plat not in snap:
+                continue
+            if post_date and post_date <= d:
+                snap[plat]["posts"] += 1
+            # Latest read on or before day d
+            prior_days = [rd for rd in reads if rd <= d]
+            if prior_days:
+                v_at_d = reads[max(prior_days)]
+                snap[plat]["views"] += v_at_d
+                final_v = max(1, to_int(r.get("views_72h")) or to_int(r.get("views_24h")) or to_int(r.get("views_12h")) or 0)
+                ratio = min(1.0, v_at_d / final_v) if final_v > 0 else 0.0
+                snap[plat]["likes"] += round((to_int(r.get("likes")) or 0) * ratio)
+                snap[plat]["shares"] += round((to_int(r.get("reposts_or_shares")) or 0) * ratio)
+        days_map[d] = snap
+
+    DAILY_METRICS_PATH.parent.mkdir(parents=True, exist_ok=True)
+    DAILY_METRICS_PATH.write_text(json.dumps({"days": dict(sorted(days_map.items()))}, indent=2) + "\n", encoding="utf-8")
+
+    # Convert to ordered list with both cumulative totals AND daily delta views/likes/shares
+    series: list[dict[str, Any]] = []
+    prev: dict[str, dict[str, int]] | None = None
+    for d in sorted(days_map.keys()):
+        cur = days_map[d]
+        entry: dict[str, Any] = {"date": d}
+        for p in ("youtube", "tiktok", "instagram"):
+            cp = cur.get(p) or {"views": 0, "likes": 0, "shares": 0, "followers": 0, "posts": 0}
+            pp = (prev.get(p) if prev else None) or {"views": 0, "likes": 0, "shares": 0, "followers": 0, "posts": 0}
+            entry[p] = {
+                "views": int(cp.get("views", 0)),
+                "views_delta": max(0, int(cp.get("views", 0)) - int(pp.get("views", 0))),
+                "likes": int(cp.get("likes", 0)),
+                "likes_delta": max(0, int(cp.get("likes", 0)) - int(pp.get("likes", 0))),
+                "shares": int(cp.get("shares", 0)),
+                "followers": int(cp.get("followers", 0)),
+                "posts": int(cp.get("posts", 0)),
+            }
+        series.append(entry)
+        prev = cur
+    return series
 
 
 def build_dashboard_payload() -> dict[str, Any]:
@@ -187,6 +294,17 @@ def build_dashboard_payload() -> dict[str, Any]:
         ],
     }
 
+    # Daily historical time-series snapshots (for GSC-style multi-line trend charts)
+    timeseries = update_daily_metrics(rows, platform_totals)
+
+    # AI Self-Improvement strategy (generated by scripts/ai_optimizer.py)
+    strategy: dict[str, Any] = {}
+    if STRATEGY_PATH.exists():
+        try:
+            strategy = json.loads(STRATEGY_PATH.read_text(encoding="utf-8"))
+        except Exception:
+            strategy = {}
+
     return {
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "page_name": os.environ.get("PAGE_NAME", "Leonida Chaos"),
@@ -200,6 +318,8 @@ def build_dashboard_payload() -> dict[str, Any]:
             "followers": sum(p["followers"] for p in platform_totals.values()),
             "posts": len(clips),
         },
+        "timeseries": timeseries,
+        "strategy": strategy,
         "clips": clips,
         "top_clips": top_clips,
         "working": working,

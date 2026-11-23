@@ -1,0 +1,96 @@
+{
+  "days": {
+    "2026-11-20": {
+      "youtube": {
+        "views": 1711,
+        "likes": 7,
+        "shares": 0,
+        "followers": 0,
+        "posts": 3
+      },
+      "tiktok": {
+        "views": 389,
+        "likes": 8,
+        "shares": 0,
+        "followers": 0,
+        "posts": 3
+      },
+      "instagram": {
+        "views": 366,
+        "likes": 3,
+        "shares": 0,
+        "followers": 0,
+        "posts": 3
+      }
+    },
+    "2026-11-21": {
+      "youtube": {
+        "views": 6818,
+        "likes": 24,
+        "shares": 0,
+        "followers": 0,
+        "posts": 7
+      },
+      "tiktok": {
+        "views": 2088,
+        "likes": 38,
+        "shares": 1,
+        "followers": 0,
+        "posts": 7
+      },
+      "instagram": {
+        "views": 1320,
+        "likes": 12,
+        "shares": 0,
+        "followers": 0,
+        "posts": 7
+      }
+    },
+    "2026-11-22": {
+      "youtube": {
+        "views": 9644,
+        "likes": 35,
+        "shares": 0,
+        "followers": 0,
+        "posts": 13
+      },
+      "tiktok": {
+        "views": 3362,
+        "likes": 56,
+        "shares": 2,
+        "followers": 0,
+        "posts": 13
+      },
+      "instagram": {
+        "views": 1661,
+        "likes": 17,
+        "shares": 0,
+        "followers": 0,
+        "posts": 13
+      }
+    },
+    "2026-11-23": {
+      "youtube": {
+        "views": 10124,
+        "likes": 37,
+        "shares": 0,
+        "followers": 1,
+        "posts": 20
+      },
+      "tiktok": {
+        "views": 3418,
+        "likes": 56,
+        "shares": 2,
+        "followers": 0,
+        "posts": 20
+      },
+      "instagram": {
+        "views": 1662,
+        "likes": 17,
+        "shares": 0,
+        "followers": 0,
+        "posts": 20
+      }
+    }
+  }
+}
