@@ -1,5 +1,5 @@
 {
-  "updated_at_utc": "2026-11-24T00:02:48.694236+00:00",
+  "updated_at_utc": "2026-11-24T10:05:39.943909+00:00",
   "model_used": "nvidia/nemotron-3.5-super-vl:free",
   "min_virality_score": 8,
   "recommended_target_sec": 15,
@@ -8,31 +8,31 @@
     "xqc",
     "caseoh",
     "jynxzi",
-    "kaicenat",
-    "typicalgamer"
+    "berleezy",
+    "lirik"
   ],
   "winning_patterns": [
-    "Short 13-15 second clips with all-caps hooks referencing a specific streamer promise or failure, like GTA-001, outperformed because they delivered immediate conflict and resolved within the first 15 seconds.",
-    "Physics-breaking moments and game glitches, such as GTA-002 and GTA-006, generated high TikTok views because they are visually chaotic and require no context to understand.",
-    "Clips under 22 seconds had a median of 531.5 views versus 267.0 for 23-35 second clips, proving fast pacing and quick punchlines drive higher retention on Shorts and Reels."
+    "Short 13-15 second clips with high-energy streamer reactions outperform 30-second clips, with median views of 531.5 vs 271.0",
+    "Hooks using all-caps promises or broken physics claims drive the highest YouTube dominance, as seen in GTA-001 with 9900 YT views",
+    "Specific streamer names combined with immediate chaos events (crashing, physics breaks) generate cross-platform spikes over generic gameplay"
   ],
   "avoid_patterns": [
-    "Reject strip club or adult venue scenes like GTA-012 which received 1 view because they lack gameplay action and trigger algorithmic suppression.",
-    "Reject generic beach or vehicle chaos titles without a streamer reaction, like GTA-018 which received 4 views, because they fail to create personality-driven curiosity.",
-    "Reject 30-second clips with slow builds and no immediate hook in the first 3 seconds, as all bottom flops were 30.04 seconds with under 10 views."
+    "Reject 30-second clips with zero engagement like GTA-020 and GTA-012 which received 0-1 views",
+    "Avoid generic scene descriptions like 'street gameplay reaction' or 'beach truck chaos' that lack a specific conflict",
+    "Do not post clips where the streamer is not visibly reacting or the hook does not mention a specific failure or promise"
   ],
-  "hook_style_guidance": "Write Frame-1 hooks as all-caps, streamer-named accusations or promises that imply a broken game state or failed expectation within the first word.",
-  "daily_brief": "The biggest win was GTA-001 with 10910 views from a 13.7 second ohnepixel clip about crashing promises. The biggest leak is posting 30-second generic scenes that get 1 to 4 views. Tomorrow, cut all clips to under 16 seconds and lead with a streamer-named physics failure.",
+  "hook_style_guidance": "Write Frame-1 hooks in all-caps that name the streamer and a specific broken promise or physics glitch within the first 3 seconds.",
+  "daily_brief": "The biggest win was GTA-001 from ohnepixel hitting 10910 views using a 13-second crashing hook. The biggest leak is posting 30-second generic clips that get 0-6 views. Tomorrow, cut all clips to under 22 seconds and only use all-caps conflict hooks.",
   "scorecard_snapshot": {
-    "total_clips_live": 18,
-    "median_clip_views": 282.0,
+    "total_clips_live": 20,
+    "median_clip_views": 285.0,
     "top_post_id": "GTA-001",
     "top_post_views": 10910,
     "short_vs_medium": {
       "short_12_22s_count": 6,
       "short_12_22s_median": 531.5,
-      "medium_23_35s_count": 12,
-      "medium_23_35s_median": 267.0
+      "medium_23_35s_count": 14,
+      "medium_23_35s_median": 271.0
     }
   }
 }
