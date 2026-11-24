@@ -1,5 +1,5 @@
 {
-  "updated_at_utc": "2026-11-24T17:40:27.362724+00:00",
+  "updated_at_utc": "2026-11-24T19:42:29.748260+00:00",
   "model_used": "nvidia/nemotron-3.5-super-vl:free",
   "min_virality_score": 8,
   "recommended_target_sec": 15,
@@ -12,17 +12,17 @@
     "lirik"
   ],
   "winning_patterns": [
-    "Short 12-22 second clips with high-energy crash or physics-breaking hooks achieved a median of 531.5 views versus 267 for longer clips.",
-    "Top performer GTA-001 used a direct promise-based hook about crashing and earned 10,910 total views with 9,900 from YouTube.",
-    "Winners focused on specific streamer reactions and immediate GTA 6 chaos rather than generic gameplay or long setup intros."
+    "Short 13-15 second clips with high-energy crash or physics break hooks outperformed 30-second medium clips by nearly 2x median views (531 vs 271).",
+    "Clips featuring streamer names in the hook combined with a specific game failure (crashing, physics broke, painting wrong) drove the highest cross-platform views.",
+    "YouTube Shorts dominated total volume with 10,405 views, while TikTok delivered higher engagement rates per view for mid-tier streamer clips."
   ],
   "avoid_patterns": [
-    "Reject 30-second strip club scenes like GTA-012 which earned only 2 views.",
-    "Reject 30-second generic street gameplay reactions like GTA-019 which earned 475 views despite a known streamer.",
-    "Reject low-energy crash chaos clips without a recognizable personality hook like GTA-022 which earned 1 view."
+    "Reject 30-second generic street gameplay or beach truck chaos clips with no streamer reaction or game-breaking moment.",
+    "Reject clips with zero likes, shares, or comments across all platforms, such as Jason the Ween and Kai Cenat flops.",
+    "Reject hooks that lack urgency or specific streamer attribution, resulting in 1-2 view dead posts."
   ],
-  "hook_style_guidance": "Write Frame-1 hooks as all-caps, promise-driven statements that name the streamer and the exact GTA 6 chaos happening in the first second.",
-  "daily_brief": "The biggest win was GTA-001 with 10,910 views from a 13.71 second ohnepixel crash promise clip. The biggest leak is posting 30-second generic gameplay clips that consistently earn under 100 views. Tomorrow, cut all clips to 15 seconds and lead with an all-caps streamer-specific chaos hook.",
+  "hook_style_guidance": "Write Frame-1 hooks that combine a streamer name, a specific GTA 6 failure or chaos moment, and all-caps urgency to stop the scroll immediately.",
+  "daily_brief": "The biggest win was the ohnepixel crash clip hitting 10,910 views with a 13-second hook, while the biggest leak is 30-second generic gameplay clips getting 1-86 views. Tomorrow, cut all clips to 15 seconds max and only publish streamer reaction moments with game-breaking physics or crashes.",
   "scorecard_snapshot": {
     "total_clips_live": 21,
     "median_clip_views": 284,
@@ -32,7 +32,7 @@
       "short_12_22s_count": 6,
       "short_12_22s_median": 531.5,
       "medium_23_35s_count": 15,
-      "medium_23_35s_median": 267
+      "medium_23_35s_median": 271
     }
   }
 }

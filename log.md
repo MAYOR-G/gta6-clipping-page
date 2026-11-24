@@ -410,6 +410,70 @@ Every published/queued clip AND every rejected scout candidate is logged here so
 
 ---
 
+
+### GTA-024 — @esfandtv (Cloud Auto 30s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-24 22:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 30.04s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `ESFANDTV GTA 6 EXPLOSION NOW`
+- **Punchline:** `THIS IS A`
+- **Source URL & Created At:** `https://www.twitch.tv/esfandtv/clip/SincereArtisticCiderHeyGirl-NLTd9xrhe3pBnzKc` (2026-11-24T19:42:33Z)
+- **Credit:** `@esfandtv (Twitch)`
+- **Proof Frame:** `proofs/GTA-024_proof.png`
+- **Send Test:** your friend, 'did you see this?'
+- **IG First Comment:** `did you see that explosion?`
+
+---
+
+
+### GTA-025 — @squeex (Cloud Auto 30s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-25 01:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 29.51s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `SQUEEX GTA 6 CAR CRASHES NOW`
+- **Punchline:** `CAR BROKE PHYSICS`
+- **Source URL & Created At:** `https://www.twitch.tv/squeex/clip/RespectfulPopularSnailM4xHeh-CMTUTyo5Tq8Yb1IR` (2026-11-24T19:42:32Z)
+- **Credit:** `@squeex (Twitch)`
+- **Proof Frame:** `proofs/GTA-025_proof.png`
+- **Send Test:** Send to friend: 'Bro this is GTA 6'
+- **IG First Comment:** `Would you drive like this in GTA 6?`
+
+---
+
+
+### GTA-026 — @kaicenat (Cloud Auto 30s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-25 04:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 30.04s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `KAICEN AT GTA 6 CRASH NOW`
+- **Punchline:** `DON'T CALL POLICE`
+- **Source URL & Created At:** `https://www.twitch.tv/kaicenat/clip/ColdJollyPoxOSkomodo-uUzhkg3k06Ssttuy` (2026-11-24T19:42:33Z)
+- **Credit:** `@kaicenat (Twitch)`
+- **Proof Frame:** `proofs/GTA-026_proof.png`
+- **Send Test:** Send to friend: 'Bro this is GTA 6'
+- **IG First Comment:** `Would you run from the crash?`
+
+---
+
+
+### GTA-027 — @xqc (Cloud Auto 30s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-25 07:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 30.04s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `XQC GTA 6 MASSAGGATOR BC CRASH`
+- **Punchline:** `MASSAGGATOR BC`
+- **Source URL & Created At:** `https://www.twitch.tv/xqc/clip/RespectfulRenownedLatteUncleNox-_nfRZyzMB75SvHOU` (2026-11-24T19:42:31Z)
+- **Credit:** `@xqc (Twitch)`
+- **Proof Frame:** `proofs/GTA-027_proof.png`
+- **Send Test:** xqc to friend: 'bro what was that'
+- **IG First Comment:** `did you see the massage gator`
+
+---
+
 ## Scout Rejects Log
 
 *(Record rejected candidates with URL/ID and reason so the 2-hour routine skips them immediately.)*
