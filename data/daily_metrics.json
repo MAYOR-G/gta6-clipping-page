@@ -91,6 +91,29 @@
         "followers": 0,
         "posts": 23
       }
+    },
+    "2026-11-24": {
+      "youtube": {
+        "views": 10193,
+        "likes": 37,
+        "shares": 0,
+        "followers": 1,
+        "posts": 23
+      },
+      "tiktok": {
+        "views": 3820,
+        "likes": 69,
+        "shares": 2,
+        "followers": 0,
+        "posts": 23
+      },
+      "instagram": {
+        "views": 2130,
+        "likes": 19,
+        "shares": 0,
+        "followers": 0,
+        "posts": 23
+      }
     }
   }
 }
