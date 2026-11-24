@@ -94,24 +94,24 @@
     },
     "2026-11-24": {
       "youtube": {
-        "views": 10405,
+        "views": 10409,
         "likes": 37,
         "shares": 0,
         "followers": 1,
         "posts": 27
       },
       "tiktok": {
-        "views": 4333,
-        "likes": 78,
+        "views": 4524,
+        "likes": 80,
         "shares": 2,
         "followers": 0,
         "posts": 27
       },
       "instagram": {
-        "views": 2414,
-        "likes": 17,
+        "views": 2540,
+        "likes": 20,
         "shares": 0,
-        "followers": 0,
+        "followers": 1,
         "posts": 27
       }
     }
