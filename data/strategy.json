@@ -1,5 +1,5 @@
 {
-  "updated_at_utc": "2026-11-25T17:39:42.123622+00:00",
+  "updated_at_utc": "2026-11-25T18:50:34.753314+00:00",
   "model_used": "nvidia/nemotron-3.5-super-vl:free",
   "min_virality_score": 8,
   "recommended_target_sec": 15,
@@ -12,17 +12,17 @@
     "jasontheween"
   ],
   "winning_patterns": [
-    "Short 13-15 second clips with high-energy crash or physics break hooks outperformed 30-second reaction clips by a median of 252 views.",
-    "Clips crediting ohnepixel dominated with 10,410 views because the hook promised a specific GTA 6 fix rather than generic gameplay.",
-    "Top performers used all-caps, conflict-driven Frame-1 hooks naming the streamer and a specific in-game failure (crashing, physics break, wrong painting)."
+    "Short 13-15 second clips with high-energy streamer reactions outperform 30-second gameplay reels by 2x median views.",
+    "Hooks using all-caps promises or broken physics claims drive 10x+ views versus generic gameplay descriptions.",
+    "YouTube Shorts is the dominant traffic source for top performers, contributing 90% of views on the #1 clip despite lower TikTok volume."
   ],
   "avoid_patterns": [
-    "Reject 30-second generic street gameplay reaction clips that earned 2-516 views with zero shares.",
-    "Reject strip club scene clips that received 2 views and zero engagement across all platforms.",
-    "Reject low-energy car crash clips without a streamer meltdown or specific game-breaking moment that earned 140 views."
+    "Reject 30-second strip club or adult-themed scenes which generated 2-140 views and zero cross-platform traction.",
+    "Avoid generic car crash clips without a recognizable streamer reaction or specific game-breaking moment.",
+    "Do not post 30-second street gameplay reactions that lack a conflict, promise, or physics fail in the first 3 seconds."
   ],
-  "hook_style_guidance": "Write Frame-1 hooks in all caps that name the streamer and a specific GTA 6 bug, crash, or physics failure within the first 2 seconds to trigger immediate curiosity and retention.",
-  "daily_brief": "The ohnepixel crash clip was the biggest win with 10,410 views driven by a 13.7-second conflict hook, while the kaicenat strip club clip was the biggest leak with only 2 views. Tomorrow, scout ohnepixel and xQc for GTA 6 physics breaks and cut all clips to 15 seconds or shorter with all-caps Frame-1 hooks.",
+  "hook_style_guidance": "Write Frame-1 hooks as all-caps, promise-based statements that name a specific streamer and a broken game mechanic within the first 2 seconds.",
+  "daily_brief": "The biggest win was a 14-second ohnepixel clip about crashing that hit 10,410 views, mostly from YouTube Shorts. The biggest leak is posting 30-second generic gameplay scenes that get 2-140 views. Tomorrow, cut all clips to 15 seconds and only use streamer reaction hooks with all-caps promises.",
   "scorecard_snapshot": {
     "total_clips_live": 24,
     "median_clip_views": 307.0,

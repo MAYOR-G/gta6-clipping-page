@@ -835,6 +835,39 @@
       "scheduled_time_utc": "2026-11-25T18:30:00+00:00",
       "created_at_utc": "2026-11-25T17:41:25.350432+00:00",
       "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-029",
+      "platform": "instagram",
+      "account_id": "clip-ig-unconfigured",
+      "backend": "queue",
+      "video_sha256": "d48e542d9bf37e6ceeeae85f9b8e1afbda10149ea197749cf3dd8b18c4c80a59",
+      "caption_first_line": "kai cenat car gives up mid chase \ud83d\ude2d",
+      "scheduled_time_utc": "2026-11-25T21:30:00+00:00",
+      "created_at_utc": "2026-11-25T18:54:03.578910+00:00",
+      "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-029",
+      "platform": "tiktok",
+      "account_id": "clip-tiktok-unconfigured",
+      "backend": "queue",
+      "video_sha256": "d48e542d9bf37e6ceeeae85f9b8e1afbda10149ea197749cf3dd8b18c4c80a59",
+      "caption_first_line": "kai cenat car gives up mid chase \ud83d\ude2d",
+      "scheduled_time_utc": "2026-11-25T21:30:00+00:00",
+      "created_at_utc": "2026-11-25T18:54:03.578910+00:00",
+      "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-029",
+      "platform": "youtube",
+      "account_id": "clip-youtube-unconfigured",
+      "backend": "queue",
+      "video_sha256": "d48e542d9bf37e6ceeeae85f9b8e1afbda10149ea197749cf3dd8b18c4c80a59",
+      "caption_first_line": "kai cenat car gives up mid chase \ud83d\ude2d",
+      "scheduled_time_utc": "2026-11-25T21:30:00+00:00",
+      "created_at_utc": "2026-11-25T18:54:03.578910+00:00",
+      "status": "queued_local"
     }
   ]
 }

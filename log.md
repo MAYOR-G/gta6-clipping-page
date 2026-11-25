@@ -490,6 +490,22 @@ Every published/queued clip AND every rejected scout candidate is logged here so
 
 ---
 
+
+### GTA-029 — @kaicenat (Cloud Auto 30s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-25 22:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 30.04s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `KAI CENAT GTA 6 CAR CHASE`
+- **Punchline:** `CAR GIVES UP MID CHASE`
+- **Source URL & Created At:** `https://www.twitch.tv/kaicenat/clip/DarkEvilBobaDogFace-BhjKcxyU2NCkrSiR` (2026-11-25T18:50:37Z)
+- **Credit:** `@kaicenat (Twitch)`
+- **Proof Frame:** `proofs/GTA-029_proof.png`
+- **Send Test:** send to your gamer friend with caption 'this is us'
+- **IG First Comment:** `have you ever rage quit a chase?`
+
+---
+
 ## Scout Rejects Log
 
 *(Record rejected candidates with URL/ID and reason so the 2-hour routine skips them immediately.)*
