@@ -474,6 +474,22 @@ Every published/queued clip AND every rejected scout candidate is logged here so
 
 ---
 
+
+### GTA-028 — @hasanabi (Cloud Auto 30s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-25 19:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 18.04s (1080x1920, 30 fps)
+- **Hook (Frame 1):** `HASAN GTA 6 PARACHUTE WASTED`
+- **Punchline:** `STREAMER SHOCKED`
+- **Source URL & Created At:** `https://www.twitch.tv/hasanabi/clip/GoldenPoisedKeyboardRedCoat-HO3GxS3GCBEqzXcR` (2026-11-25T17:39:43Z)
+- **Credit:** `@hasanabi (Twitch)`
+- **Proof Frame:** `proofs/GTA-028_proof.png`
+- **Send Test:** send to your gamer friend and type 'this is us trying gta 6'
+- **IG First Comment:** `have you ever failed a parachute jump in gta?`
+
+---
+
 ## Scout Rejects Log
 
 *(Record rejected candidates with URL/ID and reason so the 2-hour routine skips them immediately.)*

@@ -802,6 +802,39 @@
       "scheduled_time_utc": "2026-11-25T06:30:00+00:00",
       "created_at_utc": "2026-11-24T19:55:31.182514+00:00",
       "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-028",
+      "platform": "instagram",
+      "account_id": "clip-ig-unconfigured",
+      "backend": "queue",
+      "video_sha256": "fa8460f45047d6e59ba032dfb88114a86faf1b45ebf143f71236b47f311431b0",
+      "caption_first_line": "he fell off the building lol \ud83d\ude02",
+      "scheduled_time_utc": "2026-11-25T18:30:00+00:00",
+      "created_at_utc": "2026-11-25T17:41:25.350432+00:00",
+      "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-028",
+      "platform": "tiktok",
+      "account_id": "clip-tiktok-unconfigured",
+      "backend": "queue",
+      "video_sha256": "fa8460f45047d6e59ba032dfb88114a86faf1b45ebf143f71236b47f311431b0",
+      "caption_first_line": "he fell off the building lol \ud83d\ude02",
+      "scheduled_time_utc": "2026-11-25T18:30:00+00:00",
+      "created_at_utc": "2026-11-25T17:41:25.350432+00:00",
+      "status": "queued_local"
+    },
+    {
+      "post_id": "GTA-028",
+      "platform": "youtube",
+      "account_id": "clip-youtube-unconfigured",
+      "backend": "queue",
+      "video_sha256": "fa8460f45047d6e59ba032dfb88114a86faf1b45ebf143f71236b47f311431b0",
+      "caption_first_line": "he fell off the building lol \ud83d\ude02",
+      "scheduled_time_utc": "2026-11-25T18:30:00+00:00",
+      "created_at_utc": "2026-11-25T17:41:25.350432+00:00",
+      "status": "queued_local"
     }
   ]
 }
