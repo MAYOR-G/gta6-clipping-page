@@ -255,6 +255,7 @@ def deliver_bundle(
         f"CLIP {index} OF {total} — {post_id}",
         f"Recommended Post Time: {slot}",
         f"Platforms: {platforms_str}",
+        "YouTube Upload Checklist: Set Category = Gaming | Use YT Title message ONLY",
         "TikTok AI Label: OFF (Not AI-generated)",
     ]
     if quality_bits:
@@ -274,11 +275,12 @@ def deliver_bundle(
     else:
         steps["3_cover"] = {"skipped": "cover not found"}
 
-    # 4. Copy-Paste TikTok / Instagram Caption (clean standalone message so 1 tap copies it)
-    steps["4_caption"] = send_message(caption, dry_run=dry_run)
-
-    # 5. Copy-Paste YouTube Shorts Title ONLY (standalone 1-tap copy, zero Credit spam)
+    # 4. YouTube Shorts Title FIRST & clearly labeled so it never gets mixed with IG/TikTok captions
     if yt_title:
+        steps["4_yt_title_label"] = send_message(
+            f"YOUTUBE SHORTS TITLE ONLY ({post_id}) — tap message below (set Category = Gaming):",
+            dry_run=dry_run,
+        )
         steps["5_yt_title"] = send_message(yt_title, dry_run=dry_run)
         cap_lines = [ln.strip() for ln in caption.splitlines() if ln.strip()]
         credit_and_tags = "\n".join(ln for ln in cap_lines[1:] if ln) if len(cap_lines) > 1 else caption
@@ -287,9 +289,16 @@ def deliver_bundle(
             dry_run=dry_run,
         )
 
-    # 7. Copy-Paste IG First Comment
+    # 7. Copy-Paste TikTok / Instagram Caption (clean standalone message so 1 tap copies it)
+    steps["7_caption_label"] = send_message(
+        f"TIKTOK & INSTAGRAM CAPTION ({post_id}) — tap message below:",
+        dry_run=dry_run,
+    )
+    steps["8_caption"] = send_message(caption, dry_run=dry_run)
+
+    # 9. Copy-Paste IG First Comment
     if ig_fc:
-        steps["7_ig_first_comment"] = send_message(ig_fc, dry_run=dry_run)
+        steps["9_ig_first_comment"] = send_message(ig_fc, dry_run=dry_run)
 
     return {"post_id": post_id, "slot": slot, "steps": steps}
 

@@ -118,7 +118,24 @@ DEFAULT_TWITCH_STREAMERS = [
     "lacy",
     "esfandtv",
     "hasanabi",
+    "buddha",
+    "lord_kebun",
+    "ramee",
+    "shotz",
+    "kyle",
+    "penta",
+    "zerkaa",
+    "omie",
+    "anthonyz",
+    "cyr",
+    "typicalgamer",
+    "darkviperau",
 ]
+
+GTA_TITLE_HINT_RE = re.compile(
+    r"\b(gta|gta\s*6|gta\s*vi|vice\s*city|leonida|lucia|jason|rockstar|police|cops|chase|crash|heist|car|npc|rp|nopixel)\b",
+    flags=re.IGNORECASE,
+)
 
 # YouTube-primary / YouTube-exclusive GTA 6 streamers (NOT primarily on Twitch — used with --source youtube locally on Mac!)
 YOUTUBE_ONLY_STREAMERS = [
@@ -325,10 +342,11 @@ def scout_twitch_direct_clips(
                 "url": clip_url,
                 "duration": dur,
                 "view_count": views,
+                "gta_hint": 1 if GTA_TITLE_HINT_RE.search(title) else 0,
                 "created_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
             })
-        # Rank by real Twitch view_count DESC so the most viral clips get checked FIRST!
-        batch.sort(key=lambda x: (x["view_count"], -abs(x["duration"] - 24.0)), reverse=True)
+        # Rank GTA-hinted viral clips first, then by real Twitch view_count DESC!
+        batch.sort(key=lambda x: (x["gta_hint"], x["view_count"], -abs(x["duration"] - 22.0)), reverse=True)
         return handle, batch
 
     for time_range in ("24hr", "7d"):
@@ -343,16 +361,17 @@ def scout_twitch_direct_clips(
                     seen_ids.add(item["id"])
                     bucket.append(item)
 
-    # Round-robin interleave: 1 clip from every streamer before taking a 2nd from anyone
+    # Round-robin interleave: prioritize GTA-hinted clips first across streamers, then remaining viral clips
     interleaved: list[dict[str, Any]] = []
     max_depth = max((len(v) for v in by_streamer.values()), default=0)
-    for idx in range(max_depth):
-        for handle in streamers:
-            bucket = by_streamer.get(handle) or []
-            if idx < len(bucket):
-                interleaved.append(bucket[idx])
-                if len(interleaved) >= limit:
-                    return interleaved
+    for want_hint in (1, 0):
+        for idx in range(max_depth):
+            for handle in streamers:
+                bucket = by_streamer.get(handle) or []
+                if idx < len(bucket) and bucket[idx].get("gta_hint", 0) == want_hint:
+                    interleaved.append(bucket[idx])
+                    if len(interleaved) >= limit:
+                        return interleaved
     return interleaved
 
 
@@ -1014,7 +1033,7 @@ def main() -> int:
         print(f"[warn] AI optimizer skipped ({type(exc).__name__}); using saved strategy.", file=sys.stderr)
 
     env_min_v = os.environ.get("MIN_VIRALITY_SCORE", "").strip()
-    min_virality_score = int(env_min_v) if env_min_v.isdigit() else int(strategy.get("min_virality_score", 7))
+    min_virality_score = int(env_min_v) if env_min_v.isdigit() else min(7, int(strategy.get("min_virality_score", 7)))
     if str(args.target_sec).strip().lower() == "auto":
         target_sec = float(strategy.get("recommended_target_sec", 18))
     else:
@@ -1080,10 +1099,10 @@ def main() -> int:
             except Exception as exc:
                 print(f"[warn] Twitch API scout failed ({type(exc).__name__}); using zero-key Twitch direct scout.", file=sys.stderr)
 
-        if len(candidates) < remaining_target * 4:
+        if len(candidates) < remaining_target * 8:
             min_src = max(14.0, target_sec - 4.0)
             tw_direct = scout_twitch_direct_clips(
-                limit=max(30, remaining_target * 8),
+                limit=max(60, remaining_target * 16),
                 min_duration=min_src,
                 priority_streamers=strategy.get("priority_streamers"),
             )
@@ -1098,10 +1117,12 @@ def main() -> int:
     if candidates and active_platforms:
         post_num = next_post_number()
         attempts = 0
-        max_attempts = max(14, remaining_target * 5)
-        used_streamers_today: set[str] = set()
+        max_attempts = max(32, remaining_target * 10)
+        streamer_counts_today: dict[str, int] = {}
 
-        for clip_meta in candidates:
+        # Pass 1: max 1 clip per streamer for diversity; Pass 2 (only if still short): allow up to 2 per streamer
+        pass_queue = [(1, clip_meta) for clip_meta in candidates] + [(2, clip_meta) for clip_meta in candidates]
+        for max_per_streamer, clip_meta in pass_queue:
             if len(produced) >= remaining_target or attempts >= max_attempts:
                 break
             cid = clip_meta["id"]
@@ -1110,8 +1131,7 @@ def main() -> int:
 
             streamer = clip_meta.get("broadcaster_name") or "streamer"
             streamer_key = streamer.lower()
-            # Enforce max 1 clip per streamer per day so every daily drop has diverse creators!
-            if streamer_key in used_streamers_today:
+            if streamer_counts_today.get(streamer_key, 0) >= max_per_streamer:
                 continue
             attempts += 1
 
@@ -1168,8 +1188,8 @@ def main() -> int:
                     raw_mp4.unlink(missing_ok=True)
                     seen_set.add(cid)
                     continue
-                if min(s_score, v_score) < min_virality_score or s_energy in ("slow_menu", "boring_idle", "needs_context"):
-                    reason = copy.get("reject_reason") or f"low stranger/virality score ({s_energy}, s={s_score}, v={v_score} < {min_virality_score})"
+                if s_score < min_virality_score or s_energy in ("slow_menu", "boring_idle", "needs_context"):
+                    reason = copy.get("reject_reason") or f"low stranger score ({s_energy}, s={s_score}, v={v_score} < {min_virality_score})"
                     print(f"[skip] {cid} (@{streamer}) rejected by quality gate: {reason}")
                     raw_mp4.unlink(missing_ok=True)
                     seen_set.add(cid)
@@ -1387,7 +1407,7 @@ def main() -> int:
                 }
                 produced.append(item_record)
                 report_items.append(item_record)
-                used_streamers_today.add(streamer_key)
+                streamer_counts_today[streamer_key] = streamer_counts_today.get(streamer_key, 0) + 1
                 seen_set.add(cid)
 
                 # Disk hygiene: remove heavy raw & rendered MP4 right after delivery so repo stays clean

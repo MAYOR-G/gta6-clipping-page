@@ -278,7 +278,7 @@ def synthesize_strategy_with_openrouter(summary: dict[str, Any]) -> dict[str, An
             prio = [re.sub(r"[^a-z0-9_]", "", str(x).lower()) for x in (parsed.get("priority_streamers") or [])]
             prio = [x for x in prio if x][:6]
             min_v = int(parsed.get("min_virality_score") or 7)
-            min_v = max(6, min(8, min_v))
+            min_v = max(6, min(7, min_v))
             rec_sec = int(parsed.get("recommended_target_sec") or 18)
             rec_sec = max(15, min(26, rec_sec))
 

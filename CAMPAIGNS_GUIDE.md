@@ -59,7 +59,11 @@ Your daily Telegram drop now runs across **4 staggered UTC+1 (WAT) windows**:
 
 ## 4. Step-by-Step: Joining & Earning on All 11 Clipping Platforms
 
-> **No clipping platform needs an API key from you** — they authenticate via your browser account login + linking your social handles (usually via a short verification code placed temporarily in your TikTok/IG/YouTube bio).
+> **No clipping platform needs an API key or password in GitHub Secrets.** You connect your social handles inside each platform's own web dashboard (usually via a temporary bio verification code), while our repo tracks your accounts and earnings in two ways:
+> 1. **Social account views & followers (GitHub Variables):** `YT_CHANNEL_URL`, `TIKTOK_HANDLE`, and `IG_HANDLE` support **comma-separated multiple accounts** (e.g. `https://youtube.com/@leonidachao,https://youtube.com/@secondpage`) synced automatically every 6 hours.
+> 2. **Per-campaign USD earnings (`scripts/campaigns.py`):** When you submit a posted URL to any campaign, log it once with `log-submission`. Every 6 hours, `campaigns.py sync-views` pulls verified views from `scoreboard.csv` (and directly via `yt-dlp` for any YouTube Short URL on secondary accounts) to recalculate your Pending and Paid USD.
+
+> **YouTube Studio Tip:** Always set your upload **Category = Gaming** (not *People & Blogs*), and paste **only** the `YOUTUBE SHORTS TITLE ONLY` message from Telegram into the YouTube Title box.
 
 ### Universal 5-Step Setup Before Applying Anywhere
 1. **Profile Hygiene:** Ensure `@leonidachao` (YouTube), `@leonida.chaos4` (TikTok), and `@leonida_chaos4` (Instagram) have clean fan-page bios, no Rockstar official logos, and **at least 10–15 clean Shorts/Reels posted**.

@@ -20,6 +20,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -225,6 +226,19 @@ def sync_views_from_scoreboard(data: dict[str, Any], scoreboard_path: Path = SCO
             new_views = rows_by_url[url]
         elif (pid, social) in rows_by_key:
             new_views = rows_by_key[(pid, social)]
+        elif url and ("youtube.com/" in url or "youtu.be/" in url):
+            # Direct YouTube fallback for campaign clips posted on any secondary YouTube account
+            try:
+                out = subprocess.check_output(
+                    ["yt-dlp", "--skip-download", "--dump-json", "--no-warnings", url],
+                    text=True,
+                    timeout=20,
+                )
+                det = json.loads(out.strip().splitlines()[0])
+                if det.get("view_count") is not None:
+                    new_views = int(det["view_count"])
+            except Exception:
+                pass
         if new_views is not None and new_views > int(sub.get("verified_views") or 0):
             sub["verified_views"] = new_views
             sub["last_synced_utc"] = datetime.now(timezone.utc).isoformat()

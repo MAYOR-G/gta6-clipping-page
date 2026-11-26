@@ -331,11 +331,16 @@ def update_scoreboard(platform_data: list[dict[str, Any]], scoreboard_path: Path
     return updated_rows
 
 
+def split_accounts(raw: str) -> list[str]:
+    """Support comma-separated multiple channel URLs or handles for multi-account campaign tracking."""
+    return [item.strip() for item in (raw or "").split(",") if item.strip()]
+
+
 def main() -> int:
     load_local_dotenv()
-    yt_url = os.environ.get("YT_CHANNEL_URL", "").strip()
-    tt_handle = os.environ.get("TIKTOK_HANDLE", "").strip()
-    ig_handle = os.environ.get("IG_HANDLE", "").strip()
+    yt_urls = split_accounts(os.environ.get("YT_CHANNEL_URL", ""))
+    tt_handles = split_accounts(os.environ.get("TIKTOK_HANDLE", ""))
+    ig_handles = split_accounts(os.environ.get("IG_HANDLE", ""))
     sc_key = os.environ.get("SCRAPE_CREATORS_API_KEY", "").strip()
     sc_cap = int(os.environ.get("SCRAPE_CREATORS_CREDIT_CAP", "40"))
 
@@ -343,27 +348,77 @@ def main() -> int:
     credits_used = 0
     errors: list[str] = []
 
-    if yt_url:
-        try:
-            collected.append(fetch_youtube_channel_stats(yt_url))
-        except Exception as exc:
-            errors.append(f"youtube: {type(exc).__name__}")
+    if yt_urls:
+        yt_merged: dict[str, Any] = {"platform": "youtube", "followers": 0, "videos": []}
+        seen_yt: set[str] = set()
+        has_yt_fol = False
+        for u in yt_urls:
+            try:
+                res = fetch_youtube_channel_stats(u)
+                if res.get("followers") is not None:
+                    yt_merged["followers"] += int(res["followers"])
+                    has_yt_fol = True
+                for v in res.get("videos") or []:
+                    vid = str(v.get("id") or "")
+                    if vid and vid not in seen_yt:
+                        seen_yt.add(vid)
+                        yt_merged["videos"].append(v)
+            except Exception as exc:
+                errors.append(f"youtube({clean_handle(u)}): {type(exc).__name__}")
+        if not has_yt_fol:
+            yt_merged["followers"] = None
+        if yt_merged["videos"] or has_yt_fol:
+            collected.append(yt_merged)
 
-    if sc_key and tt_handle and credits_used + 2 <= sc_cap:
-        try:
-            data, c = fetch_tiktok_stats(tt_handle, sc_key)
-            collected.append(data)
-            credits_used += c
-        except Exception as exc:
-            errors.append(f"tiktok: {type(exc).__name__}")
+    if sc_key and tt_handles:
+        tt_merged: dict[str, Any] = {"platform": "tiktok", "followers": 0, "videos": []}
+        seen_tt: set[str] = set()
+        has_tt_fol = False
+        for h in tt_handles:
+            if credits_used + 1 > sc_cap:
+                break
+            try:
+                data, c = fetch_tiktok_stats(h, sc_key)
+                credits_used += c
+                if data.get("followers") is not None:
+                    tt_merged["followers"] += int(data["followers"])
+                    has_tt_fol = True
+                for v in data.get("videos") or []:
+                    vid = str(v.get("id") or "")
+                    if vid and vid not in seen_tt:
+                        seen_tt.add(vid)
+                        tt_merged["videos"].append(v)
+            except Exception as exc:
+                errors.append(f"tiktok({clean_handle(h)}): {type(exc).__name__}")
+        if not has_tt_fol:
+            tt_merged["followers"] = None
+        if tt_merged["videos"] or has_tt_fol:
+            collected.append(tt_merged)
 
-    if sc_key and ig_handle and credits_used + 2 <= sc_cap:
-        try:
-            data, c = fetch_instagram_stats(ig_handle, sc_key)
-            collected.append(data)
-            credits_used += c
-        except Exception as exc:
-            errors.append(f"instagram: {type(exc).__name__}")
+    if sc_key and ig_handles:
+        ig_merged: dict[str, Any] = {"platform": "instagram", "followers": 0, "videos": []}
+        seen_ig: set[str] = set()
+        has_ig_fol = False
+        for h in ig_handles:
+            if credits_used + 2 > sc_cap:
+                break
+            try:
+                data, c = fetch_instagram_stats(h, sc_key)
+                credits_used += c
+                if data.get("followers") is not None:
+                    ig_merged["followers"] += int(data["followers"])
+                    has_ig_fol = True
+                for v in data.get("videos") or []:
+                    vid = str(v.get("id") or "")
+                    if vid and vid not in seen_ig:
+                        seen_ig.add(vid)
+                        ig_merged["videos"].append(v)
+            except Exception as exc:
+                errors.append(f"instagram({clean_handle(h)}): {type(exc).__name__}")
+        if not has_ig_fol:
+            ig_merged["followers"] = None
+        if ig_merged["videos"] or has_ig_fol:
+            collected.append(ig_merged)
 
     updated = update_scoreboard(collected) if collected else 0
     print(json.dumps({
