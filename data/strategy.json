@@ -1,5 +1,5 @@
 {
-  "updated_at_utc": "2026-11-25T21:51:08.509038+00:00",
+  "updated_at_utc": "2026-11-26T08:36:37.455233+00:00",
   "model_used": "nvidia/nemotron-3.5-super-vl:free",
   "min_virality_score": 8,
   "recommended_target_sec": 15,
@@ -12,27 +12,27 @@
     "jasontheween"
   ],
   "winning_patterns": [
-    "Short 12-22 second clips have a median of 531.5 views versus 273.5 for medium clips, proving faster pacing wins.",
-    "Hooks using all-caps promises about game-breaking bugs or crashes, such as HE PROMISED GTA 6 CHAT NO MORE CRASHING, drive the highest view spikes.",
-    "Top performers are under 16 seconds and focus on immediate physics failures or streamer reactions rather than long gameplay setup."
+    "Short 12-22s clips outperform 23-35s clips with a median of 370 views vs 275 views, proving faster pacing wins.",
+    "Hyper-specific crash and glitch hooks like HE PROMISED GTA 6 CHAT NO MORE CRASHING drive 10x+ views over generic gameplay reactions.",
+    "Top 5 winners are all under 16 seconds and lead with streamer name plus immediate chaos, confirming hook-first editing beats long setup."
   ],
   "avoid_patterns": [
-    "Reject any clip longer than 30 seconds, as all zero-view flops are exactly 30.04 seconds.",
-    "Do not post Kai Cenat clips, which produced three consecutive flops with 0 to 2 views despite high creator popularity.",
-    "Avoid strip club scenes and generic car chases without a visible physics glitch or strong streamer reaction."
+    "Reject 30-second strip club and car chase clips from Kai Cenat that generated 2-134 views due to slow buildup and no payoff.",
+    "Reject generic parachute wasted and massagator crash clips from Hasan and xQc that scored zero views across all platforms.",
+    "Reject any clip longer than 22 seconds without an immediate visual glitch or crash in the first 3 seconds."
   ],
-  "hook_style_guidance": "Write every Frame-1 hook in all-caps with a specific GTA 6 bug, crash, or physics failure named in the first three words to stop the scroll instantly.",
-  "daily_brief": "The biggest win was ohnepixel's 13.71-second crash promise clip hitting 10410 views, proving short bug-focused hooks dominate. The biggest leak is Kai Cenat content, which generated three flops with zero to two views despite his audience size. Tomorrow, scout only under-16-second physics fail clips from ohnepixel, xQc, CaseOh, and Jynxzi and write all-caps hooks naming the exact glitch.",
+  "hook_style_guidance": "Write Frame-1 hooks that combine the streamer name, a specific GTA 6 bug or crash, and all-caps urgency within the first 2 seconds to stop the scroll.",
+  "daily_brief": "The biggest win was ohnepixel's crash clip hitting 10,410 views with a 13.71s hook-first format. The biggest leak is Kai Cenat's 30s generic clips generating 2-134 views. Tomorrow, cut all clips under 16 seconds and lead with streamer name plus immediate GTA 6 chaos.",
   "scorecard_snapshot": {
-    "total_clips_live": 26,
+    "total_clips_live": 28,
     "median_clip_views": 285.5,
     "top_post_id": "GTA-001",
     "top_post_views": 10410,
     "short_vs_medium": {
-      "short_12_22s_count": 6,
-      "short_12_22s_median": 531.5,
-      "medium_23_35s_count": 20,
-      "medium_23_35s_median": 273.5
+      "short_12_22s_count": 7,
+      "short_12_22s_median": 370,
+      "medium_23_35s_count": 21,
+      "medium_23_35s_median": 275
     }
   }
 }
