@@ -1,5 +1,5 @@
 {
-  "updated_at_utc": "2026-11-26T15:28:49.794823+00:00",
+  "updated_at_utc": "2026-11-26T18:38:44.222381+00:00",
   "model_used": "nvidia/nemotron-3.5-super-vl:free",
   "min_virality_score": 8,
   "recommended_target_sec": 15,
@@ -12,20 +12,20 @@
     "jasontheween"
   ],
   "winning_patterns": [
-    "Short 13-15 second clips with high-energy streamer reactions outperform longer 30 second clips, as seen in the 370 median views for shorts versus 284 for medium clips.",
-    "Hooks using all-caps promises or specific game-breaking events like crashing or physics bugs drive significantly higher views than generic gameplay descriptions.",
-    "YouTube Shorts is the dominant traffic driver for top performers, with GTA-001 earning 9400 of its 10410 views from YouTube alone."
+    "Short 12-22 second clips outperform longer ones with a median of 370 views versus 284 for medium clips.",
+    "Hooks using all-caps urgency and specific streamer names like ohnepixel drive massive YouTube views, as seen with 9400 yt_views on GTA-001.",
+    "Clips featuring immediate physics breaks or game crashes capture attention faster than general gameplay reactions."
   ],
   "avoid_patterns": [
-    "Reject clips with typos or broken English in hooks such as 'MASSAGGATOR BC CRASH' which resulted in zero views across all platforms.",
-    "Avoid generic 30 second 'reaction' clips without a specific payoff, as demonstrated by GTA-019 and GTA-008 earning under 600 views.",
-    "Do not post clips with zero engagement metrics or zero views across TikTok and Instagram, as seen with GTA-027 and GTA-028."
+    "Reject clips with typos or broken English in hooks such as MASSAGGATOR which received 0 views.",
+    "Avoid long 30-second static reaction clips like GTA-019 that fail to deliver a payoff within the first 15 seconds.",
+    "Do not post clips with zero high-energy moments or crashes, as evidenced by multiple 0-2 view flops from xqc and kaicenat."
   ],
-  "hook_style_guidance": "Write Frame-1 hooks in all-caps that promise a specific, high-stakes failure or glitch involving the streamer's name to trigger immediate curiosity.",
-  "daily_brief": "The biggest win was GTA-001 from ohnepixel hitting over 10k views primarily through YouTube Shorts. The biggest leak is posting 30 second generic reactions that consistently earn under 600 views. Tomorrow, prioritize 15 second clips of ohnepixel and xQc with all-caps hooks about game crashes.",
+  "hook_style_guidance": "Write Frame-1 hooks in all-caps that name the streamer and promise a specific game-breaking event or crash within the first three words.",
+  "daily_brief": "The biggest win was ohnepixel's crash clip hitting 10410 views, while the biggest leak is the 30-second static reaction format flopping across all platforms. Tomorrow, cut all clips to under 16 seconds and prioritize ohnepixel and xqc crash footage.",
   "scorecard_snapshot": {
     "total_clips_live": 28,
-    "median_clip_views": 300.5,
+    "median_clip_views": 312.5,
     "top_post_id": "GTA-001",
     "top_post_views": 10410,
     "short_vs_medium": {

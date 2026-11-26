@@ -1,0 +1,22 @@
+{
+  "days": {
+    "2026-11-26": {
+      "date_wat": "2026-11-26",
+      "status": "failed",
+      "clips_delivered": 0,
+      "target_clips": 5,
+      "post_ids": [],
+      "slot_used": null,
+      "attempts": [
+        {
+          "at_utc": "2026-11-26T18:43:32.872976+00:00",
+          "slot_label": "09:37 WAT (Primary)",
+          "status": "failed",
+          "added_posts": [],
+          "note": "Delivered 0 clip(s)"
+        }
+      ],
+      "updated_at_utc": "2026-11-26T18:43:32.872956+00:00"
+    }
+  }
+}
