@@ -47,13 +47,34 @@ sys.path.insert(0, str(ROOT_DIR / "scripts"))
 from ai_optimizer import STRATEGY_PATH, run_optimizer  # noqa: E402
 from clip import EMOJI_RE, probe_duration, render_clip  # noqa: E402
 from dashboard_data import build_dashboard_payload, update_dashboard_html  # noqa: E402
+from stream_clipper_engine import (  # noqa: E402
+    apply_campaign_caption_fixes,
+    build_dead_air_free_keep_ranges,
+    check_campaign_rules,
+    detect_audio_peak_signals,
+    detect_silences,
+    score_moment_for_strangers,
+    transcribe_with_words,
+    words_to_kinetic_srt,
+    write_clips_report_md,
+)
 from stuck_check import run_health_check  # noqa: E402
-from telegram_deliver import deliver_bundle, load_sent_log, save_sent_log, send_message  # noqa: E402
+from telegram_deliver import (  # noqa: E402
+    deliver_bundle,
+    get_today_drop_status,
+    load_sent_log,
+    record_daily_drop_attempt,
+    save_sent_log,
+    send_message,
+)
 
 WAT = timezone(timedelta(hours=1))
 DATA_DIR = ROOT_DIR / "data"
 SEEN_PATH = DATA_DIR / "seen_clips.json"
 CROPS_PATH = DATA_DIR / "streamer_crops.json"
+CAMPAIGNS_PATH = DATA_DIR / "campaigns.json"
+LAST_REPORT_PATH = DATA_DIR / "last_clip_report.json"
+CLIPS_REPORT_MD = ROOT_DIR / "clips" / "report.md"
 SCOREBOARD_PATH = ROOT_DIR / "scoreboard.csv"
 LOG_PATH = ROOT_DIR / "log.md"
 RAW_DIR = ROOT_DIR / "raw" / "cloud"
@@ -844,17 +865,22 @@ def append_scoreboard_rows(
     credit: str,
     proof_rel: str,
     platforms: list[str] | None = None,
+    pillar: str = "stream_clipper_18s",
+    extra_note: str = "",
 ) -> None:
     if not SCOREBOARD_PATH.exists():
         return
+    note_str = f"delivered_telegram | proof:{proof_rel}"
+    if extra_note:
+        note_str = f"{note_str} | {extra_note}"
     with SCOREBOARD_PATH.open("a", encoding="utf-8", newline="") as f:
         writer = csv.writer(f)
         for plat in (platforms or ["instagram", "tiktok", "youtube"]):
             writer.writerow([
-                post_id, date_str, time_str, plat, "cloud_auto_30s", "stack_or_full",
+                post_id, date_str, time_str, plat, pillar, "stack_or_full",
                 hook, f"{length_sec:.2f}", credit,
                 "", "", "", "", "", "", "", "", "EXP-R1",
-                f"delivered_telegram | proof:{proof_rel}",
+                note_str,
             ])
 
 
@@ -862,22 +888,28 @@ def append_log_entry(
     post_id: str,
     slot_str: str,
     streamer: str,
+    src_plat: str,
     source_url: str,
     created_at: str,
-    copy: dict[str, str],
+    copy: dict[str, Any],
     length_sec: float,
     proof_rel: str,
+    signals: list[str] | None = None,
+    has_captions: bool = False,
 ) -> None:
+    sig_str = ", ".join(signals or ["viewer_clip"])
     entry = (
-        f"\n### {post_id} — @{streamer} (Cloud Auto 30s)\n"
+        f"\n### {post_id} — @{streamer} (Stream Clipper {length_sec:.1f}s)\n"
         f"- **Status:** Cut & Delivered to Telegram\n"
         f"- **Recommended Slot (WAT):** `{slot_str}`\n"
         f"- **Platforms:** instagram, tiktok, youtube\n"
-        f"- **Duration:** {length_sec:.2f}s (1080x1920, 30 fps)\n"
+        f"- **Duration:** {length_sec:.2f}s (1080x1920, 30 fps) | **Captions:** {'kinetic word-synced' if has_captions else 'hook+punchline'}\n"
+        f"- **Stranger Score:** {copy.get('stranger_score', copy.get('virality_score', 7))}/10 | **Signals:** {sig_str}\n"
         f"- **Hook (Frame 1):** `{copy['hook']}`\n"
+        f"- **YouTube Shorts Title:** `{copy.get('yt_title', '')}`\n"
         f"- **Punchline:** `{copy['punchline']}`\n"
         f"- **Source URL & Created At:** `{source_url}` ({created_at})\n"
-        f"- **Credit:** `@{streamer} (Twitch)`\n"
+        f"- **Credit:** `@{streamer} ({src_plat})`\n"
         f"- **Proof Frame:** `{proof_rel}`\n"
         f"- **Send Test:** {copy['send_test']}\n"
         f"- **IG First Comment:** `{copy['ig_first_comment']}`\n"
@@ -892,24 +924,78 @@ def append_log_entry(
         LOG_PATH.write_text(text, encoding="utf-8")
 
 
+def load_active_campaign(campaign_id: str) -> dict[str, Any] | None:
+    if not campaign_id or not CAMPAIGNS_PATH.exists():
+        return None
+    try:
+        data = json.loads(CAMPAIGNS_PATH.read_text(encoding="utf-8"))
+        for camp in data.get("campaigns") or []:
+            if str(camp.get("id") or "").strip().lower() == campaign_id.strip().lower():
+                return camp
+    except Exception:
+        return None
+    return None
+
+
 def main() -> int:
     load_local_dotenv()
-    parser = argparse.ArgumentParser(description="Daily 10:00 AM WAT headless cloud & local YouTube-streamer pipeline.")
-    parser.add_argument("--clip-count", type=int, default=int(os.environ.get("DAILY_CLIP_COUNT", "5")))
+    parser = argparse.ArgumentParser(description="Daily WAT headless cloud & local YouTube-streamer pipeline.")
+    parser.add_argument("--clip-count", type=int, default=int(os.environ.get("DAILY_CLIP_COUNT", "3")))
     parser.add_argument("--target-sec", type=str, default=os.environ.get("TARGET_CLIP_SEC", "18"),
                         help="Target clip duration in seconds (default: 18, or 'auto' to follow AI optimizer)")
     parser.add_argument("--source", choices=("auto", "twitch", "youtube"), default="auto",
                         help="Clip source: auto/twitch (cloud default) or youtube (local Mac YouTube-only streamers)")
     parser.add_argument("--streamers", type=str, default="",
                         help="Optional comma-separated streamer names/handles (e.g. 'IShowSpeed,TypicalGamer')")
+    parser.add_argument("--niche", choices=("gta6", "gaming"), default=os.environ.get("CONTENT_NICHE", "gta6"),
+                        help="Content niche: gta6 (strict GTA 6 filter) or gaming (broader viral gaming/campaign clips)")
+    parser.add_argument("--campaign", type=str, default=os.environ.get("ACTIVE_CAMPAIGN_ID", ""),
+                        help="Optional active campaign ID from data/campaigns.json")
+    parser.add_argument("--slot-label", type=str, default="Manual / Ad-hoc",
+                        help="Automation window label (e.g. '09:37 WAT (Primary)')")
+    parser.add_argument("--force-drop", action="store_true",
+                        help="Bypass daily idempotency gate and send clips even if today's WAT drop already ran")
     parser.add_argument("--dry-run", action="store_true", help="Do not send Telegram messages or mutate scoreboard")
     args = parser.parse_args()
 
-    require_gta6 = os.environ.get("REQUIRE_GTA6_ONLY", "true").strip().lower() not in ("0", "false", "no")
+    require_gta6 = (args.niche == "gta6") and (os.environ.get("REQUIRE_GTA6_ONLY", "true").strip().lower() not in ("0", "false", "no"))
     require_facecam = os.environ.get("REQUIRE_FACECAM", "true").strip().lower() not in ("0", "false", "no")
+    active_campaign = load_active_campaign(args.campaign)
     tagged_streamers = [s.strip() for s in args.streamers.split(",") if s.strip()]
     now_wat = datetime.now(WAT)
-    print(f"=== Pipeline Starting: {now_wat.isoformat()} (source={args.source}, target={args.clip_count} clips @ {args.target_sec}s, require_gta6={require_gta6}, require_facecam={require_facecam}) ===")
+    wat_date_str = now_wat.strftime("%Y-%m-%d")
+
+    # 0. Daily Telegram Drop Idempotency Gate (multi-window fallback safety!)
+    today_status = get_today_drop_status(wat_date_str)
+    already_delivered = int(today_status.get("clips_delivered") or 0)
+    target_clips = max(1, int(args.clip_count))
+    if not args.dry_run and not args.force_drop:
+        if today_status.get("status") == "completed" or already_delivered >= target_clips:
+            print(
+                f"[idempotency] Daily drop already completed for {wat_date_str} WAT "
+                f"via {today_status.get('slot_used') or 'earlier window'} "
+                f"({already_delivered} clips: {today_status.get('post_ids')}). Skipping duplicate run."
+            )
+            record_daily_drop_attempt(
+                wat_date_str,
+                args.slot_label,
+                [],
+                target_clips,
+                "completed",
+                note="Skipped duplicate window (already dropped today)",
+            )
+            payload = build_dashboard_payload()
+            update_dashboard_html(payload)
+            return 0
+    remaining_target = target_clips if args.force_drop else max(1, target_clips - already_delivered)
+    if already_delivered > 0 and not args.force_drop and not args.dry_run:
+        print(f"[idempotency] Resuming partial drop for {wat_date_str} WAT: {already_delivered}/{target_clips} already sent, producing {remaining_target} more.")
+
+    print(
+        f"=== Pipeline Starting: {now_wat.isoformat()} (slot={args.slot_label!r}, source={args.source}, "
+        f"niche={args.niche}, target={remaining_target} clips @ {args.target_sec}s, "
+        f"require_gta6={require_gta6}, require_facecam={require_facecam}, campaign={args.campaign or 'none'}) ==="
+    )
 
     # 1. Sync stats (skipped on --dry-run to save Scrape Creators credits)
     if not args.dry_run:
@@ -934,10 +1020,12 @@ def main() -> int:
     else:
         target_sec = float(args.target_sec)
     target_sec = max(14.0, min(35.0, target_sec))
-    print(f"[strategy-active] Effective target_sec={target_sec:.0f}s | min_virality_score>={min_virality_score}/10")
+    if active_campaign and active_campaign.get("max_length_sec"):
+        target_sec = min(target_sec, float(active_campaign["max_length_sec"]))
+    print(f"[strategy-active] Effective target_sec={target_sec:.0f}s | min_stranger_score>={min_virality_score}/10")
 
-    # 2. Health check & stuck-post protocol (determine active non-paused platforms BEFORE downloading anything!)
-    health = run_health_check(apply_pauses=not args.dry_run)
+    # 2. Health check (advisory by default so Telegram fallback windows keep working)
+    health = run_health_check(apply_pauses=False)
     pause_state = health.get("pause_state") or {}
     now_utc = datetime.now(timezone.utc)
 
@@ -960,16 +1048,13 @@ def main() -> int:
     if paused_platforms:
         print(f"[health] Paused platform(s) skipped this run: {paused_platforms} | Active: {active_platforms}")
 
-    if health.get("urgent_alert_even_overnight") and not args.dry_run:
-        if os.environ.get("TELEGRAM_BOT_TOKEN") and os.environ.get("TELEGRAM_CHAT_ID"):
-            send_message("URGENT: All active platforms stuck simultaneously. Global pause triggered. Run scripts/unpause.py after checking Account Status.")
-
     # 3. Scout fresh clips ONLY if at least one platform is active
     tw_id = os.environ.get("TWITCH_CLIENT_ID", "").strip()
     tw_sec = os.environ.get("TWITCH_CLIENT_SECRET", "").strip()
     tg_ready = bool(os.environ.get("TELEGRAM_BOT_TOKEN", "").strip() and os.environ.get("TELEGRAM_CHAT_ID", "").strip())
 
     produced: list[dict[str, Any]] = []
+    report_items: list[dict[str, Any]] = []
     failure_reasons: list[str] = []
     seen = load_json(SEEN_PATH, {"clip_ids": []})
     seen_set = set(seen.get("clip_ids", []))
@@ -981,31 +1066,31 @@ def main() -> int:
     elif args.source == "youtube":
         min_src = max(14.0, target_sec - 4.0)
         yt_cands = scout_youtube_gta6_clips(
-            limit=max(16, args.clip_count * 6),
+            limit=max(16, remaining_target * 6),
             streamers=tagged_streamers or None,
             min_duration=min_src,
         )
         print(f"[scout:youtube-local] Found {len(yt_cands)} YouTube-streamer clips across {len({c['broadcaster_name'] for c in yt_cands})} creators.")
         candidates.extend(yt_cands)
     else:
-        if tw_id and tw_sec:
+        if tw_id and tw_sec and args.niche == "gta6":
             try:
                 candidates = scout_twitch_gta6_clips(tw_id, tw_sec, limit=40)
                 print(f"[scout:twitch-api] Found {len(candidates)} fresh (<24h, English, >=18s) GTA 6 Twitch clips.")
             except Exception as exc:
                 print(f"[warn] Twitch API scout failed ({type(exc).__name__}); using zero-key Twitch direct scout.", file=sys.stderr)
 
-        if len(candidates) < args.clip_count * 4:
+        if len(candidates) < remaining_target * 4:
             min_src = max(14.0, target_sec - 4.0)
             tw_direct = scout_twitch_direct_clips(
-                limit=max(30, args.clip_count * 7),
+                limit=max(30, remaining_target * 8),
                 min_duration=min_src,
                 priority_streamers=strategy.get("priority_streamers"),
             )
             print(f"[scout:twitch-direct] Found {len(tw_direct)} view-ranked round-robin Twitch clips across {len({c['broadcaster_name'] for c in tw_direct})} streamers.")
             candidates.extend(tw_direct)
 
-        if args.source == "auto" and len(candidates) < args.clip_count:
+        if args.source == "auto" and len(candidates) < remaining_target:
             yt_cands = scout_youtube_gta6_clips(limit=12)
             print(f"[scout:youtube] Found {len(yt_cands)} YouTube fallback clips.")
             candidates.extend(yt_cands)
@@ -1013,11 +1098,11 @@ def main() -> int:
     if candidates and active_platforms:
         post_num = next_post_number()
         attempts = 0
-        max_attempts = max(14, args.clip_count * 4)
+        max_attempts = max(14, remaining_target * 5)
         used_streamers_today: set[str] = set()
 
         for clip_meta in candidates:
-            if len(produced) >= args.clip_count or attempts >= max_attempts:
+            if len(produced) >= remaining_target or attempts >= max_attempts:
                 break
             cid = clip_meta["id"]
             if cid in seen_set:
@@ -1043,30 +1128,49 @@ def main() -> int:
                     seen_set.add(cid)
                     continue
 
-                # Vision check on 4 real frames BEFORE cutting: verifies real GTA 6, scores virality & writes grounded copy!
+                # Signals collected for this clip (Twitch clip views + audio peak energy)
+                clip_signals: list[str] = ["twitch_clip_views" if src_plat == "Twitch" else "youtube_search"]
+                if int(clip_meta.get("view_count") or 0) >= 500:
+                    clip_signals.append(f"views:{clip_meta['view_count']}")
+                audio_peaks = detect_audio_peak_signals(raw_mp4)
+                if audio_peaks:
+                    clip_signals.append("audio_peak")
+
+                # Transcribe speech with word timestamps for kinetic captions + stranger scoring
+                transcript = transcribe_with_words(raw_mp4)
+                words = transcript.get("words") or []
+                print(f"[whisper] {post_id} @{streamer}: backend={transcript['backend']} words={len(words)}")
+
+                # Vision + transcript check on 4 real frames BEFORE cutting:
+                # scores stranger comprehension (0-10), verifies game, picks setup->payoff window, writes clean YT title!
                 strip_b64 = build_4frame_strip_b64(raw_mp4, src_dur)
-                copy = generate_copy_with_openrouter(
-                    streamer,
-                    clip_meta.get("title") or "",
+                copy = score_moment_for_strangers(
+                    streamer=streamer,
+                    clip_title=clip_meta.get("title") or "",
+                    src_dur=src_dur,
                     strip_b64=strip_b64,
+                    words=words,
                     require_gta6=require_gta6,
                     source_platform=src_plat,
                     strategy=strategy,
+                    campaign=active_campaign,
                 )
-                v_score = int(copy.get("virality_score") or 7)
+                s_score = int(copy.get("stranger_score") or copy.get("virality_score") or 7)
+                v_score = int(copy.get("virality_score") or s_score)
                 s_energy = str(copy.get("scene_energy") or "high_action")
                 print(
                     f"[vision] {post_id} @{streamer}: is_gta6={copy['is_gta6']} ({copy['game_detected']}) | "
-                    f"virality={v_score}/10 ({s_energy}) | hook={copy['hook']!r} | seen={copy['visual_summary'][:70]!r}"
+                    f"stranger={s_score}/10 virality={v_score}/10 ({s_energy}) | "
+                    f"hook={copy['hook']!r} | yt_title={copy.get('yt_title','')!r}"
                 )
                 if require_gta6 and not copy.get("is_gta6", True):
                     print(f"[skip] {cid} (@{streamer}) rejected by vision check: detected {copy['game_detected']!r}, not GTA 6.")
                     raw_mp4.unlink(missing_ok=True)
                     seen_set.add(cid)
                     continue
-                if v_score < min_virality_score or s_energy in ("slow_menu", "boring_idle"):
-                    reason = copy.get("reject_reason") or f"low energy ({s_energy}, {v_score}/10 < {min_virality_score})"
-                    print(f"[skip] {cid} (@{streamer}) rejected by virality gate: {reason}")
+                if min(s_score, v_score) < min_virality_score or s_energy in ("slow_menu", "boring_idle", "needs_context"):
+                    reason = copy.get("reject_reason") or f"low stranger/virality score ({s_energy}, s={s_score}, v={v_score} < {min_virality_score})"
+                    print(f"[skip] {cid} (@{streamer}) rejected by quality gate: {reason}")
                     raw_mp4.unlink(missing_ok=True)
                     seen_set.add(cid)
                     continue
@@ -1096,7 +1200,6 @@ def main() -> int:
                 if cam_info["has_facecam"] and cam_info["facecam_box_pct"]:
                     facecam_crop, game_crop = compute_stack_crops(src_w, src_h, cam_info["facecam_box_pct"])
                 elif not cam_info["checked"]:
-                    # Vision API unavailable: fall back to static preset scaled to actual clip resolution
                     crop_cfg = crops.get(streamer_key)
                     if crop_cfg and crop_cfg.get("layout") == "stack":
                         sx, sy = src_w / 1920.0, src_h / 1080.0
@@ -1119,19 +1222,38 @@ def main() -> int:
                     "-i", str(raw_mp4), "-frames:v", "1", str(proof_png),
                 ], check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
-                # Build punchy payoff-first spec (scales cleanly for 15-30s targets, default 18s sweet spot):
-                # 2.4s teaser from climax + 0.14s flash + tight setup-to-payoff + 0.7s slow-mo ~= target_sec
-                payoff_end = min(src_dur - 0.3, max(target_sec + 6.0, min(src_dur - 0.3, 24.0)))
-                teaser_dur = 2.4
-                teaser_start = max(4.0, payoff_end - teaser_dur - 0.4)
+                # Build tight setup-to-payoff window with dead-air removal (`silencedetect`)
+                payoff_end = float(copy.get("payoff_end_sec") or min(src_dur - 0.25, max(target_sec + 4.0, min(src_dur - 0.25, 24.0))))
+                payoff_end = max(13.0, min(src_dur - 0.2, payoff_end))
+                teaser_dur = 2.2
+                teaser_start = max(2.5, payoff_end - teaser_dur - 0.35)
                 teaser_end = min(payoff_end, teaser_start + teaser_dur)
 
-                body_raw_len = max(10.0, target_sec - teaser_dur - 0.14 - 0.7)
+                body_raw_len = max(10.5, target_sec - teaser_dur - 0.14 - 0.65)
                 body_start = max(0.0, payoff_end - body_raw_len)
+                if copy.get("setup_start_sec") is not None:
+                    ai_start = float(copy["setup_start_sec"])
+                    if 8.0 <= (payoff_end - ai_start) <= body_raw_len + 4.0:
+                        body_start = max(0.0, ai_start)
                 body_end = payoff_end
 
-                slowmo_start = max(body_start + 4.5, payoff_end - 2.3)
-                slowmo_end = min(body_end - 0.5, slowmo_start + 0.7)
+                silences = detect_silences(raw_mp4)
+                keep_ranges = build_dead_air_free_keep_ranges(
+                    window_start=body_start,
+                    window_end=body_end,
+                    silences=silences,
+                    words=words,
+                    protected_window=(max(body_start, payoff_end - 3.0), payoff_end),
+                )
+
+                slowmo_start = max(keep_ranges[0][0] + 4.0, payoff_end - 2.2)
+                slowmo_end = min(keep_ranges[-1][1] - 0.4, slowmo_start + 0.65)
+
+                SPECS_DIR.mkdir(parents=True, exist_ok=True)
+                srt_path = None
+                if words:
+                    srt_cand = SPECS_DIR / f"{post_id}.srt"
+                    srt_path = words_to_kinetic_srt(words, srt_cand, max_words=3, max_dur=1.35, uppercase=True)
 
                 use_stack = bool(facecam_crop and game_crop)
                 spec: dict[str, Any] = {
@@ -1141,22 +1263,25 @@ def main() -> int:
                     "layout": "stack" if use_stack else "full",
                     "teaser": {"start": round(teaser_start, 2), "end": round(teaser_end, 2)},
                     "teaser_text": copy["hook"],
-                    "keep": [[round(body_start, 2), round(body_end, 2)]],
-                    "slowmo": [{"start": round(slowmo_start, 2), "end": round(slowmo_end, 2), "speed": 0.5}],
+                    "keep": keep_ranges,
+                    "slowmo": [{"start": round(slowmo_start, 2), "end": round(slowmo_end, 2), "speed": 0.5}] if slowmo_end > slowmo_start + 0.25 else [],
                     "punchlines": [
                         {
-                            "start": round(max(body_start + 1.0, payoff_end - 2.4), 2),
-                            "end": round(body_end, 2),
+                            "start": round(max(keep_ranges[0][0] + 1.0, payoff_end - 2.2), 2),
+                            "end": round(keep_ranges[-1][1], 2),
                             "text": copy["punchline"],
                         }
                     ],
+                    "caption_style": "kinetic",
+                    "loudnorm": True,
                     "volume": 1.25,
                 }
+                if srt_path and srt_path.exists():
+                    spec["subtitles"] = str(srt_path.resolve())
                 if use_stack:
                     spec["facecam"] = facecam_crop
                     spec["game"] = game_crop
 
-                SPECS_DIR.mkdir(parents=True, exist_ok=True)
                 spec_path = SPECS_DIR / f"{post_id}.json"
                 save_json(spec_path, spec)
 
@@ -1164,12 +1289,27 @@ def main() -> int:
                 out_mp4 = Path(render_info["out"])
                 slot_iso, date_str, time_str = find_next_open_slot(now_wat)
 
-                # Validate & queue through safe_publish.py (ONLY for active non-paused platforms!)
+                # Apply campaign compliance fixes & checks if a clipping campaign is active
+                final_caption = apply_campaign_caption_fixes(copy["caption"], active_campaign) if active_campaign else copy["caption"]
+                camp_check = check_campaign_rules(
+                    {
+                        "duration_sec": render_info["duration_sec"],
+                        "caption": final_caption,
+                        "yt_title": copy.get("yt_title", ""),
+                        "platforms": active_platforms,
+                    },
+                    active_campaign,
+                )
+                if active_campaign and not camp_check["passed"]:
+                    print(f"[warn] {post_id} campaign check flags: {camp_check['checks']}", file=sys.stderr)
+
+                # Validate & queue through safe_publish.py (passing clean separate --yt-title!)
                 pub_cmd = [
                     sys.executable, str(ROOT_DIR / "scripts/safe_publish.py"),
                     "--post-id", post_id,
                     "--video", str(out_mp4),
-                    "--caption", copy["caption"],
+                    "--caption", final_caption,
+                    "--yt-title", copy.get("yt_title") or copy["hook"].title(),
                     "--platforms", *active_platforms,
                     "--scheduled-time", slot_iso,
                     "--ig-first-comment", copy["ig_first_comment"],
@@ -1188,14 +1328,19 @@ def main() -> int:
                 # Once safe_publish commits this post_id to the ledger, advance post_num so retries never collide
                 post_num += 1
 
-                # Deliver to Telegram in structured 5-part format
+                # Deliver to Telegram in clean structured format (separate YT Shorts title!)
                 delivered_tg = False
                 if tg_ready and not args.dry_run:
                     deliver_bundle(
                         ROOT_DIR / "queue" / post_id,
-                        index=len(produced) + 1,
-                        total=args.clip_count,
+                        index=already_delivered + len(produced) + 1,
+                        total=max(target_clips, already_delivered + remaining_target),
                         dry_run=False,
+                        meta={
+                            "stranger_score": s_score,
+                            "signals": clip_signals,
+                            "campaign_id": active_campaign.get("id") if active_campaign else None,
+                        },
                     )
                     sent_log = load_sent_log()
                     sent_log.setdefault("delivered", {})[post_id] = {
@@ -1206,26 +1351,42 @@ def main() -> int:
                     delivered_tg = True
 
                 if not args.dry_run:
-                    # Always track all 3 platforms in scoreboard.csv so IG, TikTok & YouTube stay in sync
                     append_scoreboard_rows(
                         post_id, date_str, time_str, copy["hook"],
                         render_info["duration_sec"], f"@{streamer} ({src_plat})",
                         f"proofs/{post_id}_proof.png",
                         platforms=["instagram", "tiktok", "youtube"],
+                        pillar=f"stream_clipper_{int(round(target_sec))}s",
+                        extra_note=f"stranger={s_score}/10 | captions={'yes' if srt_path else 'no'}",
                     )
                     append_log_entry(
-                        post_id, f"{date_str} {time_str}", streamer, clip_url,
+                        post_id, f"{date_str} {time_str}", streamer, src_plat, clip_url,
                         clip_meta.get("created_at", ""), copy, render_info["duration_sec"],
                         f"proofs/{post_id}_proof.png",
+                        signals=clip_signals,
+                        has_captions=bool(srt_path),
                     )
 
-                produced.append({
+                item_record = {
                     "post_id": post_id,
+                    "file": f"{post_id}.mp4",
                     "streamer": streamer,
+                    "source_platform": src_plat,
                     "duration_sec": render_info["duration_sec"],
+                    "timestamp": f"{keep_ranges[0][0]:.1f}s-{keep_ranges[-1][1]:.1f}s",
+                    "signals": clip_signals,
+                    "stranger_score": s_score,
+                    "virality_score": v_score,
+                    "has_captions": bool(srt_path),
+                    "whisper_backend": transcript.get("backend", "none"),
+                    "hook": copy["hook"],
+                    "yt_title": copy.get("yt_title", ""),
+                    "campaign_check": camp_check,
                     "slot": f"{date_str} {time_str}",
                     "telegram_delivered": delivered_tg,
-                })
+                }
+                produced.append(item_record)
+                report_items.append(item_record)
                 used_streamers_today.add(streamer_key)
                 seen_set.add(cid)
 
@@ -1237,13 +1398,42 @@ def main() -> int:
                 reason = f"{cid}: {type(exc).__name__}: {str(exc)[:140]}"
                 print(f"[warn] Failed clip {reason}", file=sys.stderr)
                 failure_reasons.append(reason)
-                # Do NOT permanently blacklist on transient download errors (e.g. YouTube IP throttle)
 
         if not args.dry_run:
             save_json(SEEN_PATH, {"clip_ids": sorted(seen_set)[-500:]})
 
-    # Clean up temporary cloud raw/render folders
+    # Clean up temporary cloud raw folder
     shutil.rmtree(RAW_DIR, ignore_errors=True)
+
+    # Save structured quality report + Markdown report
+    if report_items and not args.dry_run:
+        save_json(LAST_REPORT_PATH, {
+            "generated_at_utc": datetime.now(timezone.utc).isoformat(),
+            "slot_label": args.slot_label,
+            "niche": args.niche,
+            "campaign_id": args.campaign or None,
+            "clips": report_items,
+        })
+        write_clips_report_md(report_items, CLIPS_REPORT_MD)
+
+    # Record today's daily drop status for multi-window idempotency & dashboard display
+    if not args.dry_run:
+        delivered_ids_this_run = [p["post_id"] for p in produced if p.get("telegram_delivered")]
+        total_now = already_delivered + len(delivered_ids_this_run)
+        if total_now >= target_clips:
+            drop_status = "completed"
+        elif total_now > 0:
+            drop_status = "partial"
+        else:
+            drop_status = "failed"
+        record_daily_drop_attempt(
+            wat_date_str,
+            args.slot_label,
+            delivered_ids_this_run,
+            target_clips,
+            drop_status,
+            note="; ".join(failure_reasons[:2]) if failure_reasons else f"Delivered {len(delivered_ids_this_run)} clip(s)",
+        )
 
     # 8. Rebuild offline-safe live dashboard (auto-deployed to GitHub Pages!)
     payload = build_dashboard_payload()
@@ -1252,14 +1442,17 @@ def main() -> int:
     # Send concise daily summary to Telegram
     if tg_ready and not args.dry_run:
         lines = [
-            f"Daily 10 AM WAT Drop Complete ({now_wat.strftime('%Y-%m-%d')})",
-            f"Clips delivered today: {len(produced)} (~{target_sec:.0f}s each, virality>={min_virality_score}/10)",
+            f"Daily WAT Drop Summary ({wat_date_str} | {args.slot_label})",
+            f"Clips delivered this run: {len(produced)} (~{target_sec:.0f}s each, stranger_score>={min_virality_score}/10)",
             f"Active platforms: {', '.join(active_platforms) or 'none'}"
-            + (f" (Paused 24h: {', '.join(paused_platforms)})" if paused_platforms else ""),
+            + (f" (Paused: {', '.join(paused_platforms)})" if paused_platforms else ""),
             f"Total tracked views: {payload['totals']['views']:,} | Followers: {payload['totals']['followers']:,}",
         ]
         for p in produced:
-            lines.append(f"- {p['post_id']} (@{p['streamer']}, {p['duration_sec']}s) -> Post at {p['slot']}")
+            lines.append(
+                f"- {p['post_id']} (@{p['streamer']}, {p['duration_sec']}s, "
+                f"score {p['stranger_score']}/10, captions={'YES' if p['has_captions'] else 'NO'}) -> {p['slot']}"
+            )
         if not produced and failure_reasons:
             lines.append(f"Diagnostic (why 0 clips): {failure_reasons[0]}")
         send_message("\n".join(lines))

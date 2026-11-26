@@ -3,43 +3,43 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vice City Chaos · GTA 6 Clipping Console</title>
+  <title>Leonida Chaos · Clipping &amp; Campaigns Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
-      /* Graphite neutral ramp (unslop dark dashboard tokens) */
-      --bg-sidebar: #0f0f10;
-      --bg-page: #141415;
-      --bg-card: #19191b;
-      --bg-raised: #222225;
-      --bg-hover: #2a2a2e;
-      /* Subtle solid dark-graphite hairlines (~1.25:1 against surface) */
-      --hairline: #232327;
-      --hairline-strong: #2e2e34;
+      --bg-sidebar: #0b0c0e;
+      --bg-page: #101216;
+      --bg-card: #16191f;
+      --bg-raised: #1d2129;
+      --bg-hover: #252a34;
+      --hairline: #232730;
+      --hairline-strong: #303642;
 
-      /* Three text roles only */
-      --text-primary: #ededed;
-      --text-secondary: #a1a1a6;
-      --text-muted: #93939a;
+      --text-primary: #f1f3f5;
+      --text-secondary: #a4acb9;
+      --text-muted: #7b8494;
 
-      /* Single Vice-dusk broadcast accent + toned semantic roles */
-      --accent: #e86f3a;
-      --accent-dim: #5e311d;
-      --accent-surface: #261a15;
-      --positive: #4cc38a;
-      --negative: #e5484d;
-      --warning: #d99b38;
+      --accent: #f0713d;
+      --accent-dim: #6d341c;
+      --accent-surface: rgba(240, 113, 61, 0.12);
+      --positive: #3ecf8e;
+      --positive-surface: rgba(62, 207, 142, 0.12);
+      --negative: #ef5350;
+      --negative-surface: rgba(239, 83, 80, 0.12);
+      --warning: #e5a93c;
+      --warning-surface: rgba(229, 169, 60, 0.12);
+      --cyan: #38bdf8;
 
-      /* Typography: single crisp sans family + tabular-nums everywhere */
-      --font-sans: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+      --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
-      /* Nested radii (cards 12, controls 8, tags 4) */
-      --r-card: 12px;
-      --r-control: 8px;
-      --r-tag: 4px;
-
-      /* Motion */
+      --r-card: 14px;
+      --r-control: 9px;
+      --r-tag: 6px;
       --ease: cubic-bezier(0.22, 1, 0.36, 1);
-      --dur-fast: 150ms;
+      --dur: 170ms;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -52,134 +52,120 @@
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
       min-height: 100%;
-      max-width: 100%;
       overflow-x: clip;
     }
 
-    button, input {
-      font-family: inherit;
-      font-size: inherit;
-      color: inherit;
+    /* Subtle ambient broadcast glow + noise texture */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(900px 420px at 78% -8%, rgba(240, 113, 61, 0.08), transparent 60%),
+        radial-gradient(640px 360px at 18% 12%, rgba(56, 189, 248, 0.04), transparent 65%);
+      z-index: 0;
     }
 
-    button:focus-visible, input:focus-visible, a:focus-visible {
+    button, input, select { font-family: inherit; font-size: inherit; color: inherit; }
+    button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible {
       outline: 2px solid var(--accent);
       outline-offset: 2px;
     }
 
-    .tabular { font-variant-numeric: tabular-nums; }
+    .tabular, .mono { font-variant-numeric: tabular-nums; }
+    .mono { font-family: var(--font-mono); }
 
-    /* App Shell: 240px sidebar + fluid canvas */
     .app-shell {
+      position: relative;
+      z-index: 1;
       display: grid;
-      grid-template-columns: 240px minmax(0, 1fr);
+      grid-template-columns: 248px minmax(0, 1fr);
       min-height: 100vh;
-      max-width: 100%;
     }
 
     /* Sidebar */
     .sidebar {
-      background: var(--bg-sidebar);
+      background: rgba(11, 12, 14, 0.94);
+      backdrop-filter: blur(12px);
       border-right: 1px solid var(--hairline);
-      padding: 20px 16px;
+      padding: 22px 16px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 22px;
       position: sticky;
       top: 0;
       height: 100vh;
-      min-width: 0;
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 11px;
       padding: 4px 8px;
     }
 
     .brand-mark {
-      width: 24px;
-      height: 24px;
+      width: 30px;
+      height: 30px;
+      border-radius: 8px;
+      background: var(--bg-raised);
+      border: 1px solid var(--hairline-strong);
+      display: grid;
+      place-items: center;
       flex-shrink: 0;
     }
 
-    .brand-name {
-      font-size: 15px;
-      font-weight: 600;
-      line-height: 1.2;
-      color: var(--text-primary);
-    }
+    .brand-name { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; }
+    .brand-scope { font-size: 11.5px; color: var(--text-muted); line-height: 1.3; }
 
-    .brand-scope {
-      font-size: 12px;
-      color: var(--text-muted);
-      line-height: 1.3;
-    }
-
-    .nav-section {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
+    .nav-section { display: flex; flex-direction: column; gap: 4px; }
     .nav-label {
-      font-size: 12px;
-      font-weight: 500;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
       color: var(--text-muted);
-      padding: 0 8px 4px;
+      padding: 0 10px 6px;
     }
 
     .nav-btn {
       width: 100%;
-      height: 36px;
+      height: 38px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 8px;
-      padding: 0 8px;
+      padding: 0 10px;
       background: transparent;
       border: 1px solid transparent;
       border-radius: var(--r-control);
       color: var(--text-secondary);
       cursor: pointer;
       text-align: left;
-      transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+      font-weight: 500;
+      transition: background var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease), transform 90ms ease;
     }
-
-    .nav-btn:hover {
-      background: var(--bg-card);
-      color: var(--text-primary);
-    }
-
+    .nav-btn:hover { background: var(--bg-card); color: var(--text-primary); }
+    .nav-btn:active { transform: scale(0.985); }
     .nav-btn.active {
       background: var(--bg-raised);
       border-color: var(--hairline-strong);
       color: var(--text-primary);
+      box-shadow: inset 2px 0 0 var(--accent);
     }
 
-    .nav-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 0;
-    }
-
-    .nav-icon {
-      width: 16px;
-      height: 16px;
-      flex-shrink: 0;
-      color: var(--text-muted);
-    }
-
-    .nav-btn.active .nav-icon {
-      color: var(--text-primary);
-    }
-
+    .nav-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .nav-icon { width: 16px; height: 16px; flex-shrink: 0; color: var(--text-muted); }
+    .nav-btn.active .nav-icon { color: var(--accent); }
     .nav-count {
-      font-size: 12px;
-      font-variant-numeric: tabular-nums;
-      color: var(--text-muted);
+      font-size: 11px;
+      font-family: var(--font-mono);
+      padding: 1px 6px;
+      border-radius: 99px;
+      background: var(--bg-card);
+      border: 1px solid var(--hairline);
+      color: var(--text-secondary);
     }
 
     .sidebar-foot {
@@ -188,7 +174,7 @@
       border-top: 1px solid var(--hairline);
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 8px;
     }
 
     .status-row {
@@ -196,40 +182,26 @@
       align-items: center;
       gap: 8px;
       padding: 0 8px;
-      font-size: 13px;
+      font-size: 12.5px;
       color: var(--text-secondary);
     }
 
-    .tally-dot {
-      width: 6px;
-      height: 6px;
-      border-radius: 50%;
-      background: var(--positive);
-      flex-shrink: 0;
-    }
-
+    .tally-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--positive); flex-shrink: 0; }
     .tally-dot.warn { background: var(--warning); }
     .tally-dot.bad { background: var(--negative); }
-
-    .meta-line {
-      font-size: 12px;
-      font-variant-numeric: tabular-nums;
-      color: var(--text-muted);
-      padding: 0 8px;
-    }
+    .meta-line { font-size: 11.5px; font-family: var(--font-mono); color: var(--text-muted); padding: 0 8px; }
 
     /* Main Canvas */
     .canvas {
       width: 100%;
-      max-width: 1360px;
+      max-width: 1380px;
       min-width: 0;
-      padding: 24px 32px 48px;
+      padding: 26px 32px 56px;
       display: flex;
       flex-direction: column;
       gap: 20px;
     }
 
-    /* Title Row */
     .page-header {
       display: flex;
       flex-wrap: wrap;
@@ -240,523 +212,125 @@
       border-bottom: 1px solid var(--hairline);
     }
 
-    .title-group {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      min-width: 0;
-    }
+    .title-group { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .page-header h1 { font-size: 25px; font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; }
+    .finding-line { font-size: 13.5px; color: var(--text-secondary); max-width: 72ch; }
 
-    .page-header h1 {
-      font-size: 24px;
-      font-weight: 500;
-      line-height: 1.2;
-      letter-spacing: -0.01em;
-      color: var(--text-primary);
-    }
-
-    .finding-line {
-      font-size: 14px;
-      color: var(--text-secondary);
-      max-width: 68ch;
-    }
-
-    .header-controls {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-      max-width: 100%;
-    }
+    .header-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
     .segmented {
       display: inline-flex;
       background: var(--bg-card);
       border: 1px solid var(--hairline);
       border-radius: var(--r-control);
-      padding: 2px;
+      padding: 3px;
       gap: 2px;
-      max-width: 100%;
       flex-wrap: wrap;
     }
 
     .seg-btn {
-      height: 30px;
-      padding: 0 12px;
+      height: 29px;
+      padding: 0 11px;
       background: transparent;
       border: 1px solid transparent;
       border-radius: 6px;
       color: var(--text-secondary);
-      font-size: 13px;
-      font-weight: 400;
+      font-size: 12.5px;
+      font-weight: 500;
       cursor: pointer;
-      transition: background var(--dur-fast) var(--ease), color var(--dur-fast) var(--ease);
+      transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
     }
-
     .seg-btn:hover { color: var(--text-primary); }
-
     .seg-btn.active {
       background: var(--bg-raised);
       border-color: var(--hairline-strong);
       color: var(--text-primary);
-      font-weight: 500;
     }
 
     .btn-secondary {
       height: 34px;
-      padding: 0 12px;
+      padding: 0 13px;
       background: var(--bg-raised);
       border: 1px solid var(--hairline-strong);
       border-radius: var(--r-control);
       color: var(--text-primary);
-      font-size: 13px;
-      font-weight: 500;
+      font-size: 12.5px;
+      font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+      gap: 7px;
+      transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), transform 90ms ease;
     }
-
-    .btn-secondary:hover { background: var(--bg-hover); }
+    .btn-secondary:hover { background: var(--bg-hover); border-color: #3e4656; }
     .btn-secondary:active { transform: scale(0.98); }
 
-    /* Unified 4-column KPI strip split by 1px hairlines */
+    /* KPI Strip */
     .kpi-strip {
       display: grid;
-      grid-template-columns: 1.25fr 1fr 1fr 1fr;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
       background: var(--bg-card);
       border: 1px solid var(--hairline);
       border-radius: var(--r-card);
       overflow: hidden;
-      min-width: 0;
     }
 
     .kpi-cell {
-      padding: 20px 24px;
+      padding: 18px 20px;
       display: flex;
       flex-direction: column;
       gap: 6px;
       border-right: 1px solid var(--hairline);
       min-width: 0;
     }
-
     .kpi-cell:last-child { border-right: 0; }
+    .kpi-label { font-size: 12.5px; font-weight: 500; color: var(--text-secondary); }
+    .kpi-val { font-size: 26px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+    .kpi-sub { font-size: 12px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+    .kpi-sub .good, .good { color: var(--positive); }
+    .kpi-sub .bad, .bad { color: var(--negative); }
+    .warn { color: var(--warning); }
 
-    .kpi-label {
-      font-size: 13px;
-      font-weight: 400;
-      color: var(--text-secondary);
+    .kpi-cell.gsc-tab {
+      cursor: pointer;
+      border-top: 2px solid transparent;
+      border-left: 0;
+      border-bottom: 0;
+      background: transparent;
+      text-align: left;
+      transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
     }
+    .kpi-cell.gsc-tab:hover { background: var(--bg-raised); }
+    .kpi-cell.gsc-tab.active { background: var(--bg-raised); border-top-color: var(--gsc-color, var(--accent)); }
+    .kpi-badge { display: inline-flex; align-items: center; gap: 6px; }
+    .kpi-swatch { width: 8px; height: 8px; border-radius: 2px; background: var(--gsc-color, var(--accent)); opacity: 0.45; }
+    .kpi-cell.gsc-tab.active .kpi-swatch { opacity: 1; }
 
-    .kpi-val {
-      font-size: 24px;
-      font-weight: 500;
-      line-height: 1.1;
-      font-variant-numeric: tabular-nums;
-      color: var(--text-primary);
-    }
-
-    .kpi-cell.lead .kpi-val { font-size: 32px; }
-
-    .kpi-sub {
-      font-size: 12px;
-      color: var(--text-muted);
-      font-variant-numeric: tabular-nums;
-    }
-
-    .kpi-sub .good { color: var(--positive); }
-    .kpi-sub .bad { color: var(--negative); }
-
-    /* Asymmetric & Balanced Grids */
-    .row-main {
-      display: grid;
-      grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-      gap: 20px;
-      align-items: stretch;
-    }
-
-    .row-equal {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 20px;
-      align-items: stretch;
-    }
-
-    .row-bottom {
-      display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-      gap: 20px;
-      align-items: stretch;
-    }
+    /* Grids & Cards */
+    .row-main { display: grid; grid-template-columns: minmax(0, 1.95fr) minmax(0, 1fr); gap: 18px; align-items: stretch; }
+    .row-equal { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: stretch; }
+    .row-bottom { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 18px; align-items: stretch; }
 
     .card {
       background: var(--bg-card);
       border: 1px solid var(--hairline);
       border-radius: var(--r-card);
-      padding: 20px 24px;
+      padding: 20px 22px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 15px;
       min-width: 0;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
     }
 
-    .card-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
+    .card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .card-title { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; color: var(--text-primary); }
+    .card-meta { font-size: 12px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
 
-    .card-title {
-      font-size: 15px;
-      font-weight: 500;
-      color: var(--text-primary);
-    }
-
-    .card-meta {
-      font-size: 12px;
-      color: var(--text-muted);
-      font-variant-numeric: tabular-nums;
-    }
-
-    /* Main SVG Performance Chart */
-    .chart-wrap { width: 100%; }
-
-    .chart-svg {
-      width: 100%;
-      height: 268px;
-      display: block;
-    }
-
-    /* 24-Hour WAT Broadcast Slot Strip (Pure SVG, zero gradient lint issues) */
-    .wat-strip-block {
-      border-top: 1px solid var(--hairline);
-      padding-top: 16px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .wat-strip-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      flex-wrap: wrap;
-      font-size: 12px;
-      color: var(--text-secondary);
-    }
-
-    .wat-svg {
-      width: 100%;
-      height: 64px;
-      display: block;
-    }
-
-    /* Platform Distribution + Health + Schedule Stack */
-    .plat-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .plat-item {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .plat-row-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      font-size: 13px;
-      gap: 8px;
-    }
-
-    .plat-name {
-      color: var(--text-primary);
-      font-weight: 500;
-      text-transform: capitalize;
-    }
-
-    .plat-figs {
-      font-size: 12px;
-      font-variant-numeric: tabular-nums;
-      color: var(--text-secondary);
-    }
-
-    .track {
-      width: 100%;
-      height: 6px;
-      background: var(--bg-raised);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-
-    .track-fill {
-      height: 100%;
-      background: var(--text-muted);
-      border-radius: 3px;
-    }
-
-    .track-fill.lead { background: var(--accent); }
-
-    .sub-block {
-      border-top: 1px solid var(--hairline);
-      padding-top: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .sub-block-label {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-muted);
-      margin-bottom: 2px;
-    }
-
-    .kv-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 13px;
-      padding: 3px 0;
-      gap: 8px;
-    }
-
-    .kv-k { color: var(--text-secondary); }
-
-    .kv-v {
-      font-size: 12px;
-      font-variant-numeric: tabular-nums;
-      color: var(--text-primary);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    /* Signals Lists */
-    .signal-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .signal-list li {
-      padding: 12px;
-      background: var(--bg-sidebar);
-      border: 1px solid var(--hairline);
-      border-radius: var(--r-control);
-      font-size: 13px;
-      color: var(--text-secondary);
-      line-height: 1.45;
-    }
-
-    /* Table Controls & Data Table */
-    .table-toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .search-input {
-      height: 34px;
-      width: 240px;
-      max-width: 100%;
-      padding: 0 12px;
-      background: var(--bg-sidebar);
-      border: 1px solid var(--hairline-strong);
-      border-radius: var(--r-control);
-      color: var(--text-primary);
-      font-size: 13px;
-      transition: border-color var(--dur-fast) var(--ease);
-    }
-
-    .search-input::placeholder { color: var(--text-muted); }
-    .search-input:focus { border-color: var(--accent); outline: none; }
-
-    .table-scroll {
-      width: 100%;
-      max-width: 100%;
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
-
-    th {
-      text-align: left;
-      padding: 8px 12px;
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--text-muted);
-      border-bottom: 1px solid var(--hairline-strong);
-      white-space: nowrap;
-    }
-
-    th.num, td.num {
-      text-align: right;
-      font-variant-numeric: tabular-nums;
-    }
-
-    th.sortable { cursor: pointer; user-select: none; }
-    th.sortable:hover { color: var(--text-primary); }
-
-    td {
-      padding: 12px;
-      border-bottom: 1px solid var(--hairline);
-      color: var(--text-primary);
-      vertical-align: middle;
-    }
-
-    tbody tr { transition: background var(--dur-fast) var(--ease); }
-    tbody tr.clickable { cursor: pointer; }
-    tbody tr.clickable:hover td,
-    tbody tr.selected td { background: var(--bg-raised); }
-
-    .hook-cell {
-      max-width: 260px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .muted { color: var(--text-muted); }
-    .secondary { color: var(--text-secondary); }
-
-    .tag-quiet {
-      display: inline-block;
-      padding: 2px 6px;
-      border-radius: var(--r-tag);
-      background: var(--bg-raised);
-      border: 1px solid var(--hairline-strong);
-      font-size: 11px;
-      font-variant-numeric: tabular-nums;
-      color: var(--text-secondary);
-      white-space: nowrap;
-    }
-
-    .tag-quiet.good {
-      color: var(--positive);
-      border-color: #254a3a;
-    }
-
-    .tag-quiet.accent {
-      color: var(--accent);
-      border-color: var(--accent-dim);
-    }
-
-    /* Inline Selected Clip Inspector */
-    .clip-drawer {
-      background: var(--bg-sidebar);
-      border: 1px solid var(--hairline-strong);
-      border-radius: var(--r-control);
-      padding: 16px;
-      display: none;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .clip-drawer.open { display: flex; }
-
-    .drawer-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-      gap: 12px;
-      font-size: 13px;
-    }
-
-    .drawer-k { font-size: 12px; color: var(--text-muted); margin-bottom: 2px; }
-    .drawer-v { color: var(--text-primary); word-break: break-word; }
-
-    /* Monetization Progress Bar */
-    .progress-meta {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      color: var(--text-secondary);
-      font-variant-numeric: tabular-nums;
-    }
-
-    .stream-list {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .stream-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 0;
-      border-bottom: 1px solid var(--hairline);
-    }
-
-    .stream-row:last-child { border-bottom: 0; }
-    .stream-name { font-size: 13px; font-weight: 500; color: var(--text-primary); }
-    .stream-req { font-size: 12px; color: var(--text-muted); }
-
-    /* GSC-Style Clickable Metric Cards */
-    .kpi-cell.gsc-tab {
-      cursor: pointer;
-      position: relative;
-      border-top: 2px solid transparent;
-      transition: background var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
-      text-align: left;
-      width: 100%;
-      background: transparent;
-      border-left: 0;
-      border-bottom: 0;
-    }
-    .kpi-cell.gsc-tab:hover { background: var(--bg-raised); }
-    .kpi-cell.gsc-tab.active {
-      background: var(--bg-raised);
-      border-top-color: var(--gsc-color, var(--accent));
-    }
-    .kpi-cell.gsc-tab .kpi-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .kpi-swatch {
-      width: 8px;
-      height: 8px;
-      border-radius: 2px;
-      background: var(--gsc-color, var(--accent));
-      opacity: 0.45;
-    }
-    .kpi-cell.gsc-tab.active .kpi-swatch { opacity: 1; }
-
-    /* Chart Controls, Legend & Interactive Tooltip */
-    .chart-controls-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-    .chart-controls-right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .legend-bar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
+    /* Chart */
+    .chart-controls-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+    .chart-controls-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .legend-bar { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
     .legend-chip {
       display: inline-flex;
       align-items: center;
@@ -769,17 +343,18 @@
       color: var(--text-primary);
       font-size: 12px;
       cursor: pointer;
-      transition: opacity var(--dur-fast) var(--ease), border-color var(--dur-fast) var(--ease);
+      transition: opacity var(--dur) var(--ease);
     }
-    .legend-chip.off { opacity: 0.38; color: var(--text-muted); }
+    .legend-chip.off { opacity: 0.36; color: var(--text-muted); }
     .legend-dot { width: 8px; height: 8px; border-radius: 99px; flex-shrink: 0; }
 
-    .chart-wrap { position: relative; }
+    .chart-wrap { position: relative; width: 100%; }
+    .chart-svg { width: 100%; height: 264px; display: block; }
     .chart-tooltip {
       position: absolute;
       top: 8px;
       right: 12px;
-      background: #101012;
+      background: #0d0f13;
       border: 1px solid var(--hairline-strong);
       border-radius: var(--r-control);
       padding: 10px 12px;
@@ -787,34 +362,195 @@
       pointer-events: none;
       opacity: 0;
       transition: opacity 120ms var(--ease);
-      min-width: 172px;
+      min-width: 174px;
       z-index: 4;
     }
     .chart-tooltip.visible { opacity: 1; }
-    .tt-date { font-weight: 600; color: var(--text-primary); margin-bottom: 6px; font-variant-numeric: tabular-nums; }
+    .tt-date { font-weight: 600; margin-bottom: 6px; font-variant-numeric: tabular-nums; }
     .tt-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 2px 0; font-variant-numeric: tabular-nums; }
     .tt-lbl { display: inline-flex; align-items: center; gap: 6px; color: var(--text-secondary); }
-    .tt-val { color: var(--text-primary); font-weight: 500; }
+    .tt-val { font-weight: 600; }
 
-    /* AI Self-Improvement Card */
+    /* WAT Strip */
+    .wat-strip-block { border-top: 1px solid var(--hairline); padding-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+    .wat-strip-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 12px; color: var(--text-secondary); }
+    .wat-svg { width: 100%; height: 62px; display: block; }
+
+    /* Fallback Window Pills */
+    .window-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .window-pill {
+      background: var(--bg-sidebar);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-control);
+      padding: 12px 13px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .window-pill.done { border-color: rgba(62, 207, 142, 0.45); background: rgba(62, 207, 142, 0.06); }
+    .window-pill.armed { border-color: rgba(240, 113, 61, 0.4); }
+    .window-time { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--text-primary); }
+    .window-role { font-size: 11.5px; color: var(--text-secondary); }
+
+    /* Platform bars & KV */
+    .plat-list { display: flex; flex-direction: column; gap: 12px; }
+    .plat-item { display: flex; flex-direction: column; gap: 6px; }
+    .plat-row-top { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; gap: 8px; }
+    .plat-name { font-weight: 600; text-transform: capitalize; }
+    .plat-figs { font-size: 12px; font-variant-numeric: tabular-nums; color: var(--text-secondary); }
+    .track { width: 100%; height: 6px; background: var(--bg-raised); border-radius: 3px; overflow: hidden; }
+    .track-fill { height: 100%; background: var(--text-muted); border-radius: 3px; }
+    .track-fill.lead { background: var(--accent); }
+    .track-fill.green { background: var(--positive); }
+
+    .sub-block { border-top: 1px solid var(--hairline); padding-top: 13px; display: flex; flex-direction: column; gap: 6px; }
+    .sub-block-label { font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin-bottom: 2px; }
+    .kv-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 3px 0; gap: 8px; }
+    .kv-k { color: var(--text-secondary); }
+    .kv-v { font-size: 12px; font-variant-numeric: tabular-nums; color: var(--text-primary); display: inline-flex; align-items: center; gap: 6px; }
+
+    /* Signal & AI brief */
     .ai-brief-box {
-      padding: 12px 14px;
+      padding: 13px 15px;
       background: var(--bg-sidebar);
       border: 1px solid var(--hairline-strong);
       border-left: 3px solid var(--accent);
       border-radius: var(--r-control);
-      font-size: 13px;
+      font-size: 13.5px;
       color: var(--text-primary);
-      line-height: 1.5;
+      line-height: 1.55;
     }
-    .ai-meta-row {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
+    .ai-meta-row { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+    .signal-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+    .signal-list li {
+      padding: 11px 13px;
+      background: var(--bg-sidebar);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-control);
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.48;
     }
 
-    /* Pagination & See-More Footer */
+    /* Tables & Inputs */
+    .table-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .search-input, .calc-input {
+      height: 34px;
+      padding: 0 12px;
+      background: var(--bg-sidebar);
+      border: 1px solid var(--hairline-strong);
+      border-radius: var(--r-control);
+      color: var(--text-primary);
+      font-size: 13px;
+    }
+    .search-input { width: 250px; max-width: 100%; }
+    .search-input:focus, .calc-input:focus { border-color: var(--accent); outline: none; }
+
+    .table-scroll { width: 100%; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th {
+      text-align: left;
+      padding: 9px 12px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--hairline-strong);
+      white-space: nowrap;
+    }
+    th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    th.sortable { cursor: pointer; user-select: none; }
+    th.sortable:hover { color: var(--text-primary); }
+    td { padding: 11px 12px; border-bottom: 1px solid var(--hairline); vertical-align: middle; }
+    tbody tr { transition: background var(--dur) var(--ease); }
+    tbody tr.clickable { cursor: pointer; }
+    tbody tr.clickable:hover td, tbody tr.selected td { background: var(--bg-raised); }
+
+    .hook-cell { max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .muted { color: var(--text-muted); }
+    .secondary { color: var(--text-secondary); }
+
+    .tag-quiet {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 2px 8px;
+      border-radius: var(--r-tag);
+      background: var(--bg-raised);
+      border: 1px solid var(--hairline-strong);
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+    .tag-quiet.good { color: var(--positive); border-color: rgba(62, 207, 142, 0.35); background: var(--positive-surface); }
+    .tag-quiet.accent { color: var(--accent); border-color: var(--accent-dim); background: var(--accent-surface); }
+    .tag-quiet.warn { color: var(--warning); border-color: rgba(229, 169, 60, 0.35); background: var(--warning-surface); }
+
+    /* Drawer */
+    .clip-drawer {
+      background: var(--bg-sidebar);
+      border: 1px solid var(--hairline-strong);
+      border-radius: var(--r-control);
+      padding: 16px;
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .clip-drawer.open { display: flex; }
+    .drawer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(185px, 1fr)); gap: 12px; font-size: 13px; }
+    .drawer-k { font-size: 11.5px; color: var(--text-muted); margin-bottom: 2px; }
+    .drawer-v { color: var(--text-primary); word-break: break-word; }
+
+    /* Platforms & Earnings Grid */
+    .earn-hero-grid {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr;
+      background: var(--bg-card);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-card);
+      overflow: hidden;
+    }
+    .platform-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(265px, 1fr));
+      gap: 14px;
+    }
+    .plat-card {
+      background: var(--bg-sidebar);
+      border: 1px solid var(--hairline);
+      border-radius: var(--r-control);
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
+    }
+    .plat-card:hover { border-color: var(--hairline-strong); transform: translateY(-1px); }
+    .plat-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .plat-card-name { font-size: 14.5px; font-weight: 700; color: var(--text-primary); }
+    .plat-card-link { font-size: 11.5px; color: var(--accent); text-decoration: none; font-family: var(--font-mono); }
+    .plat-card-link:hover { text-decoration: underline; }
+    .plat-earn-amt { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+    .plat-card-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 11.5px; color: var(--text-secondary); }
+    .plat-card-metrics strong { display: block; color: var(--text-primary); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+
+    /* Calculator */
+    .calc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+    .calc-field { display: flex; flex-direction: column; gap: 5px; }
+    .calc-field label { font-size: 11.5px; color: var(--text-secondary); font-weight: 500; }
+    .code-cmd {
+      background: var(--bg-sidebar);
+      border: 1px solid var(--hairline-strong);
+      border-radius: var(--r-control);
+      padding: 11px 13px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-secondary);
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
     .table-footer {
       display: flex;
       align-items: center;
@@ -824,12 +560,7 @@
       padding-top: 12px;
       border-top: 1px solid var(--hairline);
     }
-    .pager-controls {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
+    .pager-controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .btn-link-accent {
       display: inline-flex;
       align-items: center;
@@ -841,49 +572,44 @@
       background: var(--accent-surface);
       color: var(--text-primary);
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
-      transition: border-color var(--dur-fast) var(--ease);
     }
     .btn-link-accent:hover { border-color: var(--accent); }
 
+    .stream-list { display: flex; flex-direction: column; }
+    .stream-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--hairline); }
+    .stream-row:last-child { border-bottom: 0; }
+    .stream-name { font-size: 13px; font-weight: 600; }
+    .stream-req { font-size: 12px; color: var(--text-muted); }
+
+    .progress-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
     .section-hidden { display: none !important; }
 
-    /* Responsive Tablet & Mobile (Zero Horizontal Overflow) */
-    @media (max-width: 1024px) {
+    @media (max-width: 1100px) {
       .app-shell { grid-template-columns: minmax(0, 1fr); }
       .sidebar {
         position: static;
         height: auto;
-        width: 100%;
         border-right: 0;
         border-bottom: 1px solid var(--hairline);
-        flex-direction: column;
-        align-items: stretch;
+        padding: 14px 16px;
         gap: 12px;
-        padding: 12px 16px;
       }
-      .nav-section {
-        flex-direction: row;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: 6px;
-      }
+      .nav-section { flex-direction: row; flex-wrap: wrap; gap: 6px; }
       .nav-label, .sidebar-foot { display: none; }
-      .nav-btn { width: auto; height: 32px; padding: 0 10px; }
-      .canvas { padding: 20px 16px 40px; }
-      .kpi-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .nav-btn { width: auto; height: 34px; padding: 0 11px; }
+      .canvas { padding: 20px 16px 44px; }
+      .kpi-strip, .earn-hero-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .kpi-cell { border-bottom: 1px solid var(--hairline); }
-      .kpi-cell:nth-child(2n) { border-right: 0; }
-      .row-main, .row-equal, .row-bottom { grid-template-columns: minmax(0, 1fr); }
+      .row-main, .row-equal, .row-bottom, .window-grid { grid-template-columns: minmax(0, 1fr); }
     }
 
     @media (max-width: 600px) {
-      .kpi-strip { grid-template-columns: minmax(0, 1fr); }
-      .kpi-cell { border-right: 0; padding: 16px; }
+      .kpi-strip, .earn-hero-grid { grid-template-columns: minmax(0, 1fr); }
+      .kpi-cell { border-right: 0; padding: 15px 16px; }
       .card { padding: 16px; }
       .search-input { width: 100%; }
-      .seg-btn { padding: 0 8px; font-size: 12px; }
     }
   </style>
 </head>
@@ -891,43 +617,51 @@
   <div class="app-shell">
     <aside class="sidebar" aria-label="Workspace navigation">
       <div class="brand">
-        <svg class="brand-mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-          <rect x="2" y="2" width="20" height="20" rx="5" fill="#19191b" stroke="#2e2e34" />
-          <path d="M9.5 7.5L16.5 12L9.5 16.5V7.5Z" fill="#e86f3a" />
-        </svg>
+        <div class="brand-mark" aria-hidden="true">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+            <path d="M8 6.5L18 12L8 17.5V6.5Z" fill="#f0713d" />
+          </svg>
+        </div>
         <div>
-          <div class="brand-name" id="sidebar-name">Vice City Chaos</div>
-          <div class="brand-scope">GTA 6 clipping desk</div>
+          <div class="brand-name" id="sidebar-name">Leonida Chaos</div>
+          <div class="brand-scope">GTA 6 &amp; Campaign Desk</div>
         </div>
       </div>
 
       <nav class="nav-section" aria-label="Views">
-        <div class="nav-label">Workspace</div>
+        <div class="nav-label">Command Center</div>
         <button class="nav-btn active" data-view="overview" type="button">
           <span class="nav-left">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
             <span>Overview</span>
           </span>
         </button>
+        <button class="nav-btn" data-view="campaigns" type="button">
+          <span class="nav-left">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            <span>Campaigns &amp; Earnings</span>
+          </span>
+          <span class="nav-count" id="nav-earn-pill">$0</span>
+        </button>
         <button class="nav-btn" data-view="clips" type="button">
           <span class="nav-left">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 9l5 3-5 3V9z"/></svg>
-            <span>Clips queue</span>
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 9l5 3-5 3V9z"/></svg>
+            <span>Clips &amp; Quality</span>
           </span>
           <span class="nav-count" id="nav-clips-count">0</span>
         </button>
+        <button class="nav-btn" data-view="automation" type="button">
+          <span class="nav-left">
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+            <span>Telegram &amp; Health</span>
+          </span>
+        </button>
         <button class="nav-btn" data-view="experiments" type="button">
           <span class="nav-left">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6"/><path d="M10 3v6l-5 9a2 2 0 0 0 1.7 3h10.6a2 2 0 0 0 1.7-3l-5-9V3"/></svg>
-            <span>Experiments</span>
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 3h6"/><path d="M10 3v6l-5 9a2 2 0 0 0 1.7 3h10.6a2 2 0 0 0 1.7-3l-5-9V3"/></svg>
+            <span>Experiments &amp; Guide</span>
           </span>
           <span class="nav-count" id="nav-exp-count">0</span>
-        </button>
-        <button class="nav-btn" data-view="monetization" type="button">
-          <span class="nav-left">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            <span>Monetization</span>
-          </span>
         </button>
       </nav>
 
@@ -945,45 +679,52 @@
       <header class="page-header">
         <div class="title-group">
           <h1 id="page-title">Performance overview</h1>
-          <p class="finding-line" id="page-finding">Loading latest run snapshot</p>
+          <p class="finding-line" id="page-finding">Loading latest clipping &amp; earnings snapshot</p>
         </div>
         <div class="header-controls">
           <div class="segmented" role="tablist" aria-label="Platform scope" id="platform-tabs">
             <button class="seg-btn active" data-platform="all" type="button" role="tab" aria-selected="true">All</button>
-            <button class="seg-btn" data-platform="instagram" type="button" role="tab" aria-selected="false">Instagram</button>
-            <button class="seg-btn" data-platform="tiktok" type="button" role="tab" aria-selected="false">TikTok</button>
             <button class="seg-btn" data-platform="youtube" type="button" role="tab" aria-selected="false">YouTube</button>
+            <button class="seg-btn" data-platform="tiktok" type="button" role="tab" aria-selected="false">TikTok</button>
+            <button class="seg-btn" data-platform="instagram" type="button" role="tab" aria-selected="false">Instagram</button>
           </div>
           <button class="btn-secondary" id="copy-summary-btn" type="button">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             <span id="copy-summary-label">Copy recap</span>
           </button>
         </div>
       </header>
 
+      <!-- OVERVIEW KPI STRIP -->
       <section class="kpi-strip" aria-label="Performance metric cards" data-section="overview" id="gsc-metric-cards">
-        <button class="kpi-cell gsc-tab lead active" data-gsc="views" style="--gsc-color:#e86f3a" type="button">
+        <button class="kpi-cell gsc-tab active" data-gsc="views" style="--gsc-color:#f0713d" type="button">
           <div class="kpi-label kpi-badge"><span class="kpi-swatch"></span>Total views</div>
           <div class="kpi-val" id="kpi-views">0</div>
-          <div class="kpi-sub" id="kpi-views-sub">0 platform rows tracked</div>
+          <div class="kpi-sub" id="kpi-views-sub">0 clips tracked</div>
         </button>
-        <button class="kpi-cell gsc-tab" data-gsc="likes" style="--gsc-color:#22d3ee" type="button">
-          <div class="kpi-label kpi-badge"><span class="kpi-swatch"></span>Total likes</div>
+        <button class="kpi-cell gsc-tab" data-gsc="likes" style="--gsc-color:#38bdf8" type="button">
+          <div class="kpi-label kpi-badge"><span class="kpi-swatch"></span>Likes &amp; rate</div>
           <div class="kpi-val" id="kpi-likes">0</div>
-          <div class="kpi-sub" id="kpi-likes-sub">Click to view likes trend</div>
+          <div class="kpi-sub" id="kpi-likes-sub">Click for likes trend</div>
         </button>
-        <button class="kpi-cell gsc-tab" data-gsc="followers" style="--gsc-color:#4cc38a" type="button">
+        <button class="kpi-cell gsc-tab" data-gsc="followers" style="--gsc-color:#3ecf8e" type="button">
           <div class="kpi-label kpi-badge"><span class="kpi-swatch"></span>Followers</div>
           <div class="kpi-val" id="kpi-followers">0</div>
           <div class="kpi-sub" id="kpi-followers-sub">Combined channels</div>
         </button>
-        <button class="kpi-cell gsc-tab" data-gsc="shares" style="--gsc-color:#d99b38" type="button">
+        <button class="kpi-cell gsc-tab" data-gsc="shares" style="--gsc-color:#e5a93c" type="button">
           <div class="kpi-label kpi-badge"><span class="kpi-swatch"></span>Shares &amp; rate</div>
           <div class="kpi-val" id="kpi-share">0</div>
           <div class="kpi-sub" id="kpi-share-sub">Target 1.0% share rate</div>
         </button>
+        <div class="kpi-cell">
+          <div class="kpi-label">Campaign earnings</div>
+          <div class="kpi-val good" id="kpi-earned">$0.00</div>
+          <div class="kpi-sub" id="kpi-earned-sub">0/11 platforms active</div>
+        </div>
       </section>
 
+      <!-- OVERVIEW CHARTS & HEALTH -->
       <section class="row-main" data-section="overview">
         <div class="card">
           <div class="chart-controls-bar">
@@ -1003,19 +744,17 @@
             </div>
           </div>
 
-          <div class="chart-controls-bar" style="margin-top:2px">
+          <div class="chart-controls-bar">
             <div class="legend-bar" id="platform-legend" aria-label="Toggle platform lines">
-              <button class="legend-chip" data-line="youtube" type="button"><span class="legend-dot" style="background:#e5484d"></span>YouTube</button>
-              <button class="legend-chip" data-line="tiktok" type="button"><span class="legend-dot" style="background:#22d3ee"></span>TikTok</button>
-              <button class="legend-chip" data-line="instagram" type="button"><span class="legend-dot" style="background:#e86f3a"></span>Instagram</button>
+              <button class="legend-chip" data-line="youtube" type="button"><span class="legend-dot" style="background:#ef5350"></span>YouTube</button>
+              <button class="legend-chip" data-line="tiktok" type="button"><span class="legend-dot" style="background:#38bdf8"></span>TikTok</button>
+              <button class="legend-chip" data-line="instagram" type="button"><span class="legend-dot" style="background:#f0713d"></span>Instagram</button>
             </div>
             <div class="segmented" role="tablist" aria-label="Date range" id="range-tabs">
-              <button class="seg-btn" data-range="5d" type="button" role="tab" aria-selected="false">5D</button>
-              <button class="seg-btn" data-range="7d" type="button" role="tab" aria-selected="false">7D</button>
-              <button class="seg-btn" data-range="28d" type="button" role="tab" aria-selected="false">28D</button>
-              <button class="seg-btn" data-range="3m" type="button" role="tab" aria-selected="false">3M</button>
-              <button class="seg-btn" data-range="6m" type="button" role="tab" aria-selected="false">6M</button>
-              <button class="seg-btn active" data-range="all" type="button" role="tab" aria-selected="true">Overall</button>
+              <button class="seg-btn" data-range="5d" type="button">5D</button>
+              <button class="seg-btn" data-range="7d" type="button">7D</button>
+              <button class="seg-btn" data-range="28d" type="button">28D</button>
+              <button class="seg-btn active" data-range="all" type="button">Overall</button>
             </div>
           </div>
 
@@ -1035,50 +774,53 @@
 
         <div class="card">
           <div class="card-head">
-            <h2 class="card-title">Platforms &amp; health</h2>
+            <h2 class="card-title">Platforms &amp; YouTube audit</h2>
             <span class="card-meta" id="health-checked">-</span>
           </div>
-
           <div class="plat-list" id="platform-list"></div>
 
           <div class="sub-block">
-            <div class="sub-block-label">Distribution checks</div>
-            <div class="kv-row">
-              <span class="kv-k">Stuck posts (&lt;20 at 1h)</span>
-              <span class="kv-v" id="health-stuck">0</span>
-            </div>
-            <div class="kv-row">
-              <span class="kv-k">Kill switch</span>
-              <span class="kv-v" id="health-pause">Clear</span>
-            </div>
-            <div class="kv-row">
-              <span class="kv-k">Profile quarantine</span>
-              <span class="kv-v" id="health-quarantine">Clear</span>
-            </div>
-            <div class="kv-row">
-              <span class="kv-k">IG ceiling streak</span>
-              <span class="kv-v" id="health-ig-band">Normal</span>
-            </div>
+            <div class="sub-block-label">YouTube Shorts recovery audit</div>
+            <div class="kv-row"><span class="kv-k">Zero / low-view (&lt;20)</span><span class="kv-v" id="yt-zero-count">-</span></div>
+            <div class="kv-row"><span class="kv-k">Breakouts (500+ views)</span><span class="kv-v good" id="yt-breakout-count">-</span></div>
+            <div class="kv-row"><span class="kv-k">Average clip length</span><span class="kv-v" id="yt-avg-len">-</span></div>
+            <div class="kv-row"><span class="kv-k">Quality gates</span><span class="kv-v" id="health-gates">Kinetic Captions · Stranger &gt;=7</span></div>
           </div>
 
           <div class="sub-block">
-            <div class="sub-block-label">Self-improving cloud desk</div>
-            <div class="kv-row">
-              <span class="kv-k">GitHub Actions cron</span>
-              <span class="kv-v">10:00 WAT daily</span>
-            </div>
-            <div class="kv-row">
-              <span class="kv-k">Target clip length</span>
-              <span class="kv-v" id="health-target-len">18.0s (5 clips/day)</span>
-            </div>
-            <div class="kv-row">
-              <span class="kv-k">Quality gates</span>
-              <span class="kv-v" id="health-gates">40/60 Cam · Virality &gt;=7</span>
-            </div>
+            <div class="sub-block-label">Today's Telegram drop</div>
+            <div class="kv-row"><span class="kv-k">WAT status</span><span class="kv-v" id="ov-drop-status">Armed</span></div>
+            <div class="kv-row"><span class="kv-k">Slot delivered</span><span class="kv-v" id="ov-drop-slot">-</span></div>
           </div>
         </div>
       </section>
 
+      <!-- TELEGRAM 4-WINDOW FALLBACK + YOUTUBE RECOVERY CARD -->
+      <section class="row-equal" data-section="overview automation">
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2 class="card-title">Telegram multi-window fallback schedule</h2>
+              <div class="card-meta" id="auto-sub">Idempotent daily WAT drop — skips backup slots once today's clips arrive</div>
+            </div>
+            <span class="tag-quiet good" id="auto-badge">Armed</span>
+          </div>
+          <div class="window-grid" id="window-grid"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2 class="card-title">YouTube Shorts viral recovery</h2>
+              <div class="card-meta">Fixes applied for @leonidachao zero-view Shorts</div>
+            </div>
+            <span class="tag-quiet accent">Stream-Clipper Active</span>
+          </div>
+          <ul class="signal-list" id="yt-rec-list"></ul>
+        </div>
+      </section>
+
+      <!-- AI STRATEGY -->
       <section class="card" data-section="overview" id="ai-strategy-card">
         <div class="card-head">
           <div>
@@ -1094,19 +836,133 @@
         <div class="card">
           <div class="card-head">
             <h2 class="card-title">Double down (winning signals)</h2>
-            <span class="card-meta">Fed into next clip scout</span>
+            <span class="card-meta">Fed into clip scout</span>
           </div>
           <ul class="signal-list" id="working-list"></ul>
         </div>
         <div class="card">
           <div class="card-head">
             <h2 class="card-title">Auto-reject (attention needed)</h2>
-            <span class="card-meta">Filtered by vision gate</span>
+            <span class="card-meta">Filtered by vision &amp; stranger gate</span>
           </div>
           <ul class="signal-list" id="not-working-list"></ul>
         </div>
       </section>
 
+      <!-- CAMPAIGNS & EARNINGS VIEW -->
+      <section class="earn-hero-grid" data-section="campaigns" aria-label="Campaign earnings summary">
+        <div class="kpi-cell">
+          <div class="kpi-label">Total accumulated earnings</div>
+          <div class="kpi-val good" id="earn-total">$0.00</div>
+          <div class="kpi-sub">Paid + Pending across all 11 platforms</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-label">Paid out</div>
+          <div class="kpi-val" id="earn-paid">$0.00</div>
+          <div class="kpi-sub">Settled withdrawals</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-label">Pending / approved</div>
+          <div class="kpi-val warn" id="earn-pending">$0.00</div>
+          <div class="kpi-sub">Awaiting hold release</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-label">Verified campaign views</div>
+          <div class="kpi-val" id="earn-views">0</div>
+          <div class="kpi-sub" id="earn-cpm">Effective CPM: $0.00</div>
+        </div>
+        <div class="kpi-cell">
+          <div class="kpi-label">Joined platforms</div>
+          <div class="kpi-val" id="earn-platforms">0 / 11</div>
+          <div class="kpi-sub" id="earn-camps">0 active campaigns</div>
+        </div>
+      </section>
+
+      <section class="card" data-section="campaigns">
+        <div class="table-toolbar">
+          <div>
+            <h2 class="card-title">All 11 clipping platforms — individual earnings &amp; status</h2>
+            <div class="card-meta">WHOP · CLIPUR · CLIPSTER · CLIPSTAKE · DAREBAY · VUES · CLIPPING · CLIPFY · CLIPERSHQ · CLIPPINGEXE · STARLET</div>
+          </div>
+          <div class="segmented" id="plat-status-filter">
+            <button class="seg-btn active" data-pfilter="all" type="button">All (11)</button>
+            <button class="seg-btn" data-pfilter="active" type="button">Joined</button>
+            <button class="seg-btn" data-pfilter="not_joined" type="button">Not joined</button>
+          </div>
+        </div>
+        <div class="platform-cards-grid" id="platform-cards-grid"></div>
+      </section>
+
+      <section class="row-equal" data-section="campaigns">
+        <div class="card">
+          <div class="card-head">
+            <h2 class="card-title">Individual campaigns breakdown</h2>
+            <span class="card-meta">Tracked from data/campaigns.json</span>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Campaign</th>
+                  <th>Platform</th>
+                  <th>Niche</th>
+                  <th class="num">CPM</th>
+                  <th class="num">Views</th>
+                  <th class="num">Pending</th>
+                  <th class="num">Paid</th>
+                  <th class="num">Total</th>
+                </tr>
+              </thead>
+              <tbody id="campaigns-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <div>
+              <h2 class="card-title">Payout calculator &amp; CLI logger</h2>
+              <div class="card-meta">Estimate net CPM earnings &amp; copy exact logging commands</div>
+            </div>
+          </div>
+          <div class="calc-grid">
+            <div class="calc-field">
+              <label for="calc-platform">Platform</label>
+              <select class="calc-input" id="calc-platform"></select>
+            </div>
+            <div class="calc-field">
+              <label for="calc-camp-id">Campaign ID</label>
+              <input class="calc-input" id="calc-camp-id" value="WHOP-GTA-1" />
+            </div>
+            <div class="calc-field">
+              <label for="calc-views">Expected views</label>
+              <input class="calc-input" id="calc-views" type="number" value="25000" min="0" step="500" />
+            </div>
+            <div class="calc-field">
+              <label for="calc-cpm">CPM ($ / 1K)</label>
+              <input class="calc-input" id="calc-cpm" type="number" value="1.50" min="0" step="0.1" />
+            </div>
+            <div class="calc-field">
+              <label for="calc-cap">Per-clip cap ($)</label>
+              <input class="calc-input" id="calc-cap" type="number" value="150" min="0" step="10" />
+            </div>
+            <div class="calc-field">
+              <label for="calc-fee">Platform fee (%)</label>
+              <input class="calc-input" id="calc-fee" type="number" value="10" min="0" max="50" step="0.5" />
+            </div>
+          </div>
+          <div class="kv-row" style="padding:8px 12px;background:var(--bg-sidebar);border:1px solid var(--hairline);border-radius:var(--r-control)">
+            <span class="kv-k">Estimated net payout</span>
+            <span class="kv-v good" id="calc-result" style="font-size:17px;font-weight:700">$33.75</span>
+          </div>
+          <div class="code-cmd" id="calc-cli-cmd"></div>
+          <div>
+            <button class="btn-link-accent" id="copy-calc-cmd" type="button">Copy CLI command</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- CLIPS TABLE (OVERVIEW PREVIEW + FULL CLIPS VIEW) -->
       <section class="card" data-section="overview clips">
         <div class="table-toolbar">
           <div>
@@ -1128,7 +984,7 @@
                 <th>Post</th>
                 <th>Platform</th>
                 <th>Streamer</th>
-                <th>Hook</th>
+                <th>Hook / YT Title</th>
                 <th class="num sortable" data-sort="length_sec">Length</th>
                 <th>Slot (WAT)</th>
                 <th class="num sortable" data-sort="views">Plays</th>
@@ -1148,7 +1004,47 @@
         </div>
       </section>
 
-      <section class="row-bottom" data-section="overview experiments monetization">
+      <!-- AUTOMATION & HEALTH DETAILS -->
+      <section class="row-equal" data-section="automation">
+        <div class="card">
+          <div class="card-head">
+            <h2 class="card-title">Daily Telegram drop history (WAT)</h2>
+            <span class="card-meta">data/daily_drops.json</span>
+          </div>
+          <div class="table-scroll">
+            <table>
+              <thead>
+                <tr>
+                  <th>Date (WAT)</th>
+                  <th>Status</th>
+                  <th>Window Used</th>
+                  <th class="num">Clips</th>
+                  <th>Post IDs</th>
+                </tr>
+              </thead>
+              <tbody id="drops-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head">
+            <h2 class="card-title">Distribution health &amp; latest quality report</h2>
+            <span class="card-meta" id="health-checked-2">-</span>
+          </div>
+          <div class="kv-row"><span class="kv-k">Stuck posts (&lt;20 plays)</span><span class="kv-v" id="health-stuck">0</span></div>
+          <div class="kv-row"><span class="kv-k">Kill switch</span><span class="kv-v" id="health-pause">Clear</span></div>
+          <div class="kv-row"><span class="kv-k">Profile quarantine</span><span class="kv-v" id="health-quarantine">Clear</span></div>
+          <div class="kv-row"><span class="kv-k">IG ceiling streak</span><span class="kv-v" id="health-ig-band">Normal</span></div>
+          <div class="sub-block">
+            <div class="sub-block-label">Latest stream-clipper run</div>
+            <div id="last-report-list" class="signal-list"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- EXPERIMENTS, MONETIZATION & GUIDE -->
+      <section class="row-bottom" data-section="overview experiments">
         <div class="card" data-sub="experiments">
           <div class="card-head">
             <h2 class="card-title">Active experiments</h2>
@@ -1169,14 +1065,14 @@
           </div>
         </div>
 
-        <div class="card" data-sub="monetization">
+        <div class="card" data-sub="experiments">
           <div class="card-head">
-            <h2 class="card-title">Monetization gate</h2>
-            <span class="card-meta" id="monetization-phase">Audience only</span>
+            <h2 class="card-title">Monetization &amp; campaign readiness</h2>
+            <span class="card-meta" id="monetization-phase">Eligible</span>
           </div>
           <div>
             <div class="progress-meta">
-              <span id="phase-day-label">Day 0 of 14 audience-only baseline</span>
+              <span id="phase-day-label">Day 0 of 14 baseline</span>
               <span class="tabular" id="phase-pct">0%</span>
             </div>
             <div class="track" style="margin-top:8px">
@@ -1184,12 +1080,6 @@
             </div>
           </div>
           <div class="stream-list" id="monetization-list"></div>
-          <div class="sub-block">
-            <div class="sub-block-label">Growth benchmarks (winners' sample)</div>
-            <div class="kv-row"><span class="kv-k">24h share rate target</span><span class="kv-v">&gt;= 1.0%</span></div>
-            <div class="kv-row"><span class="kv-k">Momentum follow-up rule</span><span class="kv-v">3x account median</span></div>
-            <div class="kv-row"><span class="kv-k">Slot verdict window</span><span class="kv-v">14 days min</span></div>
-          </div>
         </div>
       </section>
     </main>
@@ -1198,7 +1088,7 @@
   <script>
 /* === DASHBOARD_DATA_START === */
 const DASHBOARD_DATA = {
-  "generated_at_utc": "2026-11-26T08:36:37.514941+00:00",
+  "generated_at_utc": "2026-11-26T15:16:36.226108+00:00",
   "page_name": "Leonida Chaos",
   "timezone": "WAT (UTC+1)",
   "platforms": {
@@ -1848,6 +1738,7 @@ const DASHBOARD_DATA = {
       "pillar": "instant_karma",
       "format": "stack",
       "hook": "HE PROMISED GTA 6 CHAT NO MORE CRASHING",
+      "yt_title": "",
       "length_sec": 13.71,
       "credit": "@ohnePixel (Twitch)",
       "views": 158,
@@ -1869,6 +1760,7 @@ const DASHBOARD_DATA = {
       "pillar": "instant_karma",
       "format": "stack",
       "hook": "HE PROMISED GTA 6 CHAT NO MORE CRASHING",
+      "yt_title": "",
       "length_sec": 13.71,
       "credit": "@ohnePixel (Twitch)",
       "views": 852,
@@ -1890,6 +1782,7 @@ const DASHBOARD_DATA = {
       "pillar": "instant_karma",
       "format": "stack",
       "hook": "HE PROMISED GTA 6 CHAT NO MORE CRASHING",
+      "yt_title": "",
       "length_sec": 13.71,
       "credit": "@ohnePixel (Twitch)",
       "views": 9400,
@@ -1911,6 +1804,7 @@ const DASHBOARD_DATA = {
       "pillar": "physics_chaos_lucia",
       "format": "stack",
       "hook": "GTA 6 PHYSICS JUST BROKE XQC",
+      "yt_title": "",
       "length_sec": 15.24,
       "credit": "@xQc (Twitch)",
       "views": 3,
@@ -1932,6 +1826,7 @@ const DASHBOARD_DATA = {
       "pillar": "physics_chaos_lucia",
       "format": "stack",
       "hook": "GTA 6 PHYSICS JUST BROKE XQC",
+      "yt_title": "",
       "length_sec": 15.24,
       "credit": "@xQc (Twitch)",
       "views": 933,
@@ -1953,6 +1848,7 @@ const DASHBOARD_DATA = {
       "pillar": "physics_chaos_lucia",
       "format": "stack",
       "hook": "GTA 6 PHYSICS JUST BROKE XQC",
+      "yt_title": "",
       "length_sec": 15.24,
       "credit": "@xQc (Twitch)",
       "views": 6,
@@ -1974,6 +1870,7 @@ const DASHBOARD_DATA = {
       "pillar": "relatable_life_sim_jason",
       "format": "stack",
       "hook": "GTA 6 JASON PAINTING ALL WRONG",
+      "yt_title": "",
       "length_sec": 14.87,
       "credit": "@CaseOh (Twitch)",
       "views": 211,
@@ -1995,6 +1892,7 @@ const DASHBOARD_DATA = {
       "pillar": "relatable_life_sim_jason",
       "format": "stack",
       "hook": "GTA 6 JASON PAINTING ALL WRONG",
+      "yt_title": "",
       "length_sec": 14.87,
       "credit": "@CaseOh (Twitch)",
       "views": 475,
@@ -2016,6 +1914,7 @@ const DASHBOARD_DATA = {
       "pillar": "relatable_life_sim_jason",
       "format": "stack",
       "hook": "GTA 6 JASON PAINTING ALL WRONG",
+      "yt_title": "",
       "length_sec": 14.87,
       "credit": "@CaseOh (Twitch)",
       "views": 7,
@@ -2037,6 +1936,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_20s",
       "format": "stack_or_full",
       "hook": "XQC GETTING LOST IN VICE CITY",
+      "yt_title": "",
       "length_sec": 20.04,
       "credit": "@xqc (Twitch)",
       "views": 0,
@@ -2058,6 +1958,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_20s",
       "format": "stack_or_full",
       "hook": "XQC GETTING LOST IN VICE CITY",
+      "yt_title": "",
       "length_sec": 20.04,
       "credit": "@xqc (Twitch)",
       "views": 216,
@@ -2079,6 +1980,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_20s",
       "format": "stack_or_full",
       "hook": "XQC GETTING LOST IN VICE CITY",
+      "yt_title": "",
       "length_sec": 20.04,
       "credit": "@xqc (Twitch)",
       "views": 2,
@@ -2100,6 +2002,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_20s",
       "format": "stack_or_full",
       "hook": "GTA 6 LUCIA WALKS INTO A WALL",
+      "yt_title": "",
       "length_sec": 20.04,
       "credit": "@kaicenat (Twitch)",
       "views": 199,
@@ -2121,6 +2024,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_20s",
       "format": "stack_or_full",
       "hook": "GTA 6 LUCIA WALKS INTO A WALL",
+      "yt_title": "",
       "length_sec": 20.04,
       "credit": "@kaicenat (Twitch)",
       "views": 123,
@@ -2142,6 +2046,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_20s",
       "format": "stack_or_full",
       "hook": "GTA 6 LUCIA WALKS INTO A WALL",
+      "yt_title": "",
       "length_sec": 20.04,
       "credit": "@kaicenat (Twitch)",
       "views": 5,
@@ -2163,6 +2068,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_20s",
       "format": "stack_or_full",
       "hook": "XQC GTA 6 PHYSICS ARE BROKEN",
+      "yt_title": "",
       "length_sec": 20.1,
       "credit": "@xqc (Twitch)",
       "views": 201,
@@ -2184,6 +2090,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_20s",
       "format": "stack_or_full",
       "hook": "XQC GTA 6 PHYSICS ARE BROKEN",
+      "yt_title": "",
       "length_sec": 20.1,
       "credit": "@xqc (Twitch)",
       "views": 165,
@@ -2205,6 +2112,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_20s",
       "format": "stack_or_full",
       "hook": "XQC GTA 6 PHYSICS ARE BROKEN",
+      "yt_title": "",
       "length_sec": 20.1,
       "credit": "@xqc (Twitch)",
       "views": 4,
@@ -2226,6 +2134,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 BEDROOM MELTDOWN MOMENT",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@jasontheween (Twitch)",
       "views": 0,
@@ -2247,6 +2156,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 BEDROOM MELTDOWN MOMENT",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@jasontheween (Twitch)",
       "views": 0,
@@ -2268,6 +2178,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 BEDROOM MELTDOWN MOMENT",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@jasontheween (Twitch)",
       "views": 0,
@@ -2289,6 +2200,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 LIQUOR STORE ROBBERY",
+      "yt_title": "",
       "length_sec": 30.1,
       "credit": "@jynxzi (Twitch)",
       "views": 153,
@@ -2310,6 +2222,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 LIQUOR STORE ROBBERY",
+      "yt_title": "",
       "length_sec": 30.1,
       "credit": "@jynxzi (Twitch)",
       "views": 189,
@@ -2331,6 +2244,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 LIQUOR STORE ROBBERY",
+      "yt_title": "",
       "length_sec": 30.1,
       "credit": "@jynxzi (Twitch)",
       "views": 210,
@@ -2352,6 +2266,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 NIGHT CITY DRIVING",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@lacy (Twitch)",
       "views": 200,
@@ -2373,6 +2288,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 NIGHT CITY DRIVING",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@lacy (Twitch)",
       "views": 152,
@@ -2394,6 +2310,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 NIGHT CITY DRIVING",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@lacy (Twitch)",
       "views": 4,
@@ -2415,6 +2332,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 DRACO DOING WORK",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@fanum (Twitch)",
       "views": 191,
@@ -2436,6 +2354,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 DRACO DOING WORK",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@fanum (Twitch)",
       "views": 32,
@@ -2457,6 +2376,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 DRACO DOING WORK",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@fanum (Twitch)",
       "views": 38,
@@ -2478,6 +2398,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 FIRST PERSON MODE",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@lirik (Twitch)",
       "views": 136,
@@ -2499,6 +2420,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 FIRST PERSON MODE",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@lirik (Twitch)",
       "views": 207,
@@ -2520,6 +2442,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 FIRST PERSON MODE",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@lirik (Twitch)",
       "views": 6,
@@ -2541,6 +2464,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 STRIP CLUB SCENE",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@kaicenat (Twitch)",
       "views": 0,
@@ -2562,6 +2486,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 STRIP CLUB SCENE",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@kaicenat (Twitch)",
       "views": 0,
@@ -2583,6 +2508,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 STRIP CLUB SCENE",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@kaicenat (Twitch)",
       "views": 2,
@@ -2604,6 +2530,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 MARATHON FINALE SHOCK",
+      "yt_title": "",
       "length_sec": 30.1,
       "credit": "@agent00 (Twitch)",
       "views": 150,
@@ -2625,6 +2552,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 MARATHON FINALE SHOCK",
+      "yt_title": "",
       "length_sec": 30.1,
       "credit": "@agent00 (Twitch)",
       "views": 123,
@@ -2646,6 +2574,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 MARATHON FINALE SHOCK",
+      "yt_title": "",
       "length_sec": 30.1,
       "credit": "@agent00 (Twitch)",
       "views": 2,
@@ -2667,6 +2596,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 PHONE INTERFACE REVEAL",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@fanum (Twitch)",
       "views": 157,
@@ -2688,6 +2618,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 PHONE INTERFACE REVEAL",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@fanum (Twitch)",
       "views": 127,
@@ -2709,6 +2640,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 PHONE INTERFACE REVEAL",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@fanum (Twitch)",
       "views": 0,
@@ -2730,6 +2662,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 PLANE CRASH FAIL",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@squeex (Twitch)",
       "views": 122,
@@ -2751,6 +2684,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 PLANE CRASH FAIL",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@squeex (Twitch)",
       "views": 130,
@@ -2772,6 +2706,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 PLANE CRASH FAIL",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@squeex (Twitch)",
       "views": 0,
@@ -2793,6 +2728,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GRANDMA WATCHES GTA 6 NEWS",
+      "yt_title": "",
       "length_sec": 30.01,
       "credit": "@esfandtv (Twitch)",
       "views": 130,
@@ -2814,6 +2750,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GRANDMA WATCHES GTA 6 NEWS",
+      "yt_title": "",
       "length_sec": 30.01,
       "credit": "@esfandtv (Twitch)",
       "views": 154,
@@ -2835,6 +2772,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GRANDMA WATCHES GTA 6 NEWS",
+      "yt_title": "",
       "length_sec": 30.01,
       "credit": "@esfandtv (Twitch)",
       "views": 3,
@@ -2856,6 +2794,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 TV IS CRAZY",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@TimTheTatman (YouTube)",
       "views": 122,
@@ -2877,6 +2816,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 TV IS CRAZY",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@TimTheTatman (YouTube)",
       "views": 145,
@@ -2898,6 +2838,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 TV IS CRAZY",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@TimTheTatman (YouTube)",
       "views": 0,
@@ -2919,6 +2860,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 BEACH TRUCK CHAOS",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@TypicalGamer (YouTube)",
       "views": 0,
@@ -2940,6 +2882,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 BEACH TRUCK CHAOS",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@TypicalGamer (YouTube)",
       "views": 152,
@@ -2961,6 +2904,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 BEACH TRUCK CHAOS",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@TypicalGamer (YouTube)",
       "views": 0,
@@ -2982,6 +2926,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 STREET GAMEPLAY REACTION",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@Berleezy (YouTube)",
       "views": 129,
@@ -3003,6 +2948,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 STREET GAMEPLAY REACTION",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@Berleezy (YouTube)",
       "views": 159,
@@ -3024,6 +2970,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 STREET GAMEPLAY REACTION",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@Berleezy (YouTube)",
       "views": 252,
@@ -3045,6 +2992,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 LOOKALIKE MOMENT",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@IShowSpeed (YouTube)",
       "views": 154,
@@ -3066,6 +3014,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 LOOKALIKE MOMENT",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@IShowSpeed (YouTube)",
       "views": 118,
@@ -3087,6 +3036,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "GTA 6 LOOKALIKE MOMENT",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@IShowSpeed (YouTube)",
       "views": 0,
@@ -3108,6 +3058,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "CASEOH GTA 6 CAR CRASH",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@caseoh_ (Twitch)",
       "views": 2,
@@ -3129,6 +3080,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "CASEOH GTA 6 CAR CRASH",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@caseoh_ (Twitch)",
       "views": 131,
@@ -3150,6 +3102,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "CASEOH GTA 6 CAR CRASH",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@caseoh_ (Twitch)",
       "views": 7,
@@ -3171,6 +3124,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "JASON THE WEEN GTA 6 CRASH CHAOS",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@jasontheween (Twitch)",
       "views": 0,
@@ -3192,6 +3146,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "JASON THE WEEN GTA 6 CRASH CHAOS",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@jasontheween (Twitch)",
       "views": 457,
@@ -3213,6 +3168,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "JASON THE WEEN GTA 6 CRASH CHAOS",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@jasontheween (Twitch)",
       "views": 1,
@@ -3234,6 +3190,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "STREAMER NAME GTA 6 MECHANIC JUST BROKE",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@xqc (Twitch)",
       "views": 0,
@@ -3255,6 +3212,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "STREAMER NAME GTA 6 MECHANIC JUST BROKE",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@xqc (Twitch)",
       "views": 448,
@@ -3276,6 +3234,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "STREAMER NAME GTA 6 MECHANIC JUST BROKE",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@xqc (Twitch)",
       "views": 1,
@@ -3297,6 +3256,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "ESFANDTV GTA 6 EXPLOSION NOW",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@esfandtv (Twitch)",
       "views": 0,
@@ -3318,6 +3278,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "ESFANDTV GTA 6 EXPLOSION NOW",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@esfandtv (Twitch)",
       "views": 457,
@@ -3339,6 +3300,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "ESFANDTV GTA 6 EXPLOSION NOW",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@esfandtv (Twitch)",
       "views": 1,
@@ -3360,6 +3322,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "SQUEEX GTA 6 CAR CRASHES NOW",
+      "yt_title": "",
       "length_sec": 29.51,
       "credit": "@squeex (Twitch)",
       "views": 150,
@@ -3381,6 +3344,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "SQUEEX GTA 6 CAR CRASHES NOW",
+      "yt_title": "",
       "length_sec": 29.51,
       "credit": "@squeex (Twitch)",
       "views": 216,
@@ -3402,6 +3366,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "SQUEEX GTA 6 CAR CRASHES NOW",
+      "yt_title": "",
       "length_sec": 29.51,
       "credit": "@squeex (Twitch)",
       "views": 0,
@@ -3423,6 +3388,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "KAICEN AT GTA 6 CRASH NOW",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@kaicenat (Twitch)",
       "views": 0,
@@ -3444,6 +3410,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "KAICEN AT GTA 6 CRASH NOW",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@kaicenat (Twitch)",
       "views": 132,
@@ -3465,6 +3432,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "KAICEN AT GTA 6 CRASH NOW",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@kaicenat (Twitch)",
       "views": 0,
@@ -3486,6 +3454,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "XQC GTA 6 MASSAGGATOR BC CRASH",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@xqc (Twitch)",
       "views": 0,
@@ -3507,6 +3476,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "XQC GTA 6 MASSAGGATOR BC CRASH",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@xqc (Twitch)",
       "views": 0,
@@ -3528,6 +3498,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "XQC GTA 6 MASSAGGATOR BC CRASH",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@xqc (Twitch)",
       "views": 0,
@@ -3549,6 +3520,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "HASAN GTA 6 PARACHUTE WASTED",
+      "yt_title": "",
       "length_sec": 18.04,
       "credit": "@hasanabi (Twitch)",
       "views": 0,
@@ -3570,6 +3542,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "HASAN GTA 6 PARACHUTE WASTED",
+      "yt_title": "",
       "length_sec": 18.04,
       "credit": "@hasanabi (Twitch)",
       "views": 0,
@@ -3591,6 +3564,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "HASAN GTA 6 PARACHUTE WASTED",
+      "yt_title": "",
       "length_sec": 18.04,
       "credit": "@hasanabi (Twitch)",
       "views": 0,
@@ -3612,6 +3586,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "KAI CENAT GTA 6 CAR CHASE",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@kaicenat (Twitch)",
       "views": 0,
@@ -3633,6 +3608,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "KAI CENAT GTA 6 CAR CHASE",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@kaicenat (Twitch)",
       "views": 132,
@@ -3654,6 +3630,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_30s",
       "format": "stack_or_full",
       "hook": "KAI CENAT GTA 6 CAR CHASE",
+      "yt_title": "",
       "length_sec": 30.04,
       "credit": "@kaicenat (Twitch)",
       "views": 2,
@@ -3677,6 +3654,7 @@ const DASHBOARD_DATA = {
       "pillar": "cloud_auto_20s",
       "format": "stack_or_full",
       "hook": "GTA 6 LUCIA WALKS INTO A WALL",
+      "yt_title": "",
       "length_sec": 20.04,
       "credit": "@kaicenat (Twitch)",
       "views": 123,
@@ -3698,6 +3676,7 @@ const DASHBOARD_DATA = {
       "pillar": "instant_karma",
       "format": "stack",
       "hook": "HE PROMISED GTA 6 CHAT NO MORE CRASHING",
+      "yt_title": "",
       "length_sec": 13.71,
       "credit": "@ohnePixel (Twitch)",
       "views": 852,
@@ -3719,6 +3698,7 @@ const DASHBOARD_DATA = {
       "pillar": "instant_karma",
       "format": "stack",
       "hook": "HE PROMISED GTA 6 CHAT NO MORE CRASHING",
+      "yt_title": "",
       "length_sec": 13.71,
       "credit": "@ohnePixel (Twitch)",
       "views": 9400,
@@ -3740,6 +3720,7 @@ const DASHBOARD_DATA = {
       "pillar": "physics_chaos_lucia",
       "format": "stack",
       "hook": "GTA 6 PHYSICS JUST BROKE XQC",
+      "yt_title": "",
       "length_sec": 15.24,
       "credit": "@xQc (Twitch)",
       "views": 933,
@@ -3761,6 +3742,7 @@ const DASHBOARD_DATA = {
       "pillar": "relatable_life_sim_jason",
       "format": "stack",
       "hook": "GTA 6 JASON PAINTING ALL WRONG",
+      "yt_title": "",
       "length_sec": 14.87,
       "credit": "@CaseOh (Twitch)",
       "views": 475,
@@ -3779,7 +3761,7 @@ const DASHBOARD_DATA = {
     "Top performer: GTA-005 (tiktok) \u2014 123 plays, 0.81% share rate (@kaicenat (Twitch))."
   ],
   "not_working": [
-    "Median share rate is 0.00% (below 1.0% target) \u2014 double down on relatable / NPC chaos clips.",
+    "Median share rate is 0.00% (below 1.0% target) \u2014 prioritize instant-comprehension hooks.",
     "19 post(s) sat below 50% of account median (134 plays)."
   ],
   "experiments": [
@@ -4000,13 +3982,13 @@ const DASHBOARD_DATA = {
     }
   ],
   "health": {
-    "checked_at_utc": "2026-11-26T08:36:37.503598+00:00",
+    "checked_at_utc": "2026-11-26T15:16:36.217196+00:00",
     "stuck_posts": [
       {
         "platform": "instagram",
         "post_id": "GTA-002",
         "dt_utc": "2026-11-20T15:30:00+00:00",
-        "age_hours": 137.11,
+        "age_hours": 143.78,
         "views": 3,
         "is_live": true,
         "is_stuck": true,
@@ -4016,7 +3998,7 @@ const DASHBOARD_DATA = {
         "platform": "instagram",
         "post_id": "GTA-004",
         "dt_utc": "2026-11-21T12:30:00+00:00",
-        "age_hours": 116.11,
+        "age_hours": 122.78,
         "views": 0,
         "is_live": true,
         "is_stuck": true,
@@ -4026,7 +4008,7 @@ const DASHBOARD_DATA = {
         "platform": "instagram",
         "post_id": "GTA-009",
         "dt_utc": "2026-11-22T03:30:00+00:00",
-        "age_hours": 101.11,
+        "age_hours": 107.78,
         "views": 0,
         "is_live": true,
         "is_stuck": true,
@@ -4036,7 +4018,7 @@ const DASHBOARD_DATA = {
         "platform": "instagram",
         "post_id": "GTA-018",
         "dt_utc": "2026-11-23T15:30:00+00:00",
-        "age_hours": 56.58,
+        "age_hours": 63.24,
         "views": 0,
         "is_live": true,
         "is_stuck": true,
@@ -4046,7 +4028,7 @@ const DASHBOARD_DATA = {
         "platform": "instagram",
         "post_id": "GTA-021",
         "dt_utc": "2026-11-24T00:30:00+00:00",
-        "age_hours": 38.94,
+        "age_hours": 45.61,
         "views": 2,
         "is_live": true,
         "is_stuck": true,
@@ -4056,7 +4038,7 @@ const DASHBOARD_DATA = {
         "platform": "instagram",
         "post_id": "GTA-022",
         "dt_utc": "2026-11-24T03:30:00+00:00",
-        "age_hours": 34.01,
+        "age_hours": 40.68,
         "views": 0,
         "is_live": true,
         "is_stuck": true,
@@ -4066,7 +4048,7 @@ const DASHBOARD_DATA = {
         "platform": "instagram",
         "post_id": "GTA-023",
         "dt_utc": "2026-11-24T06:30:00+00:00",
-        "age_hours": 34.01,
+        "age_hours": 40.68,
         "views": 0,
         "is_live": true,
         "is_stuck": true,
@@ -4076,7 +4058,7 @@ const DASHBOARD_DATA = {
         "platform": "instagram",
         "post_id": "GTA-024",
         "dt_utc": "2026-11-24T21:30:00+00:00",
-        "age_hours": 34.01,
+        "age_hours": 40.68,
         "views": 0,
         "is_live": true,
         "is_stuck": true,
@@ -4086,7 +4068,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-002",
         "dt_utc": "2026-11-20T15:30:00+00:00",
-        "age_hours": 137.11,
+        "age_hours": 143.78,
         "views": 6,
         "is_live": true,
         "is_stuck": true,
@@ -4096,7 +4078,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-003",
         "dt_utc": "2026-11-20T18:30:00+00:00",
-        "age_hours": 133.08,
+        "age_hours": 139.74,
         "views": 7,
         "is_live": true,
         "is_stuck": true,
@@ -4106,7 +4088,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-004",
         "dt_utc": "2026-11-21T12:30:00+00:00",
-        "age_hours": 115.49,
+        "age_hours": 122.16,
         "views": 2,
         "is_live": true,
         "is_stuck": true,
@@ -4116,7 +4098,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-005",
         "dt_utc": "2026-11-21T15:30:00+00:00",
-        "age_hours": 109.16,
+        "age_hours": 115.83,
         "views": 5,
         "is_live": true,
         "is_stuck": true,
@@ -4126,7 +4108,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-006",
         "dt_utc": "2026-11-21T18:30:00+00:00",
-        "age_hours": 109.16,
+        "age_hours": 115.83,
         "views": 4,
         "is_live": true,
         "is_stuck": true,
@@ -4136,7 +4118,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-009",
         "dt_utc": "2026-11-22T03:30:00+00:00",
-        "age_hours": 101.11,
+        "age_hours": 107.78,
         "views": 4,
         "is_live": true,
         "is_stuck": true,
@@ -4146,7 +4128,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-011",
         "dt_utc": "2026-11-22T09:30:00+00:00",
-        "age_hours": 87.98,
+        "age_hours": 94.64,
         "views": 6,
         "is_live": true,
         "is_stuck": true,
@@ -4156,7 +4138,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-012",
         "dt_utc": "2026-11-22T18:30:00+00:00",
-        "age_hours": 68.38,
+        "age_hours": 75.04,
         "views": 2,
         "is_live": true,
         "is_stuck": true,
@@ -4166,7 +4148,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-013",
         "dt_utc": "2026-11-22T21:30:00+00:00",
-        "age_hours": 65.31,
+        "age_hours": 71.98,
         "views": 2,
         "is_live": true,
         "is_stuck": true,
@@ -4176,7 +4158,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-016",
         "dt_utc": "2026-11-23T06:30:00+00:00",
-        "age_hours": 60.09,
+        "age_hours": 66.76,
         "views": 3,
         "is_live": true,
         "is_stuck": true,
@@ -4186,7 +4168,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-021",
         "dt_utc": "2026-11-24T00:30:00+00:00",
-        "age_hours": 56.11,
+        "age_hours": 62.78,
         "views": 7,
         "is_live": true,
         "is_stuck": true,
@@ -4196,7 +4178,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-022",
         "dt_utc": "2026-11-24T03:30:00+00:00",
-        "age_hours": 38.94,
+        "age_hours": 45.61,
         "views": 1,
         "is_live": true,
         "is_stuck": true,
@@ -4206,7 +4188,7 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-023",
         "dt_utc": "2026-11-24T06:30:00+00:00",
-        "age_hours": 34.01,
+        "age_hours": 40.68,
         "views": 1,
         "is_live": true,
         "is_stuck": true,
@@ -4216,11 +4198,21 @@ const DASHBOARD_DATA = {
         "platform": "youtube",
         "post_id": "GTA-024",
         "dt_utc": "2026-11-24T21:30:00+00:00",
-        "age_hours": 34.01,
+        "age_hours": 40.68,
         "views": 1,
         "is_live": true,
         "is_stuck": true,
         "hook": "ESFANDTV GTA 6 EXPLOSION NOW"
+      },
+      {
+        "platform": "youtube",
+        "post_id": "GTA-029",
+        "dt_utc": "2026-11-25T21:30:00+00:00",
+        "age_hours": 17.44,
+        "views": 2,
+        "is_live": true,
+        "is_stuck": true,
+        "hook": "KAI CENAT GTA 6 CAR CHASE"
       }
     ],
     "unconfirmed_scheduled": [],
@@ -4256,9 +4248,9 @@ const DASHBOARD_DATA = {
     "days_required_phase1": 14,
     "triggers": [
       {
-        "stream": "Whop Content Rewards ($1-$1.50/1K)",
-        "requirement": "14d audience baseline (no follower min)",
-        "ready": false
+        "stream": "Whop & Clipping Networks ($1-$3/1K)",
+        "requirement": "No follower minimum \u2014 follow brief & submit live links",
+        "ready": true
       },
       {
         "stream": "Instagram Gifts",
@@ -4266,7 +4258,7 @@ const DASHBOARD_DATA = {
         "ready": false
       },
       {
-        "stream": "Amazon / Logitech Bio Affiliates",
+        "stream": "Bio Affiliates",
         "requirement": "14d + consistent reach on 1 app",
         "ready": false
       },
@@ -4281,110 +4273,415 @@ const DASHBOARD_DATA = {
         "ready": false
       }
     ]
-  }
+  },
+  "earnings": {
+    "currency": "USD",
+    "total_accumulated_usd": 0.0,
+    "total_paid_usd": 0.0,
+    "total_pending_usd": 0.0,
+    "total_verified_views": 0,
+    "avg_effective_cpm": 0.0,
+    "joined_platforms_count": 0,
+    "total_platforms_count": 11,
+    "active_campaigns_count": 0,
+    "by_platform": [
+      {
+        "id": "whop",
+        "name": "Whop Content Rewards",
+        "url": "https://whop.com",
+        "status": "not_joined",
+        "handle": "",
+        "typical_cpm_usd": 1.25,
+        "fee_pct": 10.0,
+        "min_payout_usd": 10.0,
+        "payout_rail": "Whop Balance (Bank / Stripe / Crypto)",
+        "niche_fit": "GTA 6, Gaming, Streamers, Podcasts",
+        "onboarding_steps": [
+          "Sign up at whop.com and verify email + payout method",
+          "Open Content Rewards marketplace and filter for Gaming / Streamer clips",
+          "Link your YouTube, TikTok, and Instagram accounts via profile/bio verification",
+          "Read the campaign brief (max length, required tags, allowed platforms) before cutting"
+        ],
+        "notes": "Largest public Content Rewards marketplace; zero follower minimum on most campaigns.",
+        "campaigns_count": 0,
+        "submissions_count": 0,
+        "verified_views": 0,
+        "paid_usd": 0.0,
+        "pending_usd": 0.0,
+        "total_usd": 0.0
+      },
+      {
+        "id": "clipur",
+        "name": "Clipur",
+        "url": "https://www.clipur.com",
+        "status": "not_joined",
+        "handle": "",
+        "typical_cpm_usd": 1.5,
+        "fee_pct": 10.0,
+        "min_payout_usd": 15.0,
+        "payout_rail": "Whop / Stripe / Crypto",
+        "niche_fit": "Streamers, Creators, Gaming",
+        "onboarding_steps": [
+          "Apply via clipur.com and join the Clipur Discord/Whop hub",
+          "Submit 1-2 sample vertical edits (use your best GTA 6 stacked clips)",
+          "Connect social handles and claim open creator briefs"
+        ],
+        "notes": "Vetted creator distribution network; rewards clean facecam + captions + high retention.",
+        "campaigns_count": 0,
+        "submissions_count": 0,
+        "verified_views": 0,
+        "paid_usd": 0.0,
+        "pending_usd": 0.0,
+        "total_usd": 0.0
+      },
+      {
+        "id": "clipster",
+        "name": "Clipster",
+        "url": "https://www.clipster.com",
+        "status": "not_joined",
+        "handle": "",
+        "typical_cpm_usd": 1.4,
+        "fee_pct": 10.0,
+        "min_payout_usd": 10.0,
+        "payout_rail": "Whop / Bank / Crypto",
+        "niche_fit": "Twitch & Kick Streamers, Gaming",
+        "onboarding_steps": [
+          "Create an account on clipster.com (or via Clipster Whop hub)",
+          "Verify your TikTok / IG / Shorts pages in the creator dashboard",
+          "Pick active streamer campaigns and submit live URLs within the brief window"
+        ],
+        "notes": "Strong streamer-clipping focus with frequent Twitch/YouTube gaming pools.",
+        "campaigns_count": 0,
+        "submissions_count": 0,
+        "verified_views": 0,
+        "paid_usd": 0.0,
+        "pending_usd": 0.0,
+        "total_usd": 0.0
+      },
+      {
+        "id": "clipstake",
+        "name": "ClipStake",
+        "url": "https://www.clipstake.com",
+        "status": "not_joined",
+        "handle": "",
+        "typical_cpm_usd": 1.75,
+        "fee_pct": 10.0,
+        "min_payout_usd": 20.0,
+        "payout_rail": "Stripe / Wise / Crypto",
+        "niche_fit": "Creators, Gaming, Tech & Brands",
+        "onboarding_steps": [
+          "Register on app.clipstake.com / clipstake.com",
+          "Connect your posting accounts for automated verified-view tracking",
+          "Join open CPM campaigns and submit live Short/Reel links"
+        ],
+        "notes": "Data-backed CPM campaign tracker with clear per-clip view caps and verified analytics.",
+        "campaigns_count": 0,
+        "submissions_count": 0,
+        "verified_views": 0,
+        "paid_usd": 0.0,
+        "pending_usd": 0.0,
+        "total_usd": 0.0
+      },
+      {
+        "id": "darebay",
+        "name": "DareBay",
+        "url": "https://darebay.com",
+        "status": "not_joined",
+        "handle": "",
+        "typical_cpm_usd": 1.5,
+        "fee_pct": 10.0,
+        "min_payout_usd": 10.0,
+        "payout_rail": "Wallet / Crypto / Payout Gateway",
+        "niche_fit": "Bounties, Stream Challenges, Gaming",
+        "onboarding_steps": [
+          "Create a DareBay account at darebay.com",
+          "Verify your social handles and check active clipping bounties",
+          "Post compliant clips and submit post URLs before bounty pool closes"
+        ],
+        "notes": "Wallet-backed clipping bounties and view-based contests.",
+        "campaigns_count": 0,
+        "submissions_count": 0,
+        "verified_views": 0,
+        "paid_usd": 0.0,
+        "pending_usd": 0.0,
+        "total_usd": 0.0
+      },
+      {
+        "id": "vues",
+        "name": "Vues",
+        "url": "https://vues.app",
+        "status": "not_joined",
+        "handle": "",
+        "typical_cpm_usd": 1.2,
+        "fee_pct": 9.0,
+        "min_payout_usd": 10.0,
+        "payout_rail": "Stripe / Bank / Crypto",
+        "niche_fit": "Self-serve Short-Form CPM Campaigns",
+        "onboarding_steps": [
+          "Sign up at vues.app and verify your email",
+          "Link your YouTube Shorts, TikTok, and Instagram Reels channels",
+          "Enroll in active CPM campaigns and paste live clip links after posting"
+        ],
+        "notes": "Self-serve automated view tracking across Shorts, TikTok, and Reels.",
+        "campaigns_count": 0,
+        "submissions_count": 0,
+        "verified_views": 0,
+        "paid_usd": 0.0,
+        "pending_usd": 0.0,
+        "total_usd": 0.0
+      },
+      {
+        "id": "clipping",
+        "name": "Clipping.io",
+        "url": "https://www.clipping.io",
+        "status": "not_joined",
+        "handle": "",
+        "typical_cpm_usd": 1.5,
+        "fee_pct": 10.0,
+        "min_payout_usd": 15.0,
+        "payout_rail": "Stripe / Payoneer / Crypto",
+        "niche_fit": "Gaming, Streamers, Podcasts",
+        "onboarding_steps": [
+          "Register at clipping.io and complete profile verification",
+          "Review active campaigns and check per-1,000 view rates + geo rules",
+          "Submit live URLs immediately after posting so 30-day tracking starts early"
+        ],
+        "notes": "Structured campaign portal with clear view thresholds and tracking windows.",
+        "campaigns_count": 0,
+        "submissions_count": 0,
+        "verified_views": 0,
+        "paid_usd": 0.0,
+        "pending_usd": 0.0,
+        "total_usd": 0.0
+      },
+      {
+        "id": "clipfy",
+        "name": "Clipfy",
+        "url": "https://clipfy.app",
+        "status": "not_joined",
+        "handle": "",
+        "typical_cpm_usd": 1.25,
+        "fee_pct": 10.0,
+        "min_payout_usd": 10.0,
+        "payout_rail": "Bank / PayPal / Crypto",
+        "niche_fit": "Streamers, Viral Gaming, Creators",
+        "onboarding_steps": [
+          "Create an account at clipfy.app",
+          "Connect your Shorts / TikTok / IG pages",
+          "Join gaming/creator briefs and submit your posted clip links"
+        ],
+        "notes": "Creator clipping marketplace for short-form gaming and entertainment campaigns.",
+        "campaigns_count": 0,
+        "submissions_count": 0,
+        "verified_views": 0,
+        "paid_usd": 0.0,
+        "pending_usd": 0.0,
+        "total_usd": 0.0
+      },
+      {
+        "id": "clipershq",
+        "name": "Clippers HQ",
+        "url": "https://clipershq.com",
+        "status": "not_joined",
+        "handle": "",
+        "typical_cpm_usd": 1.5,
+        "fee_pct": 9.5,
+        "min_payout_usd": 15.0,
+        "payout_rail": "Whop / Stripe / Crypto",
+        "niche_fit": "High-Volume Streamers & Gaming Brands",
+        "onboarding_steps": [
+          "Sign up at clipershq.com and join their Discord community",
+          "Follow strictly one account per person and verify your social pages",
+          "Claim open campaigns and submit compliant clips"
+        ],
+        "notes": "Strict anti-bot & single-account enforcement (~9.5% fee); consistent gaming briefs.",
+        "campaigns_count": 0,
+        "submissions_count": 0,
+        "verified_views": 0,
+        "paid_usd": 0.0,
+        "pending_usd": 0.0,
+        "total_usd": 0.0
+      },
+      {
+        "id": "clippingexe",
+        "name": "Clipping.exe",
+        "url": "https://clip.tech",
+        "status": "not_joined",
+        "handle": "",
+        "typical_cpm_usd": 1.6,
+        "fee_pct": 10.0,
+        "min_payout_usd": 15.0,
+        "payout_rail": "Stripe / Crypto",
+        "niche_fit": "Gaming, Tech, Creator Networks",
+        "onboarding_steps": [
+          "Apply or sign up via clip.tech",
+          "Complete creator onboarding and connect social handles",
+          "Pick active gaming campaigns and submit live links"
+        ],
+        "notes": "Agency-style campaign network with higher CPMs on vetted channels.",
+        "campaigns_count": 0,
+        "submissions_count": 0,
+        "verified_views": 0,
+        "paid_usd": 0.0,
+        "pending_usd": 0.0,
+        "total_usd": 0.0
+      },
+      {
+        "id": "starlet",
+        "name": "Starlet",
+        "url": "https://starlet.gg",
+        "status": "not_joined",
+        "handle": "",
+        "typical_cpm_usd": 1.5,
+        "fee_pct": 10.0,
+        "min_payout_usd": 10.0,
+        "payout_rail": "Stripe / Wise / Crypto",
+        "niche_fit": "Esports, Gaming Streamers, GTA/FPS",
+        "onboarding_steps": [
+          "Sign up at starlet.gg and link your gaming channels",
+          "Browse gaming creator campaigns and check VOD links/rules",
+          "Cut with stream-clipper, post, and submit links in Starlet"
+        ],
+        "notes": "Gaming-native clipping platform ideal for GTA 6 and broader gaming campaigns.",
+        "campaigns_count": 0,
+        "submissions_count": 0,
+        "verified_views": 0,
+        "paid_usd": 0.0,
+        "pending_usd": 0.0,
+        "total_usd": 0.0
+      }
+    ],
+    "by_campaign": [],
+    "submissions": []
+  },
+  "automation": {
+    "today_wat": "2026-11-26",
+    "now_wat": "2026-11-26 16:16 WAT",
+    "today_status": "armed",
+    "today_slot_used": null,
+    "today_clips_delivered": 0,
+    "today_target_clips": 3,
+    "today_post_ids": [],
+    "schedule_windows": [
+      {
+        "id": "primary",
+        "label": "09:37 WAT (Primary)",
+        "time_wat": "09:37",
+        "cron": "37 8 * * *"
+      },
+      {
+        "id": "backup_1",
+        "label": "12:17 WAT (Backup 1)",
+        "time_wat": "12:17",
+        "cron": "17 11 * * *"
+      },
+      {
+        "id": "backup_2",
+        "label": "15:43 WAT (Backup 2)",
+        "time_wat": "15:43",
+        "cron": "43 14 * * *"
+      },
+      {
+        "id": "backup_3",
+        "label": "19:19 WAT (Backup 3)",
+        "time_wat": "19:19",
+        "cron": "19 18 * * *"
+      }
+    ],
+    "recent_drops": []
+  },
+  "youtube_diagnostics": {
+    "total_shorts_tracked": 29,
+    "live_count": 28,
+    "zero_or_low_count": 24,
+    "breakout_count": 1,
+    "median_views": 2.0,
+    "avg_length_sec": 27.0,
+    "long_24s_plus_count": 22,
+    "recommendations": [
+      "Use Telegram Message 5 (standalone 40-62 char Shorts title) \u2014 never paste Credit/hashtags into the YouTube Title field.",
+      "Keep Shorts in the 14-20s sweet spot with burned-in 2-3 word kinetic captions and zero >0.6s dead air.",
+      "Enforce stranger comprehension >= 7/10 so viewers immediately understand the setup in the first 2 seconds.",
+      "Post 3 high-conviction Shorts/day (spaced >= 2.5h apart) instead of flooding 5-8 uncaptioned 30s clips."
+    ]
+  },
+  "last_report": {}
 };
 /* === DASHBOARD_DATA_END === */
 
-    const D = DASHBOARD_DATA;
-    const PLAT_COLORS = { youtube: "#e5484d", tiktok: "#22d3ee", instagram: "#e86f3a" };
-    const PLAT_LABELS = { youtube: "YouTube", tiktok: "TikTok", instagram: "Instagram" };
+    const D = typeof DASHBOARD_DATA === "object" && DASHBOARD_DATA ? DASHBOARD_DATA : {};
     const state = {
-      platform: "all",
-      gscMetric: "views",      // views | likes | followers | shares
-      chartMode: "trend",      // trend | posts
-      range: "all",            // 5d | 7d | 28d | 3m | 6m | all
-      granularity: "daily",    // daily | weekly
-      visibleLines: { youtube: true, tiktok: true, instagram: true },
       view: "overview",
+      platform: "all",
+      gscMetric: "views",
+      chartMode: "trend",
+      granularity: "daily",
+      range: "all",
+      visibleLines: { youtube: true, tiktok: true, instagram: true },
       query: "",
-      sortKey: "post_id",
+      sortKey: "date",
       sortDir: "desc",
       selectedKey: null,
       page: 1,
       pageSize: 12,
-      showAllRows: false
+      showAllRows: false,
+      platFilter: "all"
     };
 
-    const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (m) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[m]));
-    const fmtInt = (n) => (n === null || n === undefined ? "-" : Number(n).toLocaleString("en-US"));
-    const fmtPct = (n, views) => (views > 0 ? Number(n).toFixed(1) + "%" : "-");
-    const shortUtc = (iso) => {
+    const PLAT_COLORS = { youtube: "#ef5350", tiktok: "#38bdf8", instagram: "#f0713d" };
+    const PLAT_LABELS = { youtube: "YouTube", tiktok: "TikTok", instagram: "Instagram" };
+    const fmtInt = (n) => Number(n || 0).toLocaleString("en-US");
+    const fmtUsd = (n) => "$" + Number(n || 0).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const fmtPct = (v, views) => (views > 0 ? `${Number(v || 0).toFixed(2)}%` : "-");
+    const esc = (s) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
+    function shortUtc(iso) {
       if (!iso) return "-";
       const d = new Date(iso);
-      if (Number.isNaN(d.getTime())) return iso;
-      return d.toISOString().replace("T", " ").slice(0, 16) + " UTC";
-    };
-    const shortDate = (dStr) => {
-      const m = String(dStr || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
-      if (!m) return dStr || "";
-      const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-      return `${months[Number(m[2]) - 1]} ${Number(m[3])}`;
-    };
+      if (isNaN(d.getTime())) return String(iso).slice(0, 16);
+      return d.toISOString().slice(0, 16).replace("T", " ") + " UTC";
+    }
+
+    function shortDate(ymd) {
+      if (!ymd) return "";
+      const p = String(ymd).split("-");
+      if (p.length !== 3) return ymd;
+      const m = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][Number(p[1]) - 1] || p[1];
+      return `${m} ${Number(p[2])}`;
+    }
 
     function filteredClips() {
-      let list = (D.clips || []).slice();
-      if (state.platform !== "all") {
-        list = list.filter((c) => c.platform === state.platform);
-      }
-      if (state.query.trim()) {
-        const q = state.query.trim().toLowerCase();
-        list = list.filter((c) =>
-          (c.post_id || "").toLowerCase().includes(q) ||
-          (c.credit || "").toLowerCase().includes(q) ||
-          (c.hook || "").toLowerCase().includes(q) ||
-          (c.test_name || "").toLowerCase().includes(q)
-        );
-      }
-      const mult = state.sortDir === "asc" ? 1 : -1;
+      const q = state.query.trim().toLowerCase();
+      let list = (D.clips || []).filter((c) => {
+        if (state.platform !== "all" && c.platform !== state.platform) return false;
+        if (q) {
+          const hay = `${c.post_id} ${c.credit} ${c.hook} ${c.yt_title || ""} ${c.platform} ${c.pillar} ${c.test_name}`.toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        return true;
+      });
       list.sort((a, b) => {
-        const av = a[state.sortKey] ?? "";
-        const bv = b[state.sortKey] ?? "";
-        if (typeof av === "number" && typeof bv === "number") return (av - bv) * mult;
-        return String(av).localeCompare(String(bv)) * mult;
+        const dir = state.sortDir === "asc" ? 1 : -1;
+        if (["views","likes","shares","share_rate","length_sec"].includes(state.sortKey)) {
+          return ((a[state.sortKey] || 0) - (b[state.sortKey] || 0)) * dir;
+        }
+        return (`${a.date} ${a.time} ${a.post_id}`).localeCompare(`${b.date} ${b.time} ${b.post_id}`) * dir;
       });
       return list;
     }
 
-    function syncControlTabs() {
-      document.querySelectorAll("#gsc-metric-cards .gsc-tab").forEach((b) => {
-        b.classList.toggle("active", b.getAttribute("data-gsc") === state.gscMetric);
-      });
-      document.querySelectorAll("#chart-mode-tabs .seg-btn").forEach((b) => {
-        const act = b.getAttribute("data-mode") === state.chartMode;
-        b.classList.toggle("active", act);
-        b.setAttribute("aria-selected", act ? "true" : "false");
-      });
-      document.querySelectorAll("#granularity-tabs .seg-btn").forEach((b) => {
-        const act = b.getAttribute("data-gran") === state.granularity;
-        b.classList.toggle("active", act);
-        b.setAttribute("aria-selected", act ? "true" : "false");
-      });
-      document.querySelectorAll("#range-tabs .seg-btn").forEach((b) => {
-        const act = b.getAttribute("data-range") === state.range;
-        b.classList.toggle("active", act);
-        b.setAttribute("aria-selected", act ? "true" : "false");
-      });
-      document.querySelectorAll("#platform-legend .legend-chip").forEach((b) => {
-        const p = b.getAttribute("data-line");
-        const active = state.platform === "all" ? !!state.visibleLines[p] : state.platform === p;
-        b.classList.toggle("off", !active);
-      });
-    }
-
     function renderChrome() {
-      const cleanName = (D.page_name || "Leonida Chaos").split("—")[0].split("-")[0].trim();
-      document.getElementById("sidebar-name").textContent = cleanName;
+      document.getElementById("sidebar-name").textContent = D.page_name || "Leonida Chaos";
       document.getElementById("sidebar-tz").textContent = D.timezone || "WAT (UTC+1)";
-      document.getElementById("sidebar-updated").textContent = "Updated " + shortUtc(D.generated_at_utc);
-      document.getElementById("nav-clips-count").textContent = String((D.clips || []).length);
-      document.getElementById("nav-exp-count").textContent = String((D.experiments || []).length);
+      document.getElementById("sidebar-updated").textContent = `Updated ${shortUtc(D.generated_at_utc)}`;
+      document.getElementById("nav-clips-count").textContent = new Set((D.clips || []).map((c) => c.post_id)).size;
+      document.getElementById("nav-exp-count").textContent = (D.experiments || []).length;
+      document.getElementById("nav-earn-pill").textContent = fmtUsd(D.earnings?.total_accumulated_usd || 0);
 
       const stuckN = (D.health?.stuck_posts || []).length;
       const pausedAll = !!D.health?.pause_state?.paused_all;
-      const dot = document.getElementById("sidebar-dot");
-      const st = document.getElementById("sidebar-status");
-      dot.className = "tally-dot" + (pausedAll ? " bad" : stuckN > 0 ? " warn" : "");
-      st.textContent = pausedAll ? "Emergency pause active" : stuckN > 0 ? `${stuckN} stuck post flagged` : "Distribution healthy";
+      document.getElementById("sidebar-dot").className = "tally-dot" + (pausedAll ? " bad" : stuckN > 0 ? " warn" : "");
+      document.getElementById("sidebar-status").textContent = pausedAll ? "Pause active" : stuckN > 0 ? `${stuckN} low-play alert` : "Distribution healthy";
     }
 
     function renderKpisAndFinding() {
@@ -4394,42 +4691,53 @@ const DASHBOARD_DATA = {
       const shares = scoped.reduce((s, c) => s + (c.shares || 0), 0);
       const sharePct = views > 0 ? (shares / views) * 100 : null;
       const likePct = views > 0 ? (likes / views) * 100 : null;
-
       const followers = state.platform === "all"
         ? Object.values(D.platforms || {}).reduce((s, p) => s + (p.followers || 0), 0)
         : (D.platforms?.[state.platform]?.followers || 0);
-
       const uniquePosts = new Set(scoped.map((c) => c.post_id)).size;
 
       document.getElementById("kpi-views").textContent = fmtInt(views);
-      document.getElementById("kpi-views-sub").textContent = `${uniquePosts} clip${uniquePosts === 1 ? "" : "s"} across ${scoped.length} rows`;
-
+      document.getElementById("kpi-views-sub").textContent = `${uniquePosts} clips across ${scoped.length} rows`;
       document.getElementById("kpi-likes").textContent = fmtInt(likes);
-      document.getElementById("kpi-likes-sub").textContent = likePct === null ? "Awaiting first reads" : `${likePct.toFixed(2)}% like rate`;
-
+      document.getElementById("kpi-likes-sub").textContent = likePct === null ? "Awaiting reads" : `${likePct.toFixed(2)}% like rate`;
       document.getElementById("kpi-followers").textContent = fmtInt(followers);
-      document.getElementById("kpi-followers-sub").textContent = state.platform === "all" ? "Combined IG, TikTok, YouTube" : `${PLAT_LABELS[state.platform] || state.platform} total`;
-
+      document.getElementById("kpi-followers-sub").textContent = state.platform === "all" ? "Combined IG, TikTok, YouTube" : `${PLAT_LABELS[state.platform]} total`;
       document.getElementById("kpi-share").textContent = fmtInt(shares);
       document.getElementById("kpi-share-sub").innerHTML = sharePct === null
-        ? "Awaiting first 24h reads"
+        ? "Awaiting 24h reads"
         : sharePct >= 1.0
           ? `<span class="good">${sharePct.toFixed(2)}% rate (above 1.0%)</span>`
-          : `<span>${sharePct.toFixed(2)}% rate · target 1.0%</span>`;
+          : `${sharePct.toFixed(2)}% rate · target 1.0%`;
+
+      const earn = D.earnings || {};
+      document.getElementById("kpi-earned").textContent = fmtUsd(earn.total_accumulated_usd || 0);
+      document.getElementById("kpi-earned-sub").textContent = `${earn.joined_platforms_count || 0}/${earn.total_platforms_count || 11} platforms · ${earn.active_campaigns_count || 0} campaigns`;
 
       const finding = document.getElementById("page-finding");
       if (views === 0) {
-        finding.textContent = `${uniquePosts} clips queued and verified across Instagram, TikTok, and YouTube Shorts`;
+        finding.textContent = `${uniquePosts} clips queued · stream-clipper quality gate & 4-window Telegram fallback active`;
       } else {
         const best = scoped.slice().sort((a, b) => (b.views || 0) - (a.views || 0))[0];
-        finding.textContent = `${best.post_id} (${best.credit}) leads at ${fmtInt(best.views)} views · ${fmtInt(likes)} total likes across ${uniquePosts} clips`;
+        finding.textContent = `${best.post_id} (${best.credit}) leads at ${fmtInt(best.views)} views · ${fmtUsd(earn.total_accumulated_usd || 0)} campaign earnings`;
       }
+    }
+
+    function syncControlTabs() {
+      document.querySelectorAll("#gsc-metric-cards .gsc-tab").forEach((b) => b.classList.toggle("active", b.getAttribute("data-gsc") === state.gscMetric));
+      document.querySelectorAll("#chart-mode-tabs .seg-btn").forEach((b) => b.classList.toggle("active", b.getAttribute("data-mode") === state.chartMode));
+      document.querySelectorAll("#granularity-tabs .seg-btn").forEach((b) => b.classList.toggle("active", b.getAttribute("data-gran") === state.granularity));
+      document.querySelectorAll("#range-tabs .seg-btn").forEach((b) => b.classList.toggle("active", b.getAttribute("data-range") === state.range));
+      document.querySelectorAll("#platform-legend .legend-chip").forEach((b) => {
+        const p = b.getAttribute("data-line");
+        const on = state.platform === "all" ? !!state.visibleLines[p] : state.platform === p;
+        b.classList.toggle("off", !on);
+      });
     }
 
     function getScopedTimeSeries() {
       let pts = (D.timeseries || []).slice();
       if (!pts.length) return [];
-      const rangeDays = { "5d": 5, "7d": 7, "28d": 28, "3m": 90, "6m": 180 }[state.range];
+      const rangeDays = { "5d": 5, "7d": 7, "28d": 28 }[state.range];
       if (rangeDays && pts.length > 0) {
         const lastDate = new Date(pts[pts.length - 1].date + "T00:00:00Z");
         const cutoff = new Date(lastDate.getTime() - (rangeDays - 1) * 86400000);
@@ -4442,7 +4750,6 @@ const DASHBOARD_DATA = {
           const day = d.getUTCDay() || 7;
           const monday = new Date(d.getTime() - (day - 1) * 86400000);
           const wk = monday.toISOString().slice(0, 10);
-          // Latest cumulative snapshot in that week
           byWeek.set(wk, { ...pt, date: wk, label: "Wk " + shortDate(wk) });
         });
         return Array.from(byWeek.values());
@@ -4464,13 +4771,10 @@ const DASHBOARD_DATA = {
       );
 
       if (state.chartMode === "posts") {
-        // Per-clip bar breakdown mode
         const scoped = (D.clips || []).filter((c) => state.platform === "all" || c.platform === state.platform);
         const byPost = new Map();
         scoped.forEach((c) => {
-          if (!byPost.has(c.post_id)) {
-            byPost.set(c.post_id, { post_id: c.post_id, credit: c.credit, views: 0, likes: 0, shares: 0 });
-          }
+          if (!byPost.has(c.post_id)) byPost.set(c.post_id, { post_id: c.post_id, views: 0, likes: 0, shares: 0 });
           const agg = byPost.get(c.post_id);
           agg.views += c.views || 0;
           agg.likes += c.likes || 0;
@@ -4482,17 +4786,18 @@ const DASHBOARD_DATA = {
         const W = 720, H = 276, padL = 52, padR = 16, padT = 22, padB = 38;
         const plotW = W - padL - padR, plotH = H - padT - padB;
         const rawMax = Math.max(0, ...values);
-        const niceMax = rawMax === 0 ? 10 : Math.ceil((rawMax * 1.2) / Math.max(1, Math.pow(10, Math.floor(Math.log10(Math.max(1, rawMax))) - 1))) * Math.max(1, Math.pow(10, Math.floor(Math.log10(Math.max(1, rawMax))) - 1));
+        const stepUnit = Math.max(1, Math.pow(10, Math.floor(Math.log10(Math.max(1, rawMax))) - 1));
+        const niceMax = rawMax === 0 ? 10 : Math.ceil((rawMax * 1.2) / stepUnit) * stepUnit;
 
         heading.textContent = `${metricNames[mKey] || "Views"} by clip (last ${items.length})`;
-        subtitle.textContent = "Click any KPI card above to switch metric, or switch back to Trend lines";
+        subtitle.textContent = "Click any KPI card above to switch metric";
 
         let out = "";
         for (let i = 0; i <= 4; i++) {
           const y = padT + (plotH * i) / 4;
           const val = niceMax * (1 - i / 4);
-          out += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="${i === 4 ? '#2e2e34' : '#202024'}" stroke-width="1" />`;
-          out += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="#85858b" font-size="11">${Math.round(val).toLocaleString("en-US")}</text>`;
+          out += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="${i === 4 ? '#303642' : '#20242c'}" stroke-width="1" />`;
+          out += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="#7b8494" font-size="11">${Math.round(val).toLocaleString("en-US")}</text>`;
         }
         const slotW = plotW / Math.max(1, items.length);
         const barW = Math.min(54, Math.max(20, slotW * 0.46));
@@ -4503,27 +4808,22 @@ const DASHBOARD_DATA = {
           const bh = rawMax === 0 ? 4 : Math.max(4, (val / niceMax) * plotH);
           const y = padT + plotH - bh;
           const isLead = rawMax > 0 && idx === maxIdx;
-          out += `<rect x="${(cx - barW / 2).toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${bh.toFixed(1)}" rx="3" fill="${isLead ? '#e86f3a' : (val > 0 ? '#8b4728' : '#2e2e34')}" />`;
-          out += `<text x="${cx.toFixed(1)}" y="${(y - 6).toFixed(1)}" text-anchor="middle" fill="${isLead ? '#ededed' : '#a1a1a6'}" font-size="10">${val > 0 ? fmtInt(val) : '0'}</text>`;
-          out += `<text x="${cx.toFixed(1)}" y="${H - 14}" text-anchor="middle" fill="#a1a1a6" font-size="10">${esc(it.post_id)}</text>`;
+          out += `<rect x="${(cx - barW / 2).toFixed(1)}" y="${y.toFixed(1)}" width="${barW.toFixed(1)}" height="${bh.toFixed(1)}" rx="4" fill="${isLead ? '#f0713d' : (val > 0 ? '#7a3f28' : '#262b34')}" />`;
+          out += `<text x="${cx.toFixed(1)}" y="${(y - 6).toFixed(1)}" text-anchor="middle" fill="${isLead ? '#f1f3f5' : '#a4acb9'}" font-size="10">${val > 0 ? fmtInt(val) : '0'}</text>`;
+          out += `<text x="${cx.toFixed(1)}" y="${H - 14}" text-anchor="middle" fill="#a4acb9" font-size="10">${esc(it.post_id)}</text>`;
         });
         svg.innerHTML = out;
         return;
       }
 
-      // Google Search Console-style Multi-Line Trend Chart across YouTube, TikTok & Instagram
       const pts = getScopedTimeSeries();
-      const rangeLabels = { "5d": "Last 5 days", "7d": "Last 7 days", "28d": "Last 28 days", "3m": "Last 3 months", "6m": "Last 6 months", "all": "Overall" };
-      heading.textContent = `${metricNames[state.gscMetric] || "Views"} trend · ${rangeLabels[state.range] || "Overall"}`;
-      subtitle.textContent = `${state.granularity === "weekly" ? "Weekly" : "Daily"} cumulative comparison across YouTube, TikTok & Instagram (hover points to inspect)`;
+      heading.textContent = `${metricNames[state.gscMetric] || "Views"} trend`;
+      subtitle.textContent = `${state.granularity === "weekly" ? "Weekly" : "Daily"} comparison across YouTube, TikTok & Instagram`;
 
       const W = 720, H = 276, padL = 54, padR = 22, padT = 20, padB = 38;
       const plotW = W - padL - padR, plotH = H - padT - padB;
-
-      let allVals = [];
-      pts.forEach((pt) => {
-        activePlats.forEach((p) => allVals.push(Number(pt[p]?.[state.gscMetric] || 0)));
-      });
+      const allVals = [];
+      pts.forEach((pt) => activePlats.forEach((p) => allVals.push(Number(pt[p]?.[state.gscMetric] || 0))));
       const rawMax = Math.max(0, ...allVals);
       let niceMax = 4;
       if (rawMax > 0) {
@@ -4537,49 +4837,43 @@ const DASHBOARD_DATA = {
         const y = padT + (plotH * i) / 4;
         const val = niceMax * (1 - i / 4);
         const lbl = niceMax <= 8 ? val.toFixed(val % 1 === 0 ? 0 : 1) : Math.round(val).toLocaleString("en-US");
-        out += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="${i === 4 ? '#2e2e34' : '#202024'}" stroke-width="1" />`;
-        out += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="#85858b" font-size="11">${lbl}</text>`;
+        out += `<line x1="${padL}" y1="${y}" x2="${W - padR}" y2="${y}" stroke="${i === 4 ? '#303642' : '#20242c'}" stroke-width="1" />`;
+        out += `<text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="#7b8494" font-size="11">${lbl}</text>`;
       }
 
       if (!pts.length || !activePlats.length) {
-        out += `<text x="${padL + plotW / 2}" y="${padT + plotH / 2}" text-anchor="middle" fill="#85858b" font-size="13">No data points in selected filter</text>`;
+        out += `<text x="${padL + plotW / 2}" y="${padT + plotH / 2}" text-anchor="middle" fill="#7b8494" font-size="13">No data points in selected filter</text>`;
         svg.innerHTML = out;
         return;
       }
 
       const xFor = (idx) => pts.length === 1 ? padL + plotW / 2 : padL + (plotW * idx) / (pts.length - 1);
       const yFor = (val) => padT + plotH - (niceMax > 0 ? (val / niceMax) * plotH : 0);
+      out += `<line id="chart-crosshair" x1="0" y1="${padT}" x2="0" y2="${padT + plotH}" stroke="#444c5c" stroke-dasharray="3 3" stroke-width="1" opacity="0" />`;
 
-      // Subtle vertical crosshair placeholder
-      out += `<line id="chart-crosshair" x1="0" y1="${padT}" x2="0" y2="${padT + plotH}" stroke="#3f3f46" stroke-dasharray="3 3" stroke-width="1" opacity="0" />`;
-
-      // Draw 3 smooth-clean polylines + subtle area fills + data dots
       activePlats.forEach((p) => {
         const col = PLAT_COLORS[p];
         const coords = pts.map((pt, i) => [xFor(i), yFor(Number(pt[p]?.[state.gscMetric] || 0))]);
         if (coords.length > 1) {
           const linePath = coords.map(([x, y], i) => `${i === 0 ? 'M' : 'L'}${x.toFixed(1)},${y.toFixed(1)}`).join(" ");
           const areaPath = `${linePath} L${coords[coords.length - 1][0].toFixed(1)},${(padT + plotH).toFixed(1)} L${coords[0][0].toFixed(1)},${(padT + plotH).toFixed(1)} Z`;
-          out += `<path d="${areaPath}" fill="${col}" opacity="0.06" />`;
-          out += `<path d="${linePath}" fill="none" stroke="${col}" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />`;
+          out += `<path d="${areaPath}" fill="${col}" opacity="0.07" />`;
+          out += `<path d="${linePath}" fill="none" stroke="${col}" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round" />`;
         }
-        coords.forEach(([x, y], idx) => {
-          out += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${pts.length <= 14 ? 3.5 : 2.5}" fill="${col}" stroke="#19191b" stroke-width="1.5" data-pt-idx="${idx}" />`;
+        coords.forEach(([x, y]) => {
+          out += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${pts.length <= 14 ? 3.5 : 2.5}" fill="${col}" stroke="#16191f" stroke-width="1.5" />`;
         });
       });
 
-      // X-axis date labels (auto-skip so labels never overlap)
-      const maxTicks = 7;
-      const tickStep = Math.max(1, Math.ceil(pts.length / maxTicks));
+      const tickStep = Math.max(1, Math.ceil(pts.length / 7));
       pts.forEach((pt, idx) => {
         if (idx % tickStep === 0 || idx === pts.length - 1) {
           const x = xFor(idx);
           const anc = idx === 0 && pts.length > 1 ? "start" : idx === pts.length - 1 && pts.length > 1 ? "end" : "middle";
-          out += `<text x="${x.toFixed(1)}" y="${H - 12}" text-anchor="${anc}" fill="#85858b" font-size="11">${esc(pt.label)}</text>`;
+          out += `<text x="${x.toFixed(1)}" y="${H - 12}" text-anchor="${anc}" fill="#7b8494" font-size="11">${esc(pt.label)}</text>`;
         }
       });
 
-      // Invisible hover columns for crisp GSC-style scrubbing
       const colW = pts.length === 1 ? plotW : plotW / Math.max(1, pts.length - 1);
       pts.forEach((pt, idx) => {
         const cx = xFor(idx);
@@ -4589,25 +4883,15 @@ const DASHBOARD_DATA = {
       });
 
       svg.innerHTML = out;
-
       const crosshair = svg.querySelector("#chart-crosshair");
       svg.querySelectorAll(".hover-band").forEach((band) => {
         band.addEventListener("mouseenter", () => {
           const idx = Number(band.getAttribute("data-idx"));
           const pt = pts[idx];
           const cx = xFor(idx);
-          if (crosshair) {
-            crosshair.setAttribute("x1", cx.toFixed(1));
-            crosshair.setAttribute("x2", cx.toFixed(1));
-            crosshair.setAttribute("opacity", "1");
-          }
-          tooltip.innerHTML = `
-            <div class="tt-date">${esc(pt.label)} · ${esc(metricNames[state.gscMetric] || "Views")}</div>
-            ${activePlats.map((p) => {
-              const v = Number(pt[p]?.[state.gscMetric] || 0);
-              return `<div class="tt-row"><span class="tt-lbl"><span class="legend-dot" style="background:${PLAT_COLORS[p]}"></span>${PLAT_LABELS[p]}</span><span class="tt-val">${fmtInt(v)}</span></div>`;
-            }).join("")}
-          `;
+          if (crosshair) { crosshair.setAttribute("x1", cx.toFixed(1)); crosshair.setAttribute("x2", cx.toFixed(1)); crosshair.setAttribute("opacity", "1"); }
+          tooltip.innerHTML = `<div class="tt-date">${esc(pt.label)} · ${esc(metricNames[state.gscMetric] || "Views")}</div>` +
+            activePlats.map((p) => `<div class="tt-row"><span class="tt-lbl"><span class="legend-dot" style="background:${PLAT_COLORS[p]}"></span>${PLAT_LABELS[p]}</span><span class="tt-val">${fmtInt(Number(pt[p]?.[state.gscMetric] || 0))}</span></div>`).join("");
           tooltip.classList.add("visible");
         });
       });
@@ -4617,107 +4901,43 @@ const DASHBOARD_DATA = {
       });
     }
 
-    function renderStrategyAndSignals() {
-      const st = D.strategy || {};
-      const briefEl = document.getElementById("ai-brief-text");
-      const metaEl = document.getElementById("ai-strategy-meta");
-      const tagsEl = document.getElementById("ai-strategy-tags");
-      const gatesEl = document.getElementById("health-gates");
-
-      const minV = st.min_virality_score || 7;
-      if (gatesEl) gatesEl.textContent = `40/60 Cam · Virality >=${minV}/10`;
-      if (briefEl) {
-        briefEl.textContent = st.daily_brief || "AI optimizer analyzes your live YouTube, TikTok, and Instagram performance on every run to prioritize high-action viral scenes.";
-      }
-      if (metaEl) {
-        metaEl.textContent = st.updated_at_utc
-          ? `Last learned ${shortUtc(st.updated_at_utc)} via ${st.model_used || "OpenRouter free AI"}`
-          : "Self-improving loop active (OpenRouter free AI)";
-      }
-      if (tagsEl) {
-        const prio = (st.priority_streamers || []).slice(0, 4);
-        tagsEl.innerHTML = [
-          `<span class="tag-quiet accent">Virality gate &gt;=${minV}/10</span>`,
-          `<span class="tag-quiet good">40/60 Facecam stack</span>`,
-          ...(prio.length ? [`<span class="tag-quiet">Priority: ${esc(prio.join(", "))}</span>`] : [])
-        ].join("");
-      }
-
-      const cleanCopy = (s) => String(s || "").replace(/\s+—\s+/g, ", ").replace(/\.$/, "");
-      const wins = (st.winning_patterns && st.winning_patterns.length) ? st.winning_patterns : (D.working || []);
-      const avoids = (st.avoid_patterns && st.avoid_patterns.length) ? st.avoid_patterns : (D.not_working || []);
-
-      document.getElementById("working-list").innerHTML = wins.length
-        ? wins.map((x) => `<li>${esc(cleanCopy(x))}</li>`).join("")
-        : `<li>No verified winning signals yet</li>`;
-      document.getElementById("not-working-list").innerHTML = avoids.length
-        ? avoids.map((x) => `<li>${esc(cleanCopy(x))}</li>`).join("")
-        : `<li>No issues flagged in latest check</li>`;
-    }
-
     function renderWatRuler() {
       const svg = document.getElementById("wat-svg");
-      const W = 720, barY = 4, barH = 38;
-
+      const W = 720, barY = 4, barH = 36;
       const slotMap = new Map();
       (D.clips || []).forEach((c) => {
         const m = String(c.time || "").match(/(\d{2}):(\d{2})/);
-        if (m) {
-          const key = `${m[1]}:${m[2]}`;
-          if (!slotMap.has(key)) slotMap.set(key, c.post_id);
-        }
+        if (m && !slotMap.has(`${m[1]}:${m[2]}`)) slotMap.set(`${m[1]}:${m[2]}`, c.post_id);
       });
-
-      const avoidX = (330 / 1440) * W;
-      const avoidW = (90 / 1440) * W;
-      const slots = ["01:30", "04:30", "07:30", "10:30", "13:30", "16:30", "19:30", "22:30"];
-
-      let out = `<defs>
-        <pattern id="avoidHatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-          <line x1="0" y1="0" x2="0" y2="8" stroke="#5c282b" stroke-width="2" />
-        </pattern>
-      </defs>`;
-      out += `<rect x="0.5" y="${barY}" width="${W - 1}" height="${barH}" rx="6" fill="#0f0f10" stroke="#232327" />`;
-      out += `<rect x="${avoidX.toFixed(1)}" y="${barY + 1}" width="${avoidW.toFixed(1)}" height="${barH - 2}" fill="url(#avoidHatch)" />`;
-      out += `<line x1="${avoidX.toFixed(1)}" y1="${barY}" x2="${avoidX.toFixed(1)}" y2="${barY + barH}" stroke="#5c282b" stroke-width="1" />`;
-      out += `<line x1="${(avoidX + avoidW).toFixed(1)}" y1="${barY}" x2="${(avoidX + avoidW).toFixed(1)}" y2="${barY + barH}" stroke="#5c282b" stroke-width="1" />`;
-
+      const avoidX = (330 / 1440) * W, avoidW = (90 / 1440) * W;
+      const slots = ["01:30","04:30","07:30","10:30","13:30","16:30","19:30","22:30"];
+      let out = `<rect x="0.5" y="${barY}" width="${W - 1}" height="${barH}" rx="7" fill="#0b0c0e" stroke="#232730" />`;
+      out += `<rect x="${avoidX.toFixed(1)}" y="${barY + 1}" width="${avoidW.toFixed(1)}" height="${barH - 2}" fill="rgba(239,83,80,0.12)" />`;
       slots.forEach((s) => {
         const [hh, mm] = s.split(":").map(Number);
         const x = ((hh * 60 + mm) / 1440) * W;
-        out += `<line x1="${x.toFixed(1)}" y1="${barY}" x2="${x.toFixed(1)}" y2="${barY + barH}" stroke="#232327" stroke-width="1" />`;
+        out += `<line x1="${x.toFixed(1)}" y1="${barY}" x2="${x.toFixed(1)}" y2="${barY + barH}" stroke="#232730" stroke-width="1" />`;
         const post = slotMap.get(s);
         if (post) {
-          const pw = 64, ph = 24;
-          const rx = Math.max(4, Math.min(W - pw - 4, x - pw / 2));
-          out += `<rect x="${rx.toFixed(1)}" y="${barY + 7}" width="${pw}" height="${ph}" rx="4" fill="#261a15" stroke="#e86f3a" stroke-width="1" />`;
-          out += `<text x="${(rx + pw / 2).toFixed(1)}" y="${barY + 23}" text-anchor="middle" fill="#ededed" font-size="11" font-weight="500">${esc(post)}</text>`;
+          const pw = 62, ph = 22, rx = Math.max(4, Math.min(W - pw - 4, x - pw / 2));
+          out += `<rect x="${rx.toFixed(1)}" y="${barY + 7}" width="${pw}" height="${ph}" rx="5" fill="#2a1a14" stroke="#f0713d" stroke-width="1" />`;
+          out += `<text x="${(rx + pw / 2).toFixed(1)}" y="${barY + 22}" text-anchor="middle" fill="#f1f3f5" font-size="10.5" font-weight="600">${esc(post)}</text>`;
         }
       });
-
-      const ticks = [
-        [0, "00:00", "start"],
-        [W * 0.25, "06:00", "middle"],
-        [W * 0.5, "12:00", "middle"],
-        [W * 0.75, "18:00", "middle"],
-        [W, "24:00 WAT", "end"]
-      ];
-      ticks.forEach(([tx, lbl, anc]) => {
-        out += `<text x="${tx}" y="58" text-anchor="${anc}" fill="#85858b" font-size="11">${lbl}</text>`;
+      [[0,"00:00","start"],[W*0.25,"06:00","middle"],[W*0.5,"12:00","middle"],[W*0.75,"18:00","middle"],[W,"24:00 WAT","end"]].forEach(([tx,lbl,anc]) => {
+        out += `<text x="${tx}" y="56" text-anchor="${anc}" fill="#7b8494" font-size="11">${lbl}</text>`;
       });
-
       svg.innerHTML = out;
-      document.getElementById("wat-next-slot").textContent = `${slotMap.size} of ${slots.length} daily slots filled`;
+      document.getElementById("wat-next-slot").textContent = `${slotMap.size} of ${slots.length} daily slots mapped`;
     }
 
-    function renderPlatformsAndHealth() {
+    function renderPlatformsAndAudit() {
       const entries = Object.entries(D.platforms || {});
       const maxV = Math.max(1, ...entries.map(([, p]) => p.views || 0));
       const leadPlat = entries.slice().sort((a, b) => (b[1].views || 0) - (a[1].views || 0))[0]?.[0];
-
       document.getElementById("platform-list").innerHTML = entries.map(([name, p]) => {
-        const pct = p.views > 0 ? Math.max(6, Math.round((p.views / maxV) * 100)) : (p.posts > 0 ? 18 : 0);
-        const isLead = (p.views > 0 && name === leadPlat) || (p.views === 0 && name === "instagram");
+        const pct = p.views > 0 ? Math.max(6, Math.round((p.views / maxV) * 100)) : 0;
+        const isLead = p.views > 0 && name === leadPlat;
         return `<div class="plat-item">
           <div class="plat-row-top">
             <span class="plat-name">${esc(name)}</span>
@@ -4727,22 +4947,160 @@ const DASHBOARD_DATA = {
         </div>`;
       }).join("");
 
+      const yt = D.youtube_diagnostics || {};
+      document.getElementById("yt-zero-count").textContent = `${yt.zero_or_low_count || 0} of ${yt.live_count || 0} live`;
+      document.getElementById("yt-breakout-count").textContent = `${yt.breakout_count || 0} (median ${yt.median_views || 0})`;
+      document.getElementById("yt-avg-len").textContent = `${yt.avg_length_sec || 0}s`;
+      document.getElementById("yt-rec-list").innerHTML = (yt.recommendations || []).map((r) => `<li>${esc(r)}</li>`).join("");
+
+      const auto = D.automation || {};
+      const st = auto.today_status || "armed";
+      document.getElementById("ov-drop-status").innerHTML = `<span class="tag-quiet ${st === 'completed' ? 'good' : st === 'failed' ? 'warn' : 'accent'}">${esc(st)} (${auto.today_clips_delivered || 0}/${auto.today_target_clips || 3})</span>`;
+      document.getElementById("ov-drop-slot").textContent = auto.today_slot_used || "Awaiting next WAT slot";
+      document.getElementById("auto-badge").textContent = st === "completed" ? `Done · ${auto.today_slot_used || ""}` : `Armed · ${auto.today_wat || ""}`;
+      document.getElementById("auto-badge").className = `tag-quiet ${st === "completed" ? "good" : "accent"}`;
+
+      document.getElementById("window-grid").innerHTML = (auto.schedule_windows || []).map((w) => {
+        const isUsed = auto.today_slot_used && auto.today_slot_used.includes(w.time_wat);
+        return `<div class="window-pill ${isUsed ? 'done' : 'armed'}">
+          <div class="window-time">${esc(w.time_wat)} WAT</div>
+          <div class="window-role">${esc(w.label.replace(w.time_wat + " WAT ", ""))}</div>
+          <div class="card-meta">${isUsed ? "Delivered today" : (st === "completed" ? "Auto-skip (done)" : "Standby fallback")}</div>
+        </div>`;
+      }).join("");
+
       const h = D.health || {};
+      const chk = shortUtc(h.checked_at_utc || D.generated_at_utc);
+      document.getElementById("health-checked").textContent = chk;
+      document.getElementById("health-checked-2").textContent = chk;
       const stuckN = (h.stuck_posts || []).length;
       const pausedAll = !!h.pause_state?.paused_all;
-      const quar = h.pause_state?.last_profile_edit_utc;
-      document.getElementById("health-checked").textContent = shortUtc(h.checked_at_utc || D.generated_at_utc);
       document.getElementById("health-stuck").innerHTML = `<span class="tally-dot ${stuckN > 0 ? 'warn' : ''}"></span>${stuckN}`;
       document.getElementById("health-pause").innerHTML = `<span class="tally-dot ${pausedAll ? 'bad' : ''}"></span>${pausedAll ? 'Active' : 'Clear'}`;
-      document.getElementById("health-quarantine").textContent = quar ? shortUtc(quar) : "Clear";
+      document.getElementById("health-quarantine").textContent = h.pause_state?.last_profile_edit_utc ? shortUtc(h.pause_state.last_profile_edit_utc) : "Clear";
       document.getElementById("health-ig-band").textContent = h.ig_ceiling_alert ? "Flagged (EXP-R6)" : "Normal";
+
+      document.getElementById("drops-tbody").innerHTML = (auto.recent_drops || []).length
+        ? auto.recent_drops.map((d) => `<tr>
+            <td class="mono">${esc(d.date_wat)}</td>
+            <td><span class="tag-quiet ${d.status === 'completed' ? 'good' : d.status === 'failed' ? 'warn' : 'accent'}">${esc(d.status)}</span></td>
+            <td class="secondary">${esc(d.slot_used || '-')}</td>
+            <td class="num tabular">${d.clips_delivered || 0}/${d.target_clips || 3}</td>
+            <td class="mono secondary">${esc((d.post_ids || []).join(", ") || "-")}</td>
+          </tr>`).join("")
+        : `<tr><td colspan="5" class="muted">No automated drops logged yet (waiting for next WAT window)</td></tr>`;
+
+      const repClips = D.last_report?.clips || [];
+      document.getElementById("last-report-list").innerHTML = repClips.length
+        ? repClips.map((c) => `<li><strong>${esc(c.post_id)}</strong> (@${esc(c.streamer)}, ${c.duration_sec}s) · Stranger ${c.stranger_score}/10 · Captions: ${c.has_captions ? "Yes" : "No"}<br/><span class="muted">YT Title: ${esc(c.yt_title || c.hook)}</span></li>`).join("")
+        : `<li>Run daily_cloud_pipeline.py to populate live quality report</li>`;
+    }
+
+    function renderStrategyAndSignals() {
+      const st = D.strategy || {};
+      const minV = st.min_virality_score || 7;
+      document.getElementById("health-gates").textContent = `Kinetic Captions · Stranger >=${minV}/10`;
+      document.getElementById("ai-brief-text").textContent = st.daily_brief || "AI optimizer evaluates your live YouTube, TikTok, and Instagram performance on every run.";
+      document.getElementById("ai-strategy-meta").textContent = st.updated_at_utc ? `Last learned ${shortUtc(st.updated_at_utc)} via ${st.model_used || "OpenRouter"}` : "Self-improving loop active";
+      const prio = (st.priority_streamers || []).slice(0, 4);
+      document.getElementById("ai-strategy-tags").innerHTML = [
+        `<span class="tag-quiet accent">Stranger gate &gt;=${minV}/10</span>`,
+        `<span class="tag-quiet good">Word-synced captions</span>`,
+        ...(prio.length ? [`<span class="tag-quiet">Priority: ${esc(prio.join(", "))}</span>`] : [])
+      ].join("");
+
+      const wins = (st.winning_patterns && st.winning_patterns.length) ? st.winning_patterns : (D.working || []);
+      const avoids = (st.avoid_patterns && st.avoid_patterns.length) ? st.avoid_patterns : (D.not_working || []);
+      document.getElementById("working-list").innerHTML = wins.length ? wins.map((x) => `<li>${esc(x)}</li>`).join("") : `<li>No winning signals yet</li>`;
+      document.getElementById("not-working-list").innerHTML = avoids.length ? avoids.map((x) => `<li>${esc(x)}</li>`).join("") : `<li>No issues flagged</li>`;
+    }
+
+    function renderCampaignsAndEarnings() {
+      const earn = D.earnings || {};
+      document.getElementById("earn-total").textContent = fmtUsd(earn.total_accumulated_usd);
+      document.getElementById("earn-paid").textContent = fmtUsd(earn.total_paid_usd);
+      document.getElementById("earn-pending").textContent = fmtUsd(earn.total_pending_usd);
+      document.getElementById("earn-views").textContent = fmtInt(earn.total_verified_views);
+      document.getElementById("earn-cpm").textContent = `Effective CPM: ${fmtUsd(earn.avg_effective_cpm)}`;
+      document.getElementById("earn-platforms").textContent = `${earn.joined_platforms_count || 0} / ${earn.total_platforms_count || 11}`;
+      document.getElementById("earn-camps").textContent = `${earn.active_campaigns_count || 0} active campaigns`;
+
+      const plats = (earn.by_platform || []).filter((p) => {
+        if (state.platFilter === "active") return p.status === "active" || p.status === "applied";
+        if (state.platFilter === "not_joined") return p.status === "not_joined";
+        return true;
+      });
+      const maxPlatUsd = Math.max(1, ...plats.map((p) => p.total_usd || 0));
+
+      document.getElementById("platform-cards-grid").innerHTML = plats.map((p) => {
+        const pct = p.total_usd > 0 ? Math.max(8, Math.round((p.total_usd / maxPlatUsd) * 100)) : 0;
+        const stCls = p.status === "active" ? "good" : p.status === "applied" ? "accent" : "";
+        return `<div class="plat-card">
+          <div class="plat-card-top">
+            <div>
+              <div class="plat-card-name">${esc(p.name)}</div>
+              <a class="plat-card-link" href="${esc(p.url)}" target="_blank" rel="noopener">${esc(p.url.replace("https://", ""))}</a>
+            </div>
+            <span class="tag-quiet ${stCls}">${esc(p.status.replace("_", " "))}</span>
+          </div>
+          <div class="plat-earn-amt ${p.total_usd > 0 ? 'good' : ''}">${fmtUsd(p.total_usd)}</div>
+          <div class="track"><div class="track-fill green" style="width:${pct}%"></div></div>
+          <div class="plat-card-metrics">
+            <div><span class="muted">Typical CPM</span><strong>${fmtUsd(p.typical_cpm_usd)}</strong></div>
+            <div><span class="muted">Campaigns</span><strong>${p.campaigns_count}</strong></div>
+            <div><span class="muted">Views</span><strong>${fmtInt(p.verified_views)}</strong></div>
+          </div>
+          <div class="card-meta">${esc(p.niche_fit)} · Min ${fmtUsd(p.min_payout_usd)}</div>
+        </div>`;
+      }).join("");
+
+      const camps = earn.by_campaign || [];
+      document.getElementById("campaigns-tbody").innerHTML = camps.length
+        ? camps.map((c) => `<tr>
+            <td><strong>${esc(c.name)}</strong><div class="card-meta mono">${esc(c.id)}</div></td>
+            <td>${esc(c.platform_name)}</td>
+            <td><span class="tag-quiet">${esc(c.niche || "gta6")}</span></td>
+            <td class="num tabular">${fmtUsd(c.cpm_usd)}</td>
+            <td class="num tabular">${fmtInt(c.verified_views)}</td>
+            <td class="num tabular warn">${fmtUsd(c.pending_usd)}</td>
+            <td class="num tabular">${fmtUsd(c.paid_usd)}</td>
+            <td class="num tabular good"><strong>${fmtUsd(c.total_usd)}</strong></td>
+          </tr>`).join("")
+        : `<tr><td colspan="8" class="muted">No campaigns registered yet — use the Payout Calculator &amp; CLI builder on the right to add your first campaign.</td></tr>`;
+
+      const sel = document.getElementById("calc-platform");
+      if (sel && !sel.options.length) {
+        (earn.by_platform || []).forEach((p) => {
+          const opt = document.createElement("option");
+          opt.value = p.id;
+          opt.textContent = p.name;
+          sel.appendChild(opt);
+        });
+      }
+      updateCalculator();
+    }
+
+    function updateCalculator() {
+      const plat = document.getElementById("calc-platform")?.value || "whop";
+      const cid = (document.getElementById("calc-camp-id")?.value || "WHOP-GTA-1").trim();
+      const views = Math.max(0, Number(document.getElementById("calc-views")?.value || 0));
+      const cpm = Math.max(0, Number(document.getElementById("calc-cpm")?.value || 0));
+      const cap = Math.max(0, Number(document.getElementById("calc-cap")?.value || 0));
+      const fee = Math.max(0, Math.min(50, Number(document.getElementById("calc-fee")?.value || 0)));
+
+      let gross = (views / 1000) * cpm;
+      if (cap > 0) gross = Math.min(gross, cap);
+      const net = gross * (1 - fee / 100);
+      document.getElementById("calc-result").textContent = `${fmtUsd(net)} (gross ${fmtUsd(gross)})`;
+      document.getElementById("calc-cli-cmd").textContent =
+        `python3 scripts/campaigns.py join-platform ${plat} --status active\n` +
+        `python3 scripts/campaigns.py add-campaign --id ${cid} --platform ${plat} --name "${plat.toUpperCase()} Campaign" --cpm ${cpm.toFixed(2)} --cap ${cap.toFixed(0)} --niche gaming\n` +
+        `python3 scripts/campaigns.py log-submission --campaign ${cid} --post-id GTA-021 --social youtube --views ${views} --status approved`;
     }
 
     function switchView(nextView) {
       state.view = nextView;
-      document.querySelectorAll(".nav-btn").forEach((b) => {
-        b.classList.toggle("active", b.getAttribute("data-view") === nextView);
-      });
+      document.querySelectorAll(".nav-btn").forEach((b) => b.classList.toggle("active", b.getAttribute("data-view") === nextView));
       applyView();
       renderTable();
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -4751,91 +5109,61 @@ const DASHBOARD_DATA = {
     function renderTable() {
       const allRows = filteredClips();
       const isOverview = state.view === "overview";
-      const titleEl = document.getElementById("clips-section-title");
+      document.getElementById("clips-section-title").textContent = isOverview ? "Recent clips (preview)" : "All clips & queue";
       const seeAllBtn = document.getElementById("see-all-clips-btn");
-      const searchEl = document.getElementById("clip-search");
-      const pagerInfo = document.getElementById("pager-info");
-      const pagerBtns = document.getElementById("pager-buttons");
-
-      if (titleEl) titleEl.textContent = isOverview ? "Recent clips (preview)" : "All clips & queue";
-      if (seeAllBtn) {
-        seeAllBtn.style.display = isOverview ? "inline-flex" : "none";
-        seeAllBtn.textContent = `See all ${allRows.length} rows →`;
-      }
-      if (searchEl) searchEl.style.display = isOverview ? "none" : "block";
+      seeAllBtn.style.display = isOverview ? "inline-flex" : "none";
+      seeAllBtn.textContent = `See all ${allRows.length} rows →`;
+      document.getElementById("clip-search").style.display = isOverview ? "none" : "block";
 
       let visibleRows = allRows;
-      if (isOverview) {
-        visibleRows = allRows.slice(0, 6);
-      } else if (!state.showAllRows) {
+      if (isOverview) visibleRows = allRows.slice(0, 6);
+      else if (!state.showAllRows) {
         const totalPages = Math.max(1, Math.ceil(allRows.length / state.pageSize));
         state.page = Math.max(1, Math.min(state.page, totalPages));
-        const start = (state.page - 1) * state.pageSize;
-        visibleRows = allRows.slice(start, start + state.pageSize);
+        visibleRows = allRows.slice((state.page - 1) * state.pageSize, state.page * state.pageSize);
       }
 
-      document.getElementById("table-count").textContent = isOverview
-        ? `Showing latest ${visibleRows.length} of ${allRows.length} rows`
-        : `${allRows.length} row${allRows.length === 1 ? "" : "s"}`;
-
+      document.getElementById("table-count").textContent = isOverview ? `Latest ${visibleRows.length} of ${allRows.length} rows` : `${allRows.length} rows`;
       const tbody = document.getElementById("clips-tbody");
       if (!visibleRows.length) {
-        tbody.innerHTML = `<tr><td colspan="11" class="muted">No matching clips in scoreboard.csv</td></tr>`;
-        if (pagerInfo) pagerInfo.textContent = "0 rows";
-        if (pagerBtns) pagerBtns.innerHTML = "";
+        tbody.innerHTML = `<tr><td colspan="11" class="muted">No matching clips</td></tr>`;
         return;
       }
-
       tbody.innerHTML = visibleRows.map((c) => {
         const key = `${c.post_id}::${c.platform}`;
-        const isSel = state.selectedKey === key;
-        const shareStr = fmtPct(c.share_rate, c.views);
         const shareClass = c.views > 0 && c.share_rate >= 1.0 ? "good" : "";
-        return `<tr class="clickable ${isSel ? 'selected' : ''}" data-key="${esc(key)}">
-          <td class="tabular">${esc(c.post_id)}</td>
+        const titlePreview = c.yt_title && c.platform === "youtube" ? c.yt_title : c.hook;
+        return `<tr class="clickable ${state.selectedKey === key ? 'selected' : ''}" data-key="${esc(key)}">
+          <td class="mono">${esc(c.post_id)}</td>
           <td style="text-transform:capitalize" class="secondary">${esc(c.platform)}</td>
           <td class="secondary">${esc(c.credit)}</td>
-          <td class="hook-cell" title="${esc(c.hook)}">${esc(c.hook)}</td>
+          <td class="hook-cell" title="${esc(titlePreview)}">${esc(titlePreview)}</td>
           <td class="num secondary">${c.length_sec ? Number(c.length_sec).toFixed(1) + 's' : '-'}</td>
           <td class="secondary tabular">${esc(c.time || '-')}</td>
           <td class="num">${c.views > 0 ? fmtInt(c.views) : '<span class="muted">-</span>'}</td>
           <td class="num">${c.views > 0 ? fmtInt(c.likes) : '<span class="muted">-</span>'}</td>
           <td class="num">${c.views > 0 ? fmtInt(c.shares) : '<span class="muted">-</span>'}</td>
-          <td class="num"><span class="tag-quiet ${shareClass}">${shareStr}</span></td>
+          <td class="num"><span class="tag-quiet ${shareClass}">${fmtPct(c.share_rate, c.views)}</span></td>
           <td><span class="tag-quiet">${esc(c.test_name || '-')}</span></td>
         </tr>`;
       }).join("");
 
+      const pagerInfo = document.getElementById("pager-info");
+      const pagerBtns = document.getElementById("pager-buttons");
       if (isOverview) {
-        if (pagerInfo) pagerInfo.textContent = `Showing latest ${visibleRows.length} of ${allRows.length} tracked rows on Overview`;
-        if (pagerBtns) {
-          pagerBtns.innerHTML = `<button class="btn-link-accent" id="footer-see-all" type="button">Open full Clips page (${allRows.length} rows) →</button>`;
-          const b = document.getElementById("footer-see-all");
-          if (b) b.addEventListener("click", () => switchView("clips"));
-        }
+        pagerInfo.textContent = `Showing latest ${visibleRows.length} of ${allRows.length} tracked rows`;
+        pagerBtns.innerHTML = `<button class="btn-link-accent" id="footer-see-all" type="button">Open full Clips page →</button>`;
+        document.getElementById("footer-see-all")?.addEventListener("click", () => switchView("clips"));
       } else {
         const totalPages = Math.max(1, Math.ceil(allRows.length / state.pageSize));
-        if (state.showAllRows) {
-          if (pagerInfo) pagerInfo.textContent = `Showing all ${allRows.length} rows`;
-          if (pagerBtns) {
-            pagerBtns.innerHTML = `<button class="seg-btn" id="pager-paginate" type="button">Paginate (${state.pageSize}/page)</button>`;
-            document.getElementById("pager-paginate")?.addEventListener("click", () => { state.showAllRows = false; state.page = 1; renderTable(); });
-          }
-        } else {
-          const start = (state.page - 1) * state.pageSize + 1;
-          const end = Math.min(allRows.length, state.page * state.pageSize);
-          if (pagerInfo) pagerInfo.textContent = `Showing ${start}-${end} of ${allRows.length} · Page ${state.page} of ${totalPages}`;
-          if (pagerBtns) {
-            pagerBtns.innerHTML = `
-              <button class="seg-btn" id="pager-prev" type="button" ${state.page <= 1 ? 'disabled style="opacity:.4;cursor:default"' : ''}>← Prev</button>
-              <button class="seg-btn" id="pager-next" type="button" ${state.page >= totalPages ? 'disabled style="opacity:.4;cursor:default"' : ''}>Next →</button>
-              <button class="seg-btn" id="pager-all" type="button">Show all</button>
-            `;
-            document.getElementById("pager-prev")?.addEventListener("click", () => { if (state.page > 1) { state.page--; renderTable(); } });
-            document.getElementById("pager-next")?.addEventListener("click", () => { if (state.page < totalPages) { state.page++; renderTable(); } });
-            document.getElementById("pager-all")?.addEventListener("click", () => { state.showAllRows = true; renderTable(); });
-          }
-        }
+        pagerInfo.textContent = state.showAllRows ? `All ${allRows.length} rows` : `Page ${state.page} of ${totalPages}`;
+        pagerBtns.innerHTML = state.showAllRows
+          ? `<button class="seg-btn" id="pager-paginate" type="button">Paginate</button>`
+          : `<button class="seg-btn" id="pager-prev" type="button">← Prev</button><button class="seg-btn" id="pager-next" type="button">Next →</button><button class="seg-btn" id="pager-all" type="button">Show all</button>`;
+        document.getElementById("pager-prev")?.addEventListener("click", () => { if (state.page > 1) { state.page--; renderTable(); } });
+        document.getElementById("pager-next")?.addEventListener("click", () => { if (state.page < totalPages) { state.page++; renderTable(); } });
+        document.getElementById("pager-all")?.addEventListener("click", () => { state.showAllRows = true; renderTable(); });
+        document.getElementById("pager-paginate")?.addEventListener("click", () => { state.showAllRows = false; state.page = 1; renderTable(); });
       }
 
       tbody.querySelectorAll("tr.clickable").forEach((tr) => {
@@ -4851,15 +5179,9 @@ const DASHBOARD_DATA = {
 
     function renderDrawer(rows) {
       const drawer = document.getElementById("clip-drawer");
-      if (!state.selectedKey) {
-        drawer.classList.remove("open");
-        return;
-      }
+      if (!state.selectedKey) { drawer.classList.remove("open"); return; }
       const clip = rows.find((c) => `${c.post_id}::${c.platform}` === state.selectedKey);
-      if (!clip) {
-        drawer.classList.remove("open");
-        return;
-      }
+      if (!clip) { drawer.classList.remove("open"); return; }
       drawer.classList.add("open");
       drawer.innerHTML = `
         <div class="card-head">
@@ -4868,45 +5190,35 @@ const DASHBOARD_DATA = {
         </div>
         <div class="drawer-grid">
           <div><div class="drawer-k">Frame-1 hook</div><div class="drawer-v">${esc(clip.hook)}</div></div>
+          <div><div class="drawer-k">YouTube Shorts Title</div><div class="drawer-v">${esc(clip.yt_title || "(legacy pre-upgrade)")}</div></div>
           <div><div class="drawer-k">Scheduled slot</div><div class="drawer-v tabular">${esc(clip.date)} ${esc(clip.time)}</div></div>
-          <div><div class="drawer-k">Pillar &amp; experiment</div><div class="drawer-v">${esc(clip.pillar || '-')} · ${esc(clip.test_name || '-')}</div></div>
-          <div><div class="drawer-k">Proof &amp; notes</div><div class="drawer-v">${esc(clip.notes || '-')}</div></div>
-        </div>
-      `;
-      document.getElementById("close-drawer").addEventListener("click", () => {
-        state.selectedKey = null;
-        renderTable();
-      });
+          <div><div class="drawer-k">Proof &amp; notes</div><div class="drawer-v">${esc(clip.notes || "-")}</div></div>
+        </div>`;
+      document.getElementById("close-drawer").addEventListener("click", () => { state.selectedKey = null; renderTable(); });
     }
 
     function renderExperimentsAndMonetization() {
       document.getElementById("exp-tbody").innerHTML = (D.experiments || []).length
         ? D.experiments.map((e) => `<tr>
-            <td class="tabular">${esc(e.id)}</td>
+            <td class="mono">${esc(e.id)}</td>
             <td><span class="tag-quiet ${e.status === 'Leading' ? 'accent' : ''}">${esc(e.status)}</span></td>
             <td class="secondary">${esc(e.variable)}</td>
             <td class="muted">${esc(e.metric)}</td>
           </tr>`).join("")
-        : `<tr><td colspan="4" class="muted">No active experiments logged</td></tr>`;
+        : `<tr><td colspan="4" class="muted">No active experiments</td></tr>`;
 
       const m = D.monetization || {};
-      const done = Number(m.days_completed || 0);
-      const req = Number(m.days_required_phase1 || 14);
+      const done = Number(m.days_completed || 0), req = Number(m.days_required_phase1 || 14);
       const pct = Math.min(100, Math.round((done / Math.max(1, req)) * 100));
-      document.getElementById("monetization-phase").textContent = done >= req ? "Eligible" : "Audience baseline";
-      document.getElementById("phase-day-label").textContent = `Day ${done} of ${req} audience-only window`;
+      document.getElementById("monetization-phase").textContent = done >= req ? "Campaigns Eligible" : "Audience baseline";
+      document.getElementById("phase-day-label").textContent = `Day ${done} of ${req} baseline`;
       document.getElementById("phase-pct").textContent = `${pct}%`;
       document.getElementById("phase-bar").style.width = `${Math.max(6, pct)}%`;
-
       document.getElementById("monetization-list").innerHTML = (m.triggers || []).map((t) => `
         <div class="stream-row">
-          <div>
-            <div class="stream-name">${esc(t.stream)}</div>
-            <div class="stream-req">${esc(t.requirement)}</div>
-          </div>
+          <div><div class="stream-name">${esc(t.stream)}</div><div class="stream-req">${esc(t.requirement)}</div></div>
           <span class="tag-quiet ${t.ready ? 'good' : ''}">${t.ready ? 'Ready' : 'Locked'}</span>
-        </div>
-      `).join("");
+        </div>`).join("");
     }
 
     function applyView() {
@@ -4914,18 +5226,12 @@ const DASHBOARD_DATA = {
         const scopes = el.getAttribute("data-section").split(" ");
         el.classList.toggle("section-hidden", !scopes.includes(state.view));
       });
-      document.querySelectorAll("[data-sub]").forEach((el) => {
-        if (state.view === "overview") {
-          el.classList.remove("section-hidden");
-        } else {
-          el.classList.toggle("section-hidden", el.getAttribute("data-sub") !== state.view);
-        }
-      });
       const titles = {
         overview: "Performance overview",
-        clips: "Clip queue & analytics",
-        experiments: "Active experiments",
-        monetization: "Monetization readiness"
+        campaigns: "Clipping campaigns & earnings",
+        clips: "Clips queue & quality",
+        automation: "Telegram fallback & health",
+        experiments: "Experiments & campaign readiness"
       };
       document.getElementById("page-title").textContent = titles[state.view] || "Performance overview";
     }
@@ -4935,120 +5241,64 @@ const DASHBOARD_DATA = {
       renderKpisAndFinding();
       renderChart();
       renderWatRuler();
-      renderPlatformsAndHealth();
+      renderPlatformsAndAudit();
       renderStrategyAndSignals();
+      renderCampaignsAndEarnings();
       renderTable();
       renderExperimentsAndMonetization();
       applyView();
     }
 
-    document.querySelectorAll(".nav-btn").forEach((btn) => {
-      btn.addEventListener("click", () => switchView(btn.getAttribute("data-view")));
-    });
-
+    document.querySelectorAll(".nav-btn").forEach((b) => b.addEventListener("click", () => switchView(b.getAttribute("data-view"))));
     document.getElementById("see-all-clips-btn")?.addEventListener("click", () => switchView("clips"));
-
-    document.querySelectorAll("#platform-tabs .seg-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        document.querySelectorAll("#platform-tabs .seg-btn").forEach((b) => {
-          b.classList.remove("active");
-          b.setAttribute("aria-selected", "false");
-        });
-        btn.classList.add("active");
-        btn.setAttribute("aria-selected", "true");
-        state.platform = btn.getAttribute("data-platform");
-        state.page = 1;
-        renderKpisAndFinding();
-        renderChart();
-        renderTable();
-      });
-    });
-
-    document.querySelectorAll("#gsc-metric-cards .gsc-tab").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        state.gscMetric = btn.getAttribute("data-gsc");
-        renderChart();
-      });
-    });
-
-    document.querySelectorAll("#chart-mode-tabs .seg-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        state.chartMode = btn.getAttribute("data-mode");
-        renderChart();
-      });
-    });
-
-    document.querySelectorAll("#granularity-tabs .seg-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        state.granularity = btn.getAttribute("data-gran");
-        renderChart();
-      });
-    });
-
-    document.querySelectorAll("#range-tabs .seg-btn").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        state.range = btn.getAttribute("data-range");
-        renderChart();
-      });
-    });
-
-    document.querySelectorAll("#platform-legend .legend-chip").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const p = btn.getAttribute("data-line");
-        if (state.platform !== "all") {
-          state.platform = "all";
-          document.querySelectorAll("#platform-tabs .seg-btn").forEach((b) => {
-            const act = b.getAttribute("data-platform") === "all";
-            b.classList.toggle("active", act);
-            b.setAttribute("aria-selected", act ? "true" : "false");
-          });
-          state.visibleLines = { youtube: true, tiktok: true, instagram: true };
-        } else {
-          const onCount = Object.values(state.visibleLines).filter(Boolean).length;
-          if (state.visibleLines[p] && onCount === 1) return; // keep at least 1 line visible
-          state.visibleLines[p] = !state.visibleLines[p];
-        }
-        renderKpisAndFinding();
-        renderChart();
-        renderTable();
-      });
-    });
-
-    document.getElementById("clip-search").addEventListener("input", (e) => {
-      state.query = e.target.value;
+    document.querySelectorAll("#platform-tabs .seg-btn").forEach((btn) => btn.addEventListener("click", () => {
+      document.querySelectorAll("#platform-tabs .seg-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      state.platform = btn.getAttribute("data-platform");
       state.page = 1;
+      renderKpisAndFinding(); renderChart(); renderTable();
+    }));
+    document.querySelectorAll("#gsc-metric-cards .gsc-tab").forEach((b) => b.addEventListener("click", () => { state.gscMetric = b.getAttribute("data-gsc"); renderChart(); }));
+    document.querySelectorAll("#chart-mode-tabs .seg-btn").forEach((b) => b.addEventListener("click", () => { state.chartMode = b.getAttribute("data-mode"); renderChart(); }));
+    document.querySelectorAll("#granularity-tabs .seg-btn").forEach((b) => b.addEventListener("click", () => { state.granularity = b.getAttribute("data-gran"); renderChart(); }));
+    document.querySelectorAll("#range-tabs .seg-btn").forEach((b) => b.addEventListener("click", () => { state.range = b.getAttribute("data-range"); renderChart(); }));
+    document.querySelectorAll("#plat-status-filter .seg-btn").forEach((btn) => btn.addEventListener("click", () => {
+      document.querySelectorAll("#plat-status-filter .seg-btn").forEach((b) => b.classList.remove("active"));
+      btn.classList.add("active");
+      state.platFilter = btn.getAttribute("data-pfilter");
+      renderCampaignsAndEarnings();
+    }));
+    document.querySelectorAll("#platform-legend .legend-chip").forEach((btn) => btn.addEventListener("click", () => {
+      const p = btn.getAttribute("data-line");
+      if (state.platform !== "all") { state.platform = "all"; state.visibleLines = { youtube: true, tiktok: true, instagram: true }; }
+      else {
+        if (state.visibleLines[p] && Object.values(state.visibleLines).filter(Boolean).length === 1) return;
+        state.visibleLines[p] = !state.visibleLines[p];
+      }
+      renderKpisAndFinding(); renderChart(); renderTable();
+    }));
+    document.getElementById("clip-search").addEventListener("input", (e) => { state.query = e.target.value; state.page = 1; renderTable(); });
+    document.querySelectorAll("th.sortable").forEach((th) => th.addEventListener("click", () => {
+      const k = th.getAttribute("data-sort");
+      state.sortDir = state.sortKey === k && state.sortDir === "desc" ? "asc" : "desc";
+      state.sortKey = k;
       renderTable();
+    }));
+    ["calc-platform","calc-camp-id","calc-views","calc-cpm","calc-cap","calc-fee"].forEach((id) => {
+      document.getElementById(id)?.addEventListener("input", updateCalculator);
+      document.getElementById(id)?.addEventListener("change", updateCalculator);
     });
-
-    document.querySelectorAll("th.sortable").forEach((th) => {
-      th.addEventListener("click", () => {
-        const k = th.getAttribute("data-sort");
-        if (state.sortKey === k) {
-          state.sortDir = state.sortDir === "desc" ? "asc" : "desc";
-        } else {
-          state.sortKey = k;
-          state.sortDir = "desc";
-        }
-        renderTable();
-      });
+    document.getElementById("copy-calc-cmd")?.addEventListener("click", async () => {
+      try { await navigator.clipboard.writeText(document.getElementById("calc-cli-cmd").textContent); } catch {}
     });
-
-    document.getElementById("copy-summary-btn").addEventListener("click", async () => {
-      const text = [
-        `${D.page_name || "GTA 6 Clipping"} Recap (${shortUtc(D.generated_at_utc)})`,
-        `Total plays: ${fmtInt(D.totals?.views)} | Followers: ${fmtInt(D.totals?.followers)} | Shares: ${fmtInt(D.totals?.shares)}`,
-        `Clips tracked: ${(D.clips || []).length} rows | Stuck: ${(D.health?.stuck_posts || []).length}`
-      ].join("\n");
+    document.getElementById("copy-summary-btn")?.addEventListener("click", async () => {
+      const text = `${D.page_name || "Leonida Chaos"} (${shortUtc(D.generated_at_utc)})\nViews: ${fmtInt(D.totals?.views)} | Followers: ${fmtInt(D.totals?.followers)} | Campaign Earnings: ${fmtUsd(D.earnings?.total_accumulated_usd)}`;
       try {
         await navigator.clipboard.writeText(text);
-        const lbl = document.getElementById("copy-summary-label");
-        lbl.textContent = "Copied";
-        setTimeout(() => { lbl.textContent = "Copy recap"; }, 1400);
-      } catch {
-        // Clipboard unavailable in restricted local context
-      }
+        document.getElementById("copy-summary-label").textContent = "Copied";
+        setTimeout(() => { document.getElementById("copy-summary-label").textContent = "Copy recap"; }, 1400);
+      } catch {}
     });
-
     renderAll();
   </script>
 </body>

@@ -484,6 +484,10 @@ def render_clip(spec_path: Path, make_qa: bool = True, make_sheet: bool = True) 
         if not srt_path.is_absolute():
             srt_path = (base_dir / srt_path).resolve()
         subtitles_cues = parse_srt(srt_path)
+    caption_style = str(spec.get("caption_style") or ("kinetic" if subtitles_cues else "box")).strip().lower()
+    hook_overlay = spec.get("hook_overlay")
+    if hook_overlay and hook_overlay.get("text"):
+        assert_no_emoji(str(hook_overlay["text"]), "hook_overlay.text")
 
     if not keep:
         src_dur = probe_duration(src)
@@ -620,7 +624,10 @@ def render_clip(spec_path: Path, make_qa: bool = True, make_sheet: bool = True) 
         )
         overlays.append((credit_png, None, None))
 
-        # Teaser hook text (strictly during teaser window)
+        # Teaser hook text (strictly during teaser window) + optional punchline intervals
+        teaser_ranges: list[tuple[float, float]] = []
+        punch_ranges: list[tuple[float, float]] = []
+
         for p in pieces:
             if p.kind == "teaser" and p.text:
                 ov = td_path / "ov_teaser.png"
@@ -632,7 +639,9 @@ def render_clip(spec_path: Path, make_qa: bool = True, make_sheet: bool = True) 
                     stroke_width=9,
                     prefer_impact=True,
                 )
-                overlays.append((ov, p.out_start, max(p.out_start, p.out_end - 0.03)))
+                t_e = max(p.out_start, p.out_end - 0.03)
+                overlays.append((ov, p.out_start, t_e))
+                teaser_ranges.append((p.out_start, t_e))
             elif p.kind == "freeze" and p.text:
                 ov = td_path / f"ov_freeze_{len(overlays)}.png"
                 render_text_overlay(
@@ -644,6 +653,25 @@ def render_clip(spec_path: Path, make_qa: bool = True, make_sheet: bool = True) 
                     prefer_impact=True,
                 )
                 overlays.append((ov, p.out_start, p.out_end))
+                punch_ranges.append((p.out_start, p.out_end))
+
+        if hook_overlay and hook_overlay.get("text"):
+            h_text = str(hook_overlay["text"]).strip().upper()
+            h_dur = max(0.8, min(4.0, float(hook_overlay.get("duration", 2.0))))
+            h_y = GAME_Y + 185 if layout == "stack" else int(OUT_H * 0.25)
+            h_min_y = GAME_Y + 14 if layout == "stack" else 80
+            ov_hook = td_path / "ov_hook_overlay.png"
+            render_text_overlay(
+                h_text,
+                ov_hook,
+                y_center=h_y,
+                font_size=70,
+                stroke_width=9,
+                prefer_impact=True,
+                min_y=h_min_y,
+            )
+            overlays.append((ov_hook, 0.0, h_dur))
+            teaser_ranges.append((0.0, h_dur))
 
         # Punchline overlays mapped strictly onto body timeline (NEVER in teaser window)
         for idx, pl in enumerate(punchlines):
@@ -654,31 +682,58 @@ def render_clip(spec_path: Path, make_qa: bool = True, make_sheet: bool = True) 
             render_text_overlay(
                 pl["text"].upper(),
                 ov,
-                y_center=GAME_Y + 160,
+                y_center=GAME_Y + 170 if layout == "stack" else int(OUT_H * 0.28),
                 font_size=66,
                 stroke_width=8,
                 prefer_impact=True,
+                min_y=GAME_Y + 14 if layout == "stack" else 80,
             )
             for s, e in ranges:
                 overlays.append((ov, s, e))
+                punch_ranges.append((s, e))
 
-        # Burned-in SRT subtitles mapped onto body timeline (lower gameplay zone, safe above bottom UI)
+        # Burned-in SRT subtitles mapped onto body timeline
+        # Kinetic style centers bold 2-3 word captions where the facecam meets the gameplay
+        # and shifts cleanly downward whenever a hook/punchline overlay is active.
+        def _overlaps(a: tuple[float, float], intervals: list[tuple[float, float]]) -> bool:
+            return any(a[1] > b[0] and a[0] < b[1] for b in intervals)
+
         for idx, cue in enumerate(subtitles_cues):
             ranges = map_source_interval_to_body(cue["start"], cue["end"], pieces)
             if not ranges:
                 continue
-            ov = td_path / f"ov_sub_{idx}.png"
-            render_text_overlay(
-                cue["text"],
-                ov,
-                y_center=GAME_Y + 760,  # y=1480, safely above bottom ~320px UI chrome
-                font_size=50,
-                max_width=900,
-                stroke_width=7,
-                prefer_impact=False,
-                box_bg=(0, 0, 0, 125),
-            )
-            for s, e in ranges:
+            for r_idx, (s, e) in enumerate(ranges):
+                ov = td_path / f"ov_sub_{idx}_{r_idx}.png"
+                if caption_style == "kinetic":
+                    collides = _overlaps((s, e), teaser_ranges) or _overlaps((s, e), punch_ranges)
+                    if layout == "stack":
+                        sub_y = (GAME_Y + 340) if collides else (GAME_Y + 56)
+                        sub_min_y = GAME_Y - 18
+                    else:
+                        sub_y = int(OUT_H * 0.68) if collides else int(OUT_H * 0.56)
+                        sub_min_y = 80
+                    render_text_overlay(
+                        cue["text"].upper(),
+                        ov,
+                        y_center=sub_y,
+                        font_size=62,
+                        max_width=940,
+                        stroke_width=9,
+                        prefer_impact=True,
+                        box_bg=None,
+                        min_y=sub_min_y,
+                    )
+                else:
+                    render_text_overlay(
+                        cue["text"],
+                        ov,
+                        y_center=GAME_Y + 760,
+                        font_size=50,
+                        max_width=900,
+                        stroke_width=7,
+                        prefer_impact=False,
+                        box_bg=(0, 0, 0, 125),
+                    )
                 overlays.append((ov, s, e))
 
         # 5. Composite all overlays + audio boost/limiter into final 1080x1920 30fps MP4
@@ -699,7 +754,7 @@ def render_clip(spec_path: Path, make_qa: bool = True, make_sheet: bool = True) 
             last_v = next_v
 
         af_chain = f"volume={volume:.3f},alimiter=limit=0.95"
-        if spec.get("loudnorm", False):
+        if spec.get("loudnorm", True):
             af_chain = f"volume={volume:.3f},loudnorm=I=-16:TP=-1.5:LRA=11"
 
         cmd.extend([

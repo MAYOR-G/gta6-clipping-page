@@ -120,6 +120,7 @@ def run_health_check(
     ledger_path: Path = LEDGER_PATH,
     pause_path: Path = PAUSE_PATH,
     apply_pauses: bool = False,
+    strict_auto_pause: bool = False,
 ) -> dict[str, Any]:
     now = utc_now()
     rows: list[dict[str, str]] = []
@@ -214,9 +215,9 @@ def run_health_check(
     if len(active_platforms) >= 2 and set(active_platforms).issubset(set(platforms_with_stuck_latest)):
         urgent_overnight = True
         actions.append(
-            "CRITICAL: All active platforms are stuck simultaneously -> PAUSE ALL and alert human immediately (even overnight)."
+            "ADVISORY: All active platforms have low plays on their latest post — keeping Telegram delivery active unless --strict-auto-pause is enabled."
         )
-        if apply_pauses:
+        if apply_pauses and strict_auto_pause:
             pause_state["paused_all"] = True
             pause_state["reason"] = "All active platforms stuck simultaneously"
             pause_state.setdefault("history", []).append({
@@ -274,12 +275,19 @@ def run_health_check(
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run stuck-post health check per platform.")
     parser.add_argument("--apply-pauses", action="store_true", help="Automatically update data/pause_state.json if thresholds trip")
+    parser.add_argument("--strict-auto-pause", action="store_true", help="Also allow global paused_all=True kill switch")
     parser.add_argument("--scoreboard", type=Path, default=SCOREBOARD_PATH)
     parser.add_argument("--ledger", type=Path, default=LEDGER_PATH)
     parser.add_argument("--pause-file", type=Path, default=PAUSE_PATH)
     args = parser.parse_args()
 
-    result = run_health_check(args.scoreboard, args.ledger, args.pause_file, apply_pauses=args.apply_pauses)
+    result = run_health_check(
+        args.scoreboard,
+        args.ledger,
+        args.pause_file,
+        apply_pauses=args.apply_pauses,
+        strict_auto_pause=args.strict_auto_pause,
+    )
     print(json.dumps(result, indent=2))
     return 0
 

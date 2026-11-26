@@ -21,47 +21,10 @@
   "last_profile_edit_utc": null,
   "history": [
     {
-      "at_utc": "2026-11-20T19:32:08.897101+00:00",
-      "action": "auto_pause_youtube_24h",
-      "until_utc": "2026-11-21T19:32:08.897101+00:00"
-    },
-    {
-      "at_utc": "2026-11-21T05:16:11.732426+00:00",
-      "action": "auto_pause_youtube_24h",
-      "until_utc": "2026-11-22T05:16:11.732426+00:00"
-    },
-    {
-      "at_utc": "2026-11-21T09:39:29.513885+00:00",
-      "action": "auto_pause_youtube_24h",
-      "until_utc": "2026-11-22T09:39:29.513885+00:00"
-    },
-    {
-      "at_utc": "2026-11-21T11:05:54.820510+00:00",
-      "action": "auto_pause_youtube_24h",
-      "until_utc": "2026-11-22T11:05:54.820510+00:00"
-    },
-    {
-      "at_utc": "2026-11-21T11:44:28.382023+00:00",
-      "action": "auto_pause_youtube_24h",
-      "until_utc": "2026-11-22T11:44:28.382023+00:00"
-    },
-    {
-      "at_utc": "2026-11-21T12:51:04.602192+00:00",
-      "action": "unpause_youtube",
-      "reason": "manual action"
-    },
-    {
-      "at_utc": "2026-11-23T10:16:00.083674+00:00",
-      "action": "auto_pause_all",
-      "reason": "All active platforms stuck simultaneously"
-    },
-    {
-      "at_utc": "2026-11-23T10:16:53.758339+00:00",
-      "action": "unpause_all",
-      "reason": "manual action"
+      "at_utc": "2026-11-26T13:55:00+00:00",
+      "action": "reset_pause_state",
+      "reason": "Cleared stale auto-pauses for multi-window Telegram fallback"
     }
   ],
-  "paused_pairs": [
-    "youtube:GTA-002:GTA-003"
-  ]
+  "paused_pairs": []
 }

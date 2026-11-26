@@ -32,6 +32,7 @@ from typing import Any
 ROOT_DIR = Path(__file__).resolve().parent.parent
 QUEUE_DIR = ROOT_DIR / "queue"
 SENT_LOG_PATH = ROOT_DIR / "data" / "telegram_sent.json"
+DAILY_DROPS_PATH = ROOT_DIR / "data" / "daily_drops.json"
 
 
 def _require_env() -> tuple[str, str]:
@@ -138,13 +139,91 @@ def save_sent_log(data: dict[str, Any], path: Path = SENT_LOG_PATH) -> None:
     path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
 
 
+def load_daily_drops(path: Path = DAILY_DROPS_PATH) -> dict[str, Any]:
+    if not path.exists():
+        return {"days": {}}
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception:
+        return {"days": {}}
+
+
+def save_daily_drops(data: dict[str, Any], path: Path = DAILY_DROPS_PATH) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    path.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
+
+
+def get_today_drop_status(wat_date_str: str, path: Path = DAILY_DROPS_PATH) -> dict[str, Any]:
+    data = load_daily_drops(path)
+    return (data.get("days") or {}).get(wat_date_str) or {
+        "date_wat": wat_date_str,
+        "status": "pending",
+        "clips_delivered": 0,
+        "target_clips": 0,
+        "post_ids": [],
+        "slot_used": None,
+        "attempts": [],
+    }
+
+
+def record_daily_drop_attempt(
+    wat_date_str: str,
+    slot_label: str,
+    post_ids: list[str],
+    target_count: int,
+    status: str,
+    note: str = "",
+    path: Path = DAILY_DROPS_PATH,
+) -> dict[str, Any]:
+    data = load_daily_drops(path)
+    days = data.setdefault("days", {})
+    existing = days.get(wat_date_str) or {
+        "date_wat": wat_date_str,
+        "status": "pending",
+        "clips_delivered": 0,
+        "target_clips": target_count,
+        "post_ids": [],
+        "slot_used": None,
+        "attempts": [],
+    }
+    combined_ids = list(existing.get("post_ids") or [])
+    for pid in post_ids:
+        if pid not in combined_ids:
+            combined_ids.append(pid)
+
+    existing["target_clips"] = max(int(existing.get("target_clips") or 0), int(target_count))
+    existing["post_ids"] = combined_ids
+    existing["clips_delivered"] = len(combined_ids)
+    existing["status"] = status
+    if post_ids and not existing.get("slot_used"):
+        existing["slot_used"] = slot_label
+    elif status == "completed" and not existing.get("slot_used"):
+        existing["slot_used"] = slot_label
+    existing["updated_at_utc"] = datetime.now(timezone.utc).isoformat()
+    existing.setdefault("attempts", []).append({
+        "at_utc": datetime.now(timezone.utc).isoformat(),
+        "slot_label": slot_label,
+        "status": status,
+        "added_posts": post_ids,
+        "note": note,
+    })
+    days[wat_date_str] = existing
+    # Keep last 60 days so file stays compact
+    if len(days) > 60:
+        for old_k in sorted(days.keys())[:-60]:
+            days.pop(old_k, None)
+    save_daily_drops(data, path)
+    return existing
+
+
 def deliver_bundle(
     post_dir: Path,
     index: int = 1,
     total: int = 1,
     dry_run: bool = False,
+    meta: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Send 1 clip in strict 5-part structured Telegram format."""
+    """Send 1 clip in clean structured Telegram format with separate YouTube Shorts title vs IG/TikTok caption."""
     manifests = {}
     for pdir in sorted(post_dir.iterdir()):
         mp = pdir / "manifest.json"
@@ -162,16 +241,27 @@ def deliver_bundle(
     ig_fc = (manifests.get("instagram") or {}).get("ig_first_comment")
     yt_title = (manifests.get("youtube") or {}).get("youtube_title")
     platforms_str = ", ".join(p.upper() for p in manifests.keys())
+    m_info = meta or {}
+    quality_bits = []
+    if m_info.get("stranger_score") is not None:
+        quality_bits.append(f"Stranger Score: {m_info['stranger_score']}/10")
+    if m_info.get("signals"):
+        quality_bits.append(f"Signals: {', '.join(m_info['signals'])}")
+    if m_info.get("campaign_id"):
+        quality_bits.append(f"Campaign: {m_info['campaign_id']}")
 
-    # 1. Structured Header + Recommended Posting Time
-    header = (
-        f"==============================\n"
-        f"CLIP {index} OF {total} — {post_id}\n"
-        f"Recommended Post Time: {slot}\n"
-        f"Platforms: {platforms_str}\n"
-        f"TikTok AI Label: OFF (Not AI-generated)\n"
-        f"=============================="
-    )
+    header_lines = [
+        "==============================",
+        f"CLIP {index} OF {total} — {post_id}",
+        f"Recommended Post Time: {slot}",
+        f"Platforms: {platforms_str}",
+        "TikTok AI Label: OFF (Not AI-generated)",
+    ]
+    if quality_bits:
+        header_lines.append(" | ".join(quality_bits))
+    header_lines.append("==============================")
+    header = "\n".join(header_lines)
+
     steps: dict[str, Any] = {}
     steps["1_header"] = send_message(header, dry_run=dry_run)
 
@@ -184,14 +274,22 @@ def deliver_bundle(
     else:
         steps["3_cover"] = {"skipped": "cover not found"}
 
-    # 4. Copy-Paste Caption (clean standalone message so 1 tap copies it)
+    # 4. Copy-Paste TikTok / Instagram Caption (clean standalone message so 1 tap copies it)
     steps["4_caption"] = send_message(caption, dry_run=dry_run)
 
-    # 5. Copy-Paste IG First Comment (and YT Title if different)
-    if ig_fc:
-        steps["5_ig_first_comment"] = send_message(ig_fc, dry_run=dry_run)
+    # 5. Copy-Paste YouTube Shorts Title ONLY (standalone 1-tap copy, zero Credit spam)
     if yt_title:
-        steps["6_yt_title_note"] = send_message(f"YT Shorts Title ({post_id}): {yt_title}", dry_run=dry_run)
+        steps["5_yt_title"] = send_message(yt_title, dry_run=dry_run)
+        cap_lines = [ln.strip() for ln in caption.splitlines() if ln.strip()]
+        credit_and_tags = "\n".join(ln for ln in cap_lines[1:] if ln) if len(cap_lines) > 1 else caption
+        steps["6_yt_description"] = send_message(
+            f"YT Shorts Description ({post_id}):\n{credit_and_tags} #shorts",
+            dry_run=dry_run,
+        )
+
+    # 7. Copy-Paste IG First Comment
+    if ig_fc:
+        steps["7_ig_first_comment"] = send_message(ig_fc, dry_run=dry_run)
 
     return {"post_id": post_id, "slot": slot, "steps": steps}
 

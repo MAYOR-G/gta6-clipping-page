@@ -563,6 +563,7 @@ def main() -> int:
                 "backend": args.backend,
                 "video_sha256": video_hash,
                 "caption_first_line": caption.splitlines()[0].strip(),
+                "youtube_title": (args.yt_title or caption.splitlines()[0])[:95] if p == "youtube" else None,
                 "scheduled_time_utc": scheduled_utc.isoformat(),
                 "created_at_utc": now_utc.isoformat(),
                 "status": res.get("status", "scheduled"),

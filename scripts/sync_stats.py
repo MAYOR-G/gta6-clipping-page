@@ -32,6 +32,18 @@ ROOT_DIR = Path(__file__).resolve().parent.parent
 SCOREBOARD_PATH = ROOT_DIR / "scoreboard.csv"
 
 
+def load_local_dotenv() -> None:
+    env_path = ROOT_DIR / ".env"
+    if not env_path.exists():
+        return
+    for line in env_path.read_text(encoding="utf-8").splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        k, v = line.split("=", 1)
+        os.environ.setdefault(k.strip(), v.strip().strip('"').strip("'"))
+
+
 def utc_now_str() -> str:
     return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%MZ")
 
@@ -194,7 +206,7 @@ def load_ledger_captions() -> dict[tuple[str, str], str]:
         for e in data.get("entries", []):
             pid = (e.get("post_id") or "").strip()
             plat = (e.get("platform") or "").strip().lower()
-            cap = (e.get("caption_first_line") or "").strip()
+            cap = (e.get("youtube_title") or e.get("caption_first_line") or "").strip()
             if pid and plat and cap:
                 out[(pid, plat)] = cap
                 out.setdefault((pid, "*"), cap)
@@ -203,32 +215,41 @@ def load_ledger_captions() -> dict[tuple[str, str], str]:
         return {}
 
 
-def match_video(row: dict[str, str], videos: list[dict[str, Any]], ledger_caps: dict[tuple[str, str], str]) -> dict[str, Any] | None:
+def match_video(
+    row: dict[str, str],
+    videos: list[dict[str, Any]],
+    ledger_caps: dict[tuple[str, str], str],
+    claimed_ids: set[str] | None = None,
+) -> dict[str, Any] | None:
     notes = row.get("notes") or ""
-    # 1. Exact URL / ID match in notes
+    claimed = claimed_ids or set()
+
+    # 1. Exact URL / ID match already stored in notes (authoritative even if claimed in Pass 1)
     for v in videos:
         if v.get("url") and v["url"] in notes:
             return v
         if v.get("id") and len(v["id"]) >= 6 and v["id"] in notes:
             return v
 
-    # 2. Match against exact caption first line stored in publish_ledger.json (most accurate!)
+    unclaimed = [v for v in videos if str(v.get("id") or "") not in claimed]
+
+    # 2. Match against exact youtube_title / caption_first_line stored in publish_ledger.json
     pid = (row.get("post_id") or "").strip()
     plat = (row.get("platform") or "").strip().lower()
     cap_line = normalize_text(ledger_caps.get((pid, plat)) or ledger_caps.get((pid, "*"), ""))
     cap_words = [w for w in cap_line.split() if len(w) >= 4]
     if cap_words:
-        for v in videos:
+        for v in unclaimed:
             t_norm = normalize_text(v.get("title", ""))
             if cap_line and cap_line in t_norm:
                 return v
             if sum(1 for w in cap_words if w in t_norm) >= min(3, len(cap_words)):
                 return v
 
-    # 3. Fallback: post_id or hook + streamer keyword overlap
+    # 3. Fallback: post_id or hook + streamer keyword overlap (never reuse already-claimed video!)
     hook_words = [w for w in normalize_text(row.get("hook", "")).split() if len(w) >= 4]
     credit_handle = normalize_text((row.get("credit") or "").split("(")[0])
-    for v in videos:
+    for v in unclaimed:
         t_norm = normalize_text(v.get("title", ""))
         if pid.lower() in t_norm:
             return v
@@ -252,6 +273,21 @@ def update_scoreboard(platform_data: list[dict[str, Any]], scoreboard_path: Path
     updated_rows = 0
     stamp = utc_now_str()
 
+    # Pass 1: claim all exact URL / ID matches already bound in scoreboard.csv so no two posts share one video
+    claimed_ids_by_plat: dict[str, set[str]] = {p: set() for p in by_plat}
+    for row in rows:
+        p = (row.get("platform") or "").strip().lower()
+        pdata = by_plat.get(p)
+        if not pdata:
+            continue
+        notes = row.get("notes") or ""
+        for v in pdata.get("videos") or []:
+            vid = str(v.get("id") or "")
+            if (v.get("url") and v["url"] in notes) or (vid and len(vid) >= 6 and vid in notes):
+                if vid:
+                    claimed_ids_by_plat.setdefault(p, set()).add(vid)
+                break
+
     for row in rows:
         p = (row.get("platform") or "").strip().lower()
         pdata = by_plat.get(p)
@@ -259,9 +295,12 @@ def update_scoreboard(platform_data: list[dict[str, Any]], scoreboard_path: Path
             continue
         if pdata.get("followers") is not None:
             row["followers_at_read"] = str(pdata["followers"])
-        matched = match_video(row, pdata.get("videos") or [], ledger_caps)
+        claimed = claimed_ids_by_plat.setdefault(p, set())
+        matched = match_video(row, pdata.get("videos") or [], ledger_caps, claimed_ids=claimed)
         if not matched:
             continue
+        if matched.get("id"):
+            claimed.add(str(matched["id"]))
         v = matched.get("views")
         if v is not None:
             if not row.get("views_12h"):
@@ -293,6 +332,7 @@ def update_scoreboard(platform_data: list[dict[str, Any]], scoreboard_path: Path
 
 
 def main() -> int:
+    load_local_dotenv()
     yt_url = os.environ.get("YT_CHANNEL_URL", "").strip()
     tt_handle = os.environ.get("TIKTOK_HANDLE", "").strip()
     ig_handle = os.environ.get("IG_HANDLE", "").strip()
