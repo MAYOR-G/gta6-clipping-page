@@ -1,36 +1,35 @@
 {
-  "updated_at_utc": "2026-11-26T18:38:44.222381+00:00",
-  "model_used": "nvidia/nemotron-3.5-super-vl:free",
-  "min_virality_score": 8,
-  "recommended_target_sec": 15,
+  "updated_at_utc": "2026-11-26T21:44:06.933810+00:00",
+  "model_used": "deterministic-fallback",
+  "min_virality_score": 7,
+  "recommended_target_sec": 18,
   "priority_streamers": [
     "ohnepixel",
-    "xqc",
     "caseoh",
     "jynxzi",
     "berleezy",
     "jasontheween"
   ],
   "winning_patterns": [
-    "Short 12-22 second clips outperform longer ones with a median of 370 views versus 284 for medium clips.",
-    "Hooks using all-caps urgency and specific streamer names like ohnepixel drive massive YouTube views, as seen with 9400 yt_views on GTA-001.",
-    "Clips featuring immediate physics breaks or game crashes capture attention faster than general gameplay reactions."
+    "Instant-karma vehicle crashes, police chases, robberies, and explosive physics fails within the first 2 seconds",
+    "High-energy shocked facecam reactions stacked cleanly in the top 40% frame",
+    "Tight comedic hooks that name a relatable fail or setup before the payoff hits"
   ],
   "avoid_patterns": [
-    "Reject clips with typos or broken English in hooks such as MASSAGGATOR which received 0 views.",
-    "Avoid long 30-second static reaction clips like GTA-019 that fail to deliver a payoff within the first 15 seconds.",
-    "Do not post clips with zero high-energy moments or crashes, as evidenced by multiple 0-2 view flops from xqc and kaicenat."
+    "Slow in-game phone/UI menus, inventory browsing, or reading text on screen",
+    "Aimless walking/driving with no climax, punchline, or sudden chaos",
+    "No-facecam gameplay or static Just Chatting commentary without GTA 6 action"
   ],
-  "hook_style_guidance": "Write Frame-1 hooks in all-caps that name the streamer and promise a specific game-breaking event or crash within the first three words.",
-  "daily_brief": "The biggest win was ohnepixel's crash clip hitting 10410 views, while the biggest leak is the 30-second static reaction format flopping across all platforms. Tomorrow, cut all clips to under 16 seconds and prioritize ohnepixel and xqc crash footage.",
+  "hook_style_guidance": "Lead with an immediate tension/irony premise (4-7 ALL CAPS words) that sets up the visual payoff without describing it literally.",
+  "daily_brief": "GTA-001 (@ohnePixel (Twitch), 14s) hit 10,410 total views. Prioritize high-action instant-karma & loud-reaction clips (>=7/10 virality) and reject slow menu/phone scenes.",
   "scorecard_snapshot": {
     "total_clips_live": 28,
-    "median_clip_views": 312.5,
+    "median_clip_views": 317.0,
     "top_post_id": "GTA-001",
     "top_post_views": 10410,
     "short_vs_medium": {
       "short_12_22s_count": 7,
-      "short_12_22s_median": 370,
+      "short_12_22s_median": 398,
       "medium_23_35s_count": 21,
       "medium_23_35s_median": 284
     }
