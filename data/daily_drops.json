@@ -44,9 +44,16 @@
             "GTA-034"
           ],
           "note": "Delivered 5 clip(s)"
+        },
+        {
+          "at_utc": "2026-11-27T18:27:04.760884+00:00",
+          "slot_label": "09:37 WAT (Primary)",
+          "status": "completed",
+          "added_posts": [],
+          "note": "Skipped duplicate window (already dropped today)"
         }
       ],
-      "updated_at_utc": "2026-11-27T01:53:00.550450+00:00"
+      "updated_at_utc": "2026-11-27T18:27:04.760877+00:00"
     }
   }
 }
