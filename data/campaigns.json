@@ -1,13 +1,13 @@
 {
-  "updated_at_utc": "2026-11-26T14:00:00+00:00",
+  "updated_at_utc": "2026-11-27T12:27:38.575676+00:00",
   "currency": "USD",
   "platforms": [
     {
       "id": "whop",
       "name": "Whop Content Rewards",
       "url": "https://whop.com",
-      "status": "not_joined",
-      "handle": "",
+      "status": "active",
+      "handle": "@mayowawork",
       "typical_cpm_usd": 1.25,
       "fee_pct": 10.0,
       "min_payout_usd": 10.0,
@@ -19,14 +19,14 @@
         "Link your YouTube, TikTok, and Instagram accounts via profile/bio verification",
         "Read the campaign brief (max length, required tags, allowed platforms) before cutting"
       ],
-      "notes": "Largest public Content Rewards marketplace; zero follower minimum on most campaigns."
+      "notes": "Signed in via Google (mayowawork16@gmail.com); Content Rewards + Whop AI joined"
     },
     {
       "id": "clipur",
       "name": "Clipur",
       "url": "https://www.clipur.com",
-      "status": "not_joined",
-      "handle": "",
+      "status": "applied",
+      "handle": "mayowawork16@gmail.com",
       "typical_cpm_usd": 1.5,
       "fee_pct": 10.0,
       "min_payout_usd": 15.0,
@@ -37,14 +37,14 @@
         "Submit 1-2 sample vertical edits (use your best GTA 6 stacked clips)",
         "Connect social handles and claim open creator briefs"
       ],
-      "notes": "Vetted creator distribution network; rewards clean facecam + captions + high retention."
+      "notes": "Email verified; on clipur.com/waitlist awaiting approval"
     },
     {
       "id": "clipster",
       "name": "Clipster",
       "url": "https://www.clipster.com",
-      "status": "not_joined",
-      "handle": "",
+      "status": "active",
+      "handle": "@leonidachaos4",
       "typical_cpm_usd": 1.4,
       "fee_pct": 10.0,
       "min_payout_usd": 10.0,
@@ -55,14 +55,14 @@
         "Verify your TikTok / IG / Shorts pages in the creator dashboard",
         "Pick active streamer campaigns and submit live URLs within the brief window"
       ],
-      "notes": "Strong streamer-clipping focus with frequent Twitch/YouTube gaming pools."
+      "notes": "Signed up via Google; 149 open campaigns incl. Lord Kebun (zsh.75 CPM) & GTA 6 edits (- CPM)"
     },
     {
       "id": "clipstake",
       "name": "ClipStake",
       "url": "https://www.clipstake.com",
-      "status": "not_joined",
-      "handle": "",
+      "status": "active",
+      "handle": "@leonidachao",
       "typical_cpm_usd": 1.75,
       "fee_pct": 10.0,
       "min_payout_usd": 20.0,
@@ -73,14 +73,14 @@
         "Connect your posting accounts for automated verified-view tracking",
         "Join open CPM campaigns and submit live Short/Reel links"
       ],
-      "notes": "Data-backed CPM campaign tracker with clear per-clip view caps and verified analytics."
+      "notes": "Signed in via Google; currently only casino/logo campaigns active (skipped)"
     },
     {
       "id": "darebay",
       "name": "DareBay",
       "url": "https://darebay.com",
-      "status": "not_joined",
-      "handle": "",
+      "status": "active",
+      "handle": "@user359345651",
       "typical_cpm_usd": 1.5,
       "fee_pct": 10.0,
       "min_payout_usd": 10.0,
@@ -91,14 +91,14 @@
         "Verify your social handles and check active clipping bounties",
         "Post compliant clips and submit post URLs before bounty pool closes"
       ],
-      "notes": "Wallet-backed clipping bounties and view-based contests."
+      "notes": "Signed in via Google; 2 live non-gaming tasks currently open"
     },
     {
       "id": "vues",
       "name": "Vues",
       "url": "https://vues.app",
-      "status": "not_joined",
-      "handle": "",
+      "status": "active",
+      "handle": "@leonidachaos4",
       "typical_cpm_usd": 1.2,
       "fee_pct": 9.0,
       "min_payout_usd": 10.0,
@@ -109,13 +109,13 @@
         "Link your YouTube Shorts, TikTok, and Instagram Reels channels",
         "Enroll in active CPM campaigns and paste live clip links after posting"
       ],
-      "notes": "Self-serve automated view tracking across Shorts, TikTok, and Reels."
+      "notes": "Signed in via Google; link YT/TT/IG at /clipper/accounts to join Vues orgs"
     },
     {
       "id": "clipping",
       "name": "Clipping.io",
       "url": "https://www.clipping.io",
-      "status": "not_joined",
+      "status": "paused",
       "handle": "",
       "typical_cpm_usd": 1.5,
       "fee_pct": 10.0,
@@ -127,13 +127,13 @@
         "Review active campaigns and check per-1,000 view rates + geo rules",
         "Submit live URLs immediately after posting so 30-day tracking starts early"
       ],
-      "notes": "Structured campaign portal with clear view thresholds and tracking windows."
+      "notes": "No self-serve creator portal on clipping.io (app.clipping.io unresolved)"
     },
     {
       "id": "clipfy",
       "name": "Clipfy",
       "url": "https://clipfy.app",
-      "status": "not_joined",
+      "status": "paused",
       "handle": "",
       "typical_cpm_usd": 1.25,
       "fee_pct": 10.0,
@@ -145,13 +145,13 @@
         "Connect your Shorts / TikTok / IG pages",
         "Join gaming/creator briefs and submit your posted clip links"
       ],
-      "notes": "Creator clipping marketplace for short-form gaming and entertainment campaigns."
+      "notes": "clipfy.app redirects to cutdat.com (paid link-in-bio SaaS, not a clipping marketplace)"
     },
     {
       "id": "clipershq",
       "name": "Clippers HQ",
       "url": "https://clipershq.com",
-      "status": "not_joined",
+      "status": "applied",
       "handle": "",
       "typical_cpm_usd": 1.5,
       "fee_pct": 9.5,
@@ -163,13 +163,13 @@
         "Follow strictly one account per person and verify your social pages",
         "Claim open campaigns and submit compliant clips"
       ],
-      "notes": "Strict anti-bot & single-account enforcement (~9.5% fee); consistent gaming briefs."
+      "notes": "Discord OAuth opened on clipershq.com/login; waiting for user Discord login"
     },
     {
       "id": "clippingexe",
       "name": "Clipping.exe",
       "url": "https://clip.tech",
-      "status": "not_joined",
+      "status": "applied",
       "handle": "",
       "typical_cpm_usd": 1.6,
       "fee_pct": 10.0,
@@ -181,14 +181,14 @@
         "Complete creator onboarding and connect social handles",
         "Pick active gaming campaigns and submit live links"
       ],
-      "notes": "Agency-style campaign network with higher CPMs on vetted channels."
+      "notes": "Clipper campaigns (incl. Kai Cenat /1K) run via Clip Money Discord: discord.gg/FnCMF4KMAT"
     },
     {
       "id": "starlet",
       "name": "Starlet",
       "url": "https://starlet.gg",
-      "status": "not_joined",
-      "handle": "",
+      "status": "applied",
+      "handle": "mayowawork16@gmail.com",
       "typical_cpm_usd": 1.5,
       "fee_pct": 10.0,
       "min_payout_usd": 10.0,
@@ -199,9 +199,94 @@
         "Browse gaming creator campaigns and check VOD links/rules",
         "Cut with stream-clipper, post, and submit links in Starlet"
       ],
-      "notes": "Gaming-native clipping platform ideal for GTA 6 and broader gaming campaigns."
+      "notes": "Joined starlet.gg/launch waitlist; active community on discord.gg/tiktokclips"
     }
   ],
-  "campaigns": [],
+  "campaigns": [
+    {
+      "id": "CLIPSTER-KEBUN-1",
+      "platform_id": "clipster",
+      "name": "Lord Kebun [CLIPPING]",
+      "creator": "@lordkebun",
+      "status": "active",
+      "niche": "gaming",
+      "cpm_usd": 0.75,
+      "per_clip_cap_usd": 750.0,
+      "min_views_threshold": 1000,
+      "max_length_sec": 60,
+      "required_tags": [],
+      "required_caption_text": "Add @lordkebun watermark to every video",
+      "banned_terms": [],
+      "allowed_platforms": [
+        "youtube",
+        "tiktok",
+        "instagram"
+      ],
+      "created_at_utc": "2026-11-27T12:27:38.316787+00:00"
+    },
+    {
+      "id": "CLIPSTER-FURI-1",
+      "platform_id": "clipster",
+      "name": "Furi [CLIPPING]",
+      "creator": "@FURI",
+      "status": "active",
+      "niche": "gaming",
+      "cpm_usd": 0.2,
+      "per_clip_cap_usd": 400.0,
+      "min_views_threshold": 1069,
+      "max_length_sec": 60,
+      "required_tags": [],
+      "required_caption_text": "Add @FURI watermark to every video",
+      "banned_terms": [],
+      "allowed_platforms": [
+        "youtube",
+        "tiktok",
+        "instagram"
+      ],
+      "created_at_utc": "2026-11-27T12:27:38.398144+00:00"
+    },
+    {
+      "id": "CLIPSTER-MFN-1",
+      "platform_id": "clipster",
+      "name": "Money For Nothing [GTA 6 EDITS]",
+      "creator": "Clipster GTA6",
+      "status": "active",
+      "niche": "gta6",
+      "cpm_usd": 1.0,
+      "per_clip_cap_usd": 800.0,
+      "min_views_threshold": 2000,
+      "max_length_sec": 60,
+      "required_tags": [],
+      "required_caption_text": "Use Money For Nothing - Dire Straits audio + comment song name",
+      "banned_terms": [],
+      "allowed_platforms": [
+        "youtube",
+        "tiktok",
+        "instagram"
+      ],
+      "created_at_utc": "2026-11-27T12:27:38.479750+00:00"
+    },
+    {
+      "id": "CLIPSTER-ISSUES-1",
+      "platform_id": "clipster",
+      "name": "ISSUES [GTA EDITS] (1K fol req)",
+      "creator": "Clipster GTA6",
+      "status": "active",
+      "niche": "gta6",
+      "cpm_usd": 2.0,
+      "per_clip_cap_usd": 200.0,
+      "min_views_threshold": 1000,
+      "max_length_sec": 60,
+      "required_tags": [],
+      "required_caption_text": "Requires 1000 followers; use Issues audio",
+      "banned_terms": [],
+      "allowed_platforms": [
+        "youtube",
+        "tiktok",
+        "instagram"
+      ],
+      "created_at_utc": "2026-11-27T12:27:38.575357+00:00"
+    }
+  ],
   "submissions": []
 }
