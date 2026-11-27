@@ -1,28 +1,28 @@
 {
-  "updated_at_utc": "2026-11-27T10:10:21.016543+00:00",
+  "updated_at_utc": "2026-11-27T12:50:08.765090+00:00",
   "model_used": "nvidia/nemotron-3.5-super-vl:free",
   "min_virality_score": 7,
   "recommended_target_sec": 15,
   "priority_streamers": [
     "ohnepixel",
-    "xqc",
-    "caseoh",
     "jynxzi",
+    "xqc",
     "kaicenat",
-    "esfandtv"
+    "caseoh",
+    "berleezy"
   ],
   "winning_patterns": [
-    "Short 12-22 second clips with immediate payoff hooks like 'lasted three seconds' or 'helicopter exploded' outperformed 23-35 second clips by nearly 2x median views.",
-    "Top clips featured high-energy streamers without facecams reacting to chaotic GTA 6 physics failures, explosions, or instant deaths rather than slow gameplay.",
-    "YouTube Shorts drove 90% of total views, so clips must be optimized for YouTube's Shorts feed first with fast cuts and no slow intros."
+    "Short 13-18 second clips with immediate chaotic action outperform 30-second clips, as shown by the 549.5 median views for shorts versus 275 for medium clips.",
+    "Specific narrative hooks referencing a streamer's name and a singular failure (e.g., 'he lasted three seconds') drive higher YouTube dominance than generic titles.",
+    "Clips featuring explosive or high-impact moments like bridge failures or helicopter crashes generate significantly more views than static gameplay or setup scenes."
   ],
   "avoid_patterns": [
-    "Reject any clip longer than 30 seconds with zero views, such as GTA-027 'XQC GTA 6 MASSAGGATOR BC CRASH' at 30.04 seconds.",
-    "Reject vague, incomplete hooks like 'this is a' (GTA-024) that fail to establish conflict or payoff within the first 2 seconds.",
-    "Reject all-caps clickbait titles like 'JYNXZI CAN'T STEAL FERRARI' (GTA-030) that overpromise and underdeliver on actual chaos."
+    "Reject clips with vague, incomplete hooks such as 'this is a' which resulted in 1-2 views.",
+    "Avoid 30-second clips with zero immediate payoff, as evidenced by multiple 0-view flops at exactly 30.04 seconds.",
+    "Do not post generic scene labels like 'GTA 6 STRIP CLUB SCENE' without a specific conflict or outcome, which yielded only 2 views."
   ],
-  "hook_style_guidance": "Write Frame-1 hooks that name the streamer and the specific chaotic event in under 8 words, using present-tense action verbs and zero setup.",
-  "daily_brief": "The ohnepixel bridge clip earned 10,272 views by delivering instant chaos in 13.71 seconds, proving short, high-energy clips win on YouTube Shorts. The 30-second flops with 0-1 views show that slow pacing and vague hooks kill retention. Tomorrow, cut all clips to 12-18 seconds with immediate payoff hooks and prioritize YouTube Shorts distribution.",
+  "hook_style_guidance": "Write Frame-1 hooks that combine a specific streamer name with a high-stakes, immediate outcome to create a curiosity gap within the first second.",
+  "daily_brief": "The biggest win was ohnepixel's bridge clip hitting over 10k views, while the biggest leak is posting 30-second clips with no immediate action which consistently get 0-2 views. Tomorrow, cut all clips to under 18 seconds and prioritize hooks that promise a specific failure or explosion.",
   "scorecard_snapshot": {
     "total_clips_live": 33,
     "median_clip_views": 287,
