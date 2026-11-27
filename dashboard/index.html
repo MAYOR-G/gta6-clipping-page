@@ -1,15 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Leonida Chaos · Clipping &amp; Campaigns Console</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap"
-    rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <style>
     :root {
       --bg-sidebar: #0b0c0e;
@@ -45,16 +42,9 @@
       --dur: 170ms;
     }
 
-    *,
-    *::before,
-    *::after {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    html,
-    body {
+    html, body {
       background: var(--bg-page);
       color: var(--text-primary);
       font-family: var(--font-sans);
@@ -77,30 +67,14 @@
       z-index: 0;
     }
 
-    button,
-    input,
-    select {
-      font-family: inherit;
-      font-size: inherit;
-      color: inherit;
-    }
-
-    button:focus-visible,
-    input:focus-visible,
-    select:focus-visible,
-    a:focus-visible {
+    button, input, select { font-family: inherit; font-size: inherit; color: inherit; }
+    button:focus-visible, input:focus-visible, select:focus-visible, a:focus-visible {
       outline: 2px solid var(--accent);
       outline-offset: 2px;
     }
 
-    .tabular,
-    .mono {
-      font-variant-numeric: tabular-nums;
-    }
-
-    .mono {
-      font-family: var(--font-mono);
-    }
+    .tabular, .mono { font-variant-numeric: tabular-nums; }
+    .mono { font-family: var(--font-mono); }
 
     .app-shell {
       position: relative;
@@ -142,25 +116,10 @@
       flex-shrink: 0;
     }
 
-    .brand-name {
-      font-size: 15px;
-      font-weight: 700;
-      letter-spacing: -0.01em;
-      line-height: 1.2;
-    }
+    .brand-name { font-size: 15px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.2; }
+    .brand-scope { font-size: 11.5px; color: var(--text-muted); line-height: 1.3; }
 
-    .brand-scope {
-      font-size: 11.5px;
-      color: var(--text-muted);
-      line-height: 1.3;
-    }
-
-    .nav-section {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
+    .nav-section { display: flex; flex-direction: column; gap: 4px; }
     .nav-label {
       font-size: 11px;
       font-weight: 600;
@@ -187,16 +146,8 @@
       font-weight: 500;
       transition: background var(--dur) var(--ease), color var(--dur) var(--ease), border-color var(--dur) var(--ease), transform 90ms ease;
     }
-
-    .nav-btn:hover {
-      background: var(--bg-card);
-      color: var(--text-primary);
-    }
-
-    .nav-btn:active {
-      transform: scale(0.985);
-    }
-
+    .nav-btn:hover { background: var(--bg-card); color: var(--text-primary); }
+    .nav-btn:active { transform: scale(0.985); }
     .nav-btn.active {
       background: var(--bg-raised);
       border-color: var(--hairline-strong);
@@ -204,24 +155,9 @@
       box-shadow: inset 2px 0 0 var(--accent);
     }
 
-    .nav-left {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      min-width: 0;
-    }
-
-    .nav-icon {
-      width: 16px;
-      height: 16px;
-      flex-shrink: 0;
-      color: var(--text-muted);
-    }
-
-    .nav-btn.active .nav-icon {
-      color: var(--accent);
-    }
-
+    .nav-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+    .nav-icon { width: 16px; height: 16px; flex-shrink: 0; color: var(--text-muted); }
+    .nav-btn.active .nav-icon { color: var(--accent); }
     .nav-count {
       font-size: 11px;
       font-family: var(--font-mono);
@@ -250,28 +186,10 @@
       color: var(--text-secondary);
     }
 
-    .tally-dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: var(--positive);
-      flex-shrink: 0;
-    }
-
-    .tally-dot.warn {
-      background: var(--warning);
-    }
-
-    .tally-dot.bad {
-      background: var(--negative);
-    }
-
-    .meta-line {
-      font-size: 11.5px;
-      font-family: var(--font-mono);
-      color: var(--text-muted);
-      padding: 0 8px;
-    }
+    .tally-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--positive); flex-shrink: 0; }
+    .tally-dot.warn { background: var(--warning); }
+    .tally-dot.bad { background: var(--negative); }
+    .meta-line { font-size: 11.5px; font-family: var(--font-mono); color: var(--text-muted); padding: 0 8px; }
 
     /* Main Canvas */
     .canvas {
@@ -294,32 +212,11 @@
       border-bottom: 1px solid var(--hairline);
     }
 
-    .title-group {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      min-width: 0;
-    }
+    .title-group { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+    .page-header h1 { font-size: 25px; font-weight: 700; line-height: 1.15; letter-spacing: -0.02em; }
+    .finding-line { font-size: 13.5px; color: var(--text-secondary); max-width: 72ch; }
 
-    .page-header h1 {
-      font-size: 25px;
-      font-weight: 700;
-      line-height: 1.15;
-      letter-spacing: -0.02em;
-    }
-
-    .finding-line {
-      font-size: 13.5px;
-      color: var(--text-secondary);
-      max-width: 72ch;
-    }
-
-    .header-controls {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
+    .header-controls { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 
     .segmented {
       display: inline-flex;
@@ -343,11 +240,7 @@
       cursor: pointer;
       transition: background var(--dur) var(--ease), color var(--dur) var(--ease);
     }
-
-    .seg-btn:hover {
-      color: var(--text-primary);
-    }
-
+    .seg-btn:hover { color: var(--text-primary); }
     .seg-btn.active {
       background: var(--bg-raised);
       border-color: var(--hairline-strong);
@@ -369,15 +262,8 @@
       gap: 7px;
       transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), transform 90ms ease;
     }
-
-    .btn-secondary:hover {
-      background: var(--bg-hover);
-      border-color: #3e4656;
-    }
-
-    .btn-secondary:active {
-      transform: scale(0.98);
-    }
+    .btn-secondary:hover { background: var(--bg-hover); border-color: #3e4656; }
+    .btn-secondary:active { transform: scale(0.98); }
 
     /* KPI Strip */
     .kpi-strip {
@@ -397,44 +283,13 @@
       border-right: 1px solid var(--hairline);
       min-width: 0;
     }
-
-    .kpi-cell:last-child {
-      border-right: 0;
-    }
-
-    .kpi-label {
-      font-size: 12.5px;
-      font-weight: 500;
-      color: var(--text-secondary);
-    }
-
-    .kpi-val {
-      font-size: 26px;
-      font-weight: 700;
-      line-height: 1.1;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: -0.02em;
-    }
-
-    .kpi-sub {
-      font-size: 12px;
-      color: var(--text-muted);
-      font-variant-numeric: tabular-nums;
-    }
-
-    .kpi-sub .good,
-    .good {
-      color: var(--positive);
-    }
-
-    .kpi-sub .bad,
-    .bad {
-      color: var(--negative);
-    }
-
-    .warn {
-      color: var(--warning);
-    }
+    .kpi-cell:last-child { border-right: 0; }
+    .kpi-label { font-size: 12.5px; font-weight: 500; color: var(--text-secondary); }
+    .kpi-val { font-size: 26px; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+    .kpi-sub { font-size: 12px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+    .kpi-sub .good, .good { color: var(--positive); }
+    .kpi-sub .bad, .bad { color: var(--negative); }
+    .warn { color: var(--warning); }
 
     .kpi-cell.gsc-tab {
       cursor: pointer;
@@ -445,55 +300,16 @@
       text-align: left;
       transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease);
     }
-
-    .kpi-cell.gsc-tab:hover {
-      background: var(--bg-raised);
-    }
-
-    .kpi-cell.gsc-tab.active {
-      background: var(--bg-raised);
-      border-top-color: var(--gsc-color, var(--accent));
-    }
-
-    .kpi-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .kpi-swatch {
-      width: 8px;
-      height: 8px;
-      border-radius: 2px;
-      background: var(--gsc-color, var(--accent));
-      opacity: 0.45;
-    }
-
-    .kpi-cell.gsc-tab.active .kpi-swatch {
-      opacity: 1;
-    }
+    .kpi-cell.gsc-tab:hover { background: var(--bg-raised); }
+    .kpi-cell.gsc-tab.active { background: var(--bg-raised); border-top-color: var(--gsc-color, var(--accent)); }
+    .kpi-badge { display: inline-flex; align-items: center; gap: 6px; }
+    .kpi-swatch { width: 8px; height: 8px; border-radius: 2px; background: var(--gsc-color, var(--accent)); opacity: 0.45; }
+    .kpi-cell.gsc-tab.active .kpi-swatch { opacity: 1; }
 
     /* Grids & Cards */
-    .row-main {
-      display: grid;
-      grid-template-columns: minmax(0, 1.95fr) minmax(0, 1fr);
-      gap: 18px;
-      align-items: stretch;
-    }
-
-    .row-equal {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
-      align-items: stretch;
-    }
-
-    .row-bottom {
-      display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
-      gap: 18px;
-      align-items: stretch;
-    }
+    .row-main { display: grid; grid-template-columns: minmax(0, 1.95fr) minmax(0, 1fr); gap: 18px; align-items: stretch; }
+    .row-equal { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; align-items: stretch; }
+    .row-bottom { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 18px; align-items: stretch; }
 
     .card {
       background: var(--bg-card);
@@ -507,50 +323,14 @@
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.18);
     }
 
-    .card-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .card-title {
-      font-size: 15px;
-      font-weight: 600;
-      letter-spacing: -0.01em;
-      color: var(--text-primary);
-    }
-
-    .card-meta {
-      font-size: 12px;
-      color: var(--text-muted);
-      font-variant-numeric: tabular-nums;
-    }
+    .card-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .card-title { font-size: 15px; font-weight: 600; letter-spacing: -0.01em; color: var(--text-primary); }
+    .card-meta { font-size: 12px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
 
     /* Chart */
-    .chart-controls-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .chart-controls-right {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .legend-bar {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      flex-wrap: wrap;
-    }
-
+    .chart-controls-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+    .chart-controls-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .legend-bar { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
     .legend-chip {
       display: inline-flex;
       align-items: center;
@@ -565,30 +345,11 @@
       cursor: pointer;
       transition: opacity var(--dur) var(--ease);
     }
+    .legend-chip.off { opacity: 0.36; color: var(--text-muted); }
+    .legend-dot { width: 8px; height: 8px; border-radius: 99px; flex-shrink: 0; }
 
-    .legend-chip.off {
-      opacity: 0.36;
-      color: var(--text-muted);
-    }
-
-    .legend-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 99px;
-      flex-shrink: 0;
-    }
-
-    .chart-wrap {
-      position: relative;
-      width: 100%;
-    }
-
-    .chart-svg {
-      width: 100%;
-      height: 264px;
-      display: block;
-    }
-
+    .chart-wrap { position: relative; width: 100%; }
+    .chart-svg { width: 100%; height: 264px; display: block; }
     .chart-tooltip {
       position: absolute;
       top: 8px;
@@ -604,69 +365,19 @@
       min-width: 174px;
       z-index: 4;
     }
-
-    .chart-tooltip.visible {
-      opacity: 1;
-    }
-
-    .tt-date {
-      font-weight: 600;
-      margin-bottom: 6px;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .tt-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-      padding: 2px 0;
-      font-variant-numeric: tabular-nums;
-    }
-
-    .tt-lbl {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      color: var(--text-secondary);
-    }
-
-    .tt-val {
-      font-weight: 600;
-    }
+    .chart-tooltip.visible { opacity: 1; }
+    .tt-date { font-weight: 600; margin-bottom: 6px; font-variant-numeric: tabular-nums; }
+    .tt-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; padding: 2px 0; font-variant-numeric: tabular-nums; }
+    .tt-lbl { display: inline-flex; align-items: center; gap: 6px; color: var(--text-secondary); }
+    .tt-val { font-weight: 600; }
 
     /* WAT Strip */
-    .wat-strip-block {
-      border-top: 1px solid var(--hairline);
-      padding-top: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .wat-strip-head {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      flex-wrap: wrap;
-      font-size: 12px;
-      color: var(--text-secondary);
-    }
-
-    .wat-svg {
-      width: 100%;
-      height: 62px;
-      display: block;
-    }
+    .wat-strip-block { border-top: 1px solid var(--hairline); padding-top: 14px; display: flex; flex-direction: column; gap: 8px; }
+    .wat-strip-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; font-size: 12px; color: var(--text-secondary); }
+    .wat-svg { width: 100%; height: 62px; display: block; }
 
     /* Fallback Window Pills */
-    .window-grid {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 10px;
-    }
-
+    .window-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
     .window-pill {
       background: var(--bg-sidebar);
       border: 1px solid var(--hairline);
@@ -676,120 +387,27 @@
       flex-direction: column;
       gap: 4px;
     }
-
-    .window-pill.done {
-      border-color: rgba(62, 207, 142, 0.45);
-      background: rgba(62, 207, 142, 0.06);
-    }
-
-    .window-pill.armed {
-      border-color: rgba(240, 113, 61, 0.4);
-    }
-
-    .window-time {
-      font-family: var(--font-mono);
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-
-    .window-role {
-      font-size: 11.5px;
-      color: var(--text-secondary);
-    }
+    .window-pill.done { border-color: rgba(62, 207, 142, 0.45); background: rgba(62, 207, 142, 0.06); }
+    .window-pill.armed { border-color: rgba(240, 113, 61, 0.4); }
+    .window-time { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--text-primary); }
+    .window-role { font-size: 11.5px; color: var(--text-secondary); }
 
     /* Platform bars & KV */
-    .plat-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
+    .plat-list { display: flex; flex-direction: column; gap: 12px; }
+    .plat-item { display: flex; flex-direction: column; gap: 6px; }
+    .plat-row-top { display: flex; justify-content: space-between; align-items: baseline; font-size: 13px; gap: 8px; }
+    .plat-name { font-weight: 600; text-transform: capitalize; }
+    .plat-figs { font-size: 12px; font-variant-numeric: tabular-nums; color: var(--text-secondary); }
+    .track { width: 100%; height: 6px; background: var(--bg-raised); border-radius: 3px; overflow: hidden; }
+    .track-fill { height: 100%; background: var(--text-muted); border-radius: 3px; }
+    .track-fill.lead { background: var(--accent); }
+    .track-fill.green { background: var(--positive); }
 
-    .plat-item {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .plat-row-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      font-size: 13px;
-      gap: 8px;
-    }
-
-    .plat-name {
-      font-weight: 600;
-      text-transform: capitalize;
-    }
-
-    .plat-figs {
-      font-size: 12px;
-      font-variant-numeric: tabular-nums;
-      color: var(--text-secondary);
-    }
-
-    .track {
-      width: 100%;
-      height: 6px;
-      background: var(--bg-raised);
-      border-radius: 3px;
-      overflow: hidden;
-    }
-
-    .track-fill {
-      height: 100%;
-      background: var(--text-muted);
-      border-radius: 3px;
-    }
-
-    .track-fill.lead {
-      background: var(--accent);
-    }
-
-    .track-fill.green {
-      background: var(--positive);
-    }
-
-    .sub-block {
-      border-top: 1px solid var(--hairline);
-      padding-top: 13px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .sub-block-label {
-      font-size: 11.5px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--text-muted);
-      margin-bottom: 2px;
-    }
-
-    .kv-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 13px;
-      padding: 3px 0;
-      gap: 8px;
-    }
-
-    .kv-k {
-      color: var(--text-secondary);
-    }
-
-    .kv-v {
-      font-size: 12px;
-      font-variant-numeric: tabular-nums;
-      color: var(--text-primary);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
+    .sub-block { border-top: 1px solid var(--hairline); padding-top: 13px; display: flex; flex-direction: column; gap: 6px; }
+    .sub-block-label { font-size: 11.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-muted); margin-bottom: 2px; }
+    .kv-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; padding: 3px 0; gap: 8px; }
+    .kv-k { color: var(--text-secondary); }
+    .kv-v { font-size: 12px; font-variant-numeric: tabular-nums; color: var(--text-primary); display: inline-flex; align-items: center; gap: 6px; }
 
     /* Signal & AI brief */
     .ai-brief-box {
@@ -802,21 +420,8 @@
       color: var(--text-primary);
       line-height: 1.55;
     }
-
-    .ai-meta-row {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      flex-wrap: wrap;
-    }
-
-    .signal-list {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
+    .ai-meta-row { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
+    .signal-list { list-style: none; display: flex; flex-direction: column; gap: 8px; }
     .signal-list li {
       padding: 11px 13px;
       background: var(--bg-sidebar);
@@ -828,16 +433,8 @@
     }
 
     /* Tables & Inputs */
-    .table-toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .search-input,
-    .calc-input {
+    .table-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+    .search-input, .calc-input {
       height: 34px;
       padding: 0 12px;
       background: var(--bg-sidebar);
@@ -846,29 +443,11 @@
       color: var(--text-primary);
       font-size: 13px;
     }
+    .search-input { width: 250px; max-width: 100%; }
+    .search-input:focus, .calc-input:focus { border-color: var(--accent); outline: none; }
 
-    .search-input {
-      width: 250px;
-      max-width: 100%;
-    }
-
-    .search-input:focus,
-    .calc-input:focus {
-      border-color: var(--accent);
-      outline: none;
-    }
-
-    .table-scroll {
-      width: 100%;
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 13px;
-    }
-
+    .table-scroll { width: 100%; overflow-x: auto; }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
     th {
       text-align: left;
       padding: 9px 12px;
@@ -878,55 +457,17 @@
       border-bottom: 1px solid var(--hairline-strong);
       white-space: nowrap;
     }
+    th.num, td.num { text-align: right; font-variant-numeric: tabular-nums; }
+    th.sortable { cursor: pointer; user-select: none; }
+    th.sortable:hover { color: var(--text-primary); }
+    td { padding: 11px 12px; border-bottom: 1px solid var(--hairline); vertical-align: middle; }
+    tbody tr { transition: background var(--dur) var(--ease); }
+    tbody tr.clickable { cursor: pointer; }
+    tbody tr.clickable:hover td, tbody tr.selected td { background: var(--bg-raised); }
 
-    th.num,
-    td.num {
-      text-align: right;
-      font-variant-numeric: tabular-nums;
-    }
-
-    th.sortable {
-      cursor: pointer;
-      user-select: none;
-    }
-
-    th.sortable:hover {
-      color: var(--text-primary);
-    }
-
-    td {
-      padding: 11px 12px;
-      border-bottom: 1px solid var(--hairline);
-      vertical-align: middle;
-    }
-
-    tbody tr {
-      transition: background var(--dur) var(--ease);
-    }
-
-    tbody tr.clickable {
-      cursor: pointer;
-    }
-
-    tbody tr.clickable:hover td,
-    tbody tr.selected td {
-      background: var(--bg-raised);
-    }
-
-    .hook-cell {
-      max-width: 260px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .muted {
-      color: var(--text-muted);
-    }
-
-    .secondary {
-      color: var(--text-secondary);
-    }
+    .hook-cell { max-width: 260px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .muted { color: var(--text-muted); }
+    .secondary { color: var(--text-secondary); }
 
     .tag-quiet {
       display: inline-flex;
@@ -941,24 +482,9 @@
       color: var(--text-secondary);
       white-space: nowrap;
     }
-
-    .tag-quiet.good {
-      color: var(--positive);
-      border-color: rgba(62, 207, 142, 0.35);
-      background: var(--positive-surface);
-    }
-
-    .tag-quiet.accent {
-      color: var(--accent);
-      border-color: var(--accent-dim);
-      background: var(--accent-surface);
-    }
-
-    .tag-quiet.warn {
-      color: var(--warning);
-      border-color: rgba(229, 169, 60, 0.35);
-      background: var(--warning-surface);
-    }
+    .tag-quiet.good { color: var(--positive); border-color: rgba(62, 207, 142, 0.35); background: var(--positive-surface); }
+    .tag-quiet.accent { color: var(--accent); border-color: var(--accent-dim); background: var(--accent-surface); }
+    .tag-quiet.warn { color: var(--warning); border-color: rgba(229, 169, 60, 0.35); background: var(--warning-surface); }
 
     /* Drawer */
     .clip-drawer {
@@ -970,28 +496,10 @@
       flex-direction: column;
       gap: 12px;
     }
-
-    .clip-drawer.open {
-      display: flex;
-    }
-
-    .drawer-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(185px, 1fr));
-      gap: 12px;
-      font-size: 13px;
-    }
-
-    .drawer-k {
-      font-size: 11.5px;
-      color: var(--text-muted);
-      margin-bottom: 2px;
-    }
-
-    .drawer-v {
-      color: var(--text-primary);
-      word-break: break-word;
-    }
+    .clip-drawer.open { display: flex; }
+    .drawer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(185px, 1fr)); gap: 12px; font-size: 13px; }
+    .drawer-k { font-size: 11.5px; color: var(--text-muted); margin-bottom: 2px; }
+    .drawer-v { color: var(--text-primary); word-break: break-word; }
 
     /* Platforms & Earnings Grid */
     .earn-hero-grid {
@@ -1002,13 +510,11 @@
       border-radius: var(--r-card);
       overflow: hidden;
     }
-
     .platform-cards-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(265px, 1fr));
       gap: 14px;
     }
-
     .plat-card {
       background: var(--bg-sidebar);
       border: 1px solid var(--hairline);
@@ -1019,77 +525,19 @@
       gap: 10px;
       transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease);
     }
-
-    .plat-card:hover {
-      border-color: var(--hairline-strong);
-      transform: translateY(-1px);
-    }
-
-    .plat-card-top {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 8px;
-    }
-
-    .plat-card-name {
-      font-size: 14.5px;
-      font-weight: 700;
-      color: var(--text-primary);
-    }
-
-    .plat-card-link {
-      font-size: 11.5px;
-      color: var(--accent);
-      text-decoration: none;
-      font-family: var(--font-mono);
-    }
-
-    .plat-card-link:hover {
-      text-decoration: underline;
-    }
-
-    .plat-earn-amt {
-      font-size: 22px;
-      font-weight: 700;
-      font-variant-numeric: tabular-nums;
-      letter-spacing: -0.02em;
-    }
-
-    .plat-card-metrics {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      font-size: 11.5px;
-      color: var(--text-secondary);
-    }
-
-    .plat-card-metrics strong {
-      display: block;
-      color: var(--text-primary);
-      font-size: 12.5px;
-      font-variant-numeric: tabular-nums;
-    }
+    .plat-card:hover { border-color: var(--hairline-strong); transform: translateY(-1px); }
+    .plat-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+    .plat-card-name { font-size: 14.5px; font-weight: 700; color: var(--text-primary); }
+    .plat-card-link { font-size: 11.5px; color: var(--accent); text-decoration: none; font-family: var(--font-mono); }
+    .plat-card-link:hover { text-decoration: underline; }
+    .plat-earn-amt { font-size: 22px; font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+    .plat-card-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; font-size: 11.5px; color: var(--text-secondary); }
+    .plat-card-metrics strong { display: block; color: var(--text-primary); font-size: 12.5px; font-variant-numeric: tabular-nums; }
 
     /* Calculator */
-    .calc-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-      gap: 12px;
-    }
-
-    .calc-field {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-    }
-
-    .calc-field label {
-      font-size: 11.5px;
-      color: var(--text-secondary);
-      font-weight: 500;
-    }
-
+    .calc-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+    .calc-field { display: flex; flex-direction: column; gap: 5px; }
+    .calc-field label { font-size: 11.5px; color: var(--text-secondary); font-weight: 500; }
     .code-cmd {
       background: var(--bg-sidebar);
       border: 1px solid var(--hairline-strong);
@@ -1112,14 +560,7 @@
       padding-top: 12px;
       border-top: 1px solid var(--hairline);
     }
-
-    .pager-controls {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
+    .pager-controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
     .btn-link-accent {
       display: inline-flex;
       align-items: center;
@@ -1134,56 +575,19 @@
       font-weight: 600;
       cursor: pointer;
     }
+    .btn-link-accent:hover { border-color: var(--accent); }
 
-    .btn-link-accent:hover {
-      border-color: var(--accent);
-    }
+    .stream-list { display: flex; flex-direction: column; }
+    .stream-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--hairline); }
+    .stream-row:last-child { border-bottom: 0; }
+    .stream-name { font-size: 13px; font-weight: 600; }
+    .stream-req { font-size: 12px; color: var(--text-muted); }
 
-    .stream-list {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .stream-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 11px 0;
-      border-bottom: 1px solid var(--hairline);
-    }
-
-    .stream-row:last-child {
-      border-bottom: 0;
-    }
-
-    .stream-name {
-      font-size: 13px;
-      font-weight: 600;
-    }
-
-    .stream-req {
-      font-size: 12px;
-      color: var(--text-muted);
-    }
-
-    .progress-meta {
-      display: flex;
-      justify-content: space-between;
-      font-size: 12px;
-      color: var(--text-secondary);
-      font-variant-numeric: tabular-nums;
-    }
-
-    .section-hidden {
-      display: none !important;
-    }
+    .progress-meta { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+    .section-hidden { display: none !important; }
 
     @media (max-width: 1100px) {
-      .app-shell {
-        grid-template-columns: minmax(0, 1fr);
-      }
-
+      .app-shell { grid-template-columns: minmax(0, 1fr); }
       .sidebar {
         position: static;
         height: auto;
@@ -1192,68 +596,23 @@
         padding: 14px 16px;
         gap: 12px;
       }
-
-      .nav-section {
-        flex-direction: row;
-        flex-wrap: wrap;
-        gap: 6px;
-      }
-
-      .nav-label,
-      .sidebar-foot {
-        display: none;
-      }
-
-      .nav-btn {
-        width: auto;
-        height: 34px;
-        padding: 0 11px;
-      }
-
-      .canvas {
-        padding: 20px 16px 44px;
-      }
-
-      .kpi-strip,
-      .earn-hero-grid {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .kpi-cell {
-        border-bottom: 1px solid var(--hairline);
-      }
-
-      .row-main,
-      .row-equal,
-      .row-bottom,
-      .window-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
+      .nav-section { flex-direction: row; flex-wrap: wrap; gap: 6px; }
+      .nav-label, .sidebar-foot { display: none; }
+      .nav-btn { width: auto; height: 34px; padding: 0 11px; }
+      .canvas { padding: 20px 16px 44px; }
+      .kpi-strip, .earn-hero-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .kpi-cell { border-bottom: 1px solid var(--hairline); }
+      .row-main, .row-equal, .row-bottom, .window-grid { grid-template-columns: minmax(0, 1fr); }
     }
 
     @media (max-width: 600px) {
-
-      .kpi-strip,
-      .earn-hero-grid {
-        grid-template-columns: minmax(0, 1fr);
-      }
-
-      .kpi-cell {
-        border-right: 0;
-        padding: 15px 16px;
-      }
-
-      .card {
-        padding: 16px;
-      }
-
-      .search-input {
-        width: 100%;
-      }
+      .kpi-strip, .earn-hero-grid { grid-template-columns: minmax(0, 1fr); }
+      .kpi-cell { border-right: 0; padding: 15px 16px; }
+      .card { padding: 16px; }
+      .search-input { width: 100%; }
     }
   </style>
 </head>
-
 <body>
   <div class="app-shell">
     <aside class="sidebar" aria-label="Workspace navigation">
@@ -1273,50 +632,33 @@
         <div class="nav-label">Command Center</div>
         <button class="nav-btn active" data-view="overview" type="button">
           <span class="nav-left">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
-              <rect x="3" y="3" width="7" height="7" rx="1.5" />
-              <rect x="14" y="3" width="7" height="7" rx="1.5" />
-              <rect x="3" y="14" width="7" height="7" rx="1.5" />
-              <rect x="14" y="14" width="7" height="7" rx="1.5" />
-            </svg>
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
             <span>Overview</span>
           </span>
         </button>
         <button class="nav-btn" data-view="campaigns" type="button">
           <span class="nav-left">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
-              <line x1="12" y1="2" x2="12" y2="22" />
-              <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
-            </svg>
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><line x1="12" y1="2" x2="12" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
             <span>Campaigns &amp; Earnings</span>
           </span>
           <span class="nav-count" id="nav-earn-pill">$0</span>
         </button>
         <button class="nav-btn" data-view="clips" type="button">
           <span class="nav-left">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
-              <rect x="2" y="4" width="20" height="16" rx="2" />
-              <path d="M10 9l5 3-5 3V9z" />
-            </svg>
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 9l5 3-5 3V9z"/></svg>
             <span>Clips &amp; Quality</span>
           </span>
           <span class="nav-count" id="nav-clips-count">0</span>
         </button>
         <button class="nav-btn" data-view="automation" type="button">
           <span class="nav-left">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
-              <circle cx="12" cy="12" r="9" />
-              <polyline points="12 7 12 12 15 14" />
-            </svg>
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
             <span>Telegram &amp; Health</span>
           </span>
         </button>
         <button class="nav-btn" data-view="experiments" type="button">
           <span class="nav-left">
-            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">
-              <path d="M9 3h6" />
-              <path d="M10 3v6l-5 9a2 2 0 0 0 1.7 3h10.6a2 2 0 0 0 1.7-3l-5-9V3" />
-            </svg>
+            <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 3h6"/><path d="M10 3v6l-5 9a2 2 0 0 0 1.7 3h10.6a2 2 0 0 0 1.7-3l-5-9V3"/></svg>
             <span>Experiments &amp; Guide</span>
           </span>
           <span class="nav-count" id="nav-exp-count">0</span>
@@ -1341,21 +683,13 @@
         </div>
         <div class="header-controls">
           <div class="segmented" role="tablist" aria-label="Platform scope" id="platform-tabs">
-            <button class="seg-btn active" data-platform="all" type="button" role="tab"
-              aria-selected="true">All</button>
-            <button class="seg-btn" data-platform="youtube" type="button" role="tab"
-              aria-selected="false">YouTube</button>
-            <button class="seg-btn" data-platform="tiktok" type="button" role="tab"
-              aria-selected="false">TikTok</button>
-            <button class="seg-btn" data-platform="instagram" type="button" role="tab"
-              aria-selected="false">Instagram</button>
+            <button class="seg-btn active" data-platform="all" type="button" role="tab" aria-selected="true">All</button>
+            <button class="seg-btn" data-platform="youtube" type="button" role="tab" aria-selected="false">YouTube</button>
+            <button class="seg-btn" data-platform="tiktok" type="button" role="tab" aria-selected="false">TikTok</button>
+            <button class="seg-btn" data-platform="instagram" type="button" role="tab" aria-selected="false">Instagram</button>
           </div>
           <button class="btn-secondary" id="copy-summary-btn" type="button">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
-              aria-hidden="true">
-              <rect x="9" y="9" width="13" height="13" rx="2" />
-              <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
-            </svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
             <span id="copy-summary-label">Copy recap</span>
           </button>
         </div>
@@ -1396,33 +730,25 @@
           <div class="chart-controls-bar">
             <div>
               <h2 class="card-title" id="chart-heading">Views trend across platforms</h2>
-              <div class="card-meta" id="chart-subtitle">Hover chart to inspect daily YouTube, TikTok &amp; Instagram
-                totals</div>
+              <div class="card-meta" id="chart-subtitle">Hover chart to inspect daily YouTube, TikTok &amp; Instagram totals</div>
             </div>
             <div class="chart-controls-right">
               <div class="segmented" role="tablist" aria-label="Chart mode" id="chart-mode-tabs">
-                <button class="seg-btn active" data-mode="trend" type="button" role="tab" aria-selected="true">Trend
-                  lines</button>
-                <button class="seg-btn" data-mode="posts" type="button" role="tab" aria-selected="false">By
-                  clip</button>
+                <button class="seg-btn active" data-mode="trend" type="button" role="tab" aria-selected="true">Trend lines</button>
+                <button class="seg-btn" data-mode="posts" type="button" role="tab" aria-selected="false">By clip</button>
               </div>
               <div class="segmented" role="tablist" aria-label="Granularity" id="granularity-tabs">
-                <button class="seg-btn active" data-gran="daily" type="button" role="tab"
-                  aria-selected="true">Daily</button>
-                <button class="seg-btn" data-gran="weekly" type="button" role="tab"
-                  aria-selected="false">Weekly</button>
+                <button class="seg-btn active" data-gran="daily" type="button" role="tab" aria-selected="true">Daily</button>
+                <button class="seg-btn" data-gran="weekly" type="button" role="tab" aria-selected="false">Weekly</button>
               </div>
             </div>
           </div>
 
           <div class="chart-controls-bar">
             <div class="legend-bar" id="platform-legend" aria-label="Toggle platform lines">
-              <button class="legend-chip" data-line="youtube" type="button"><span class="legend-dot"
-                  style="background:#ef5350"></span>YouTube</button>
-              <button class="legend-chip" data-line="tiktok" type="button"><span class="legend-dot"
-                  style="background:#38bdf8"></span>TikTok</button>
-              <button class="legend-chip" data-line="instagram" type="button"><span class="legend-dot"
-                  style="background:#f0713d"></span>Instagram</button>
+              <button class="legend-chip" data-line="youtube" type="button"><span class="legend-dot" style="background:#ef5350"></span>YouTube</button>
+              <button class="legend-chip" data-line="tiktok" type="button"><span class="legend-dot" style="background:#38bdf8"></span>TikTok</button>
+              <button class="legend-chip" data-line="instagram" type="button"><span class="legend-dot" style="background:#f0713d"></span>Instagram</button>
             </div>
             <div class="segmented" role="tablist" aria-label="Date range" id="range-tabs">
               <button class="seg-btn" data-range="5d" type="button">5D</button>
@@ -1433,8 +759,7 @@
           </div>
 
           <div class="chart-wrap">
-            <svg class="chart-svg" id="perf-chart" viewBox="0 0 720 276" preserveAspectRatio="xMidYMid meet" role="img"
-              aria-label="Platform performance chart"></svg>
+            <svg class="chart-svg" id="perf-chart" viewBox="0 0 720 276" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Platform performance chart"></svg>
             <div class="chart-tooltip" id="chart-tooltip"></div>
           </div>
 
@@ -1443,8 +768,7 @@
               <span>24-hour WAT posting slots (05:30 to 07:00 avoid window)</span>
               <span class="card-meta" id="wat-next-slot">Min spacing 2.5h</span>
             </div>
-            <svg class="wat-svg" id="wat-svg" viewBox="0 0 720 64" preserveAspectRatio="xMidYMid meet" role="img"
-              aria-label="24-hour WAT slot schedule"></svg>
+            <svg class="wat-svg" id="wat-svg" viewBox="0 0 720 64" preserveAspectRatio="xMidYMid meet" role="img" aria-label="24-hour WAT slot schedule"></svg>
           </div>
         </div>
 
@@ -1457,22 +781,16 @@
 
           <div class="sub-block">
             <div class="sub-block-label">YouTube Shorts recovery audit</div>
-            <div class="kv-row"><span class="kv-k">Zero / low-view (&lt;20)</span><span class="kv-v"
-                id="yt-zero-count">-</span></div>
-            <div class="kv-row"><span class="kv-k">Breakouts (500+ views)</span><span class="kv-v good"
-                id="yt-breakout-count">-</span></div>
-            <div class="kv-row"><span class="kv-k">Average clip length</span><span class="kv-v" id="yt-avg-len">-</span>
-            </div>
-            <div class="kv-row"><span class="kv-k">Quality gates</span><span class="kv-v" id="health-gates">Kinetic
-                Captions · Stranger &gt;=7</span></div>
+            <div class="kv-row"><span class="kv-k">Zero / low-view (&lt;20)</span><span class="kv-v" id="yt-zero-count">-</span></div>
+            <div class="kv-row"><span class="kv-k">Breakouts (500+ views)</span><span class="kv-v good" id="yt-breakout-count">-</span></div>
+            <div class="kv-row"><span class="kv-k">Average clip length</span><span class="kv-v" id="yt-avg-len">-</span></div>
+            <div class="kv-row"><span class="kv-k">Quality gates</span><span class="kv-v" id="health-gates">Kinetic Captions · Stranger &gt;=7</span></div>
           </div>
 
           <div class="sub-block">
             <div class="sub-block-label">Today's Telegram drop</div>
-            <div class="kv-row"><span class="kv-k">WAT status</span><span class="kv-v" id="ov-drop-status">Armed</span>
-            </div>
-            <div class="kv-row"><span class="kv-k">Slot delivered</span><span class="kv-v" id="ov-drop-slot">-</span>
-            </div>
+            <div class="kv-row"><span class="kv-k">WAT status</span><span class="kv-v" id="ov-drop-status">Armed</span></div>
+            <div class="kv-row"><span class="kv-k">Slot delivered</span><span class="kv-v" id="ov-drop-slot">-</span></div>
           </div>
         </div>
       </section>
@@ -1483,8 +801,7 @@
           <div class="card-head">
             <div>
               <h2 class="card-title">Telegram multi-window fallback schedule</h2>
-              <div class="card-meta" id="auto-sub">Idempotent daily WAT drop — skips backup slots once today's clips
-                arrive</div>
+              <div class="card-meta" id="auto-sub">Idempotent daily WAT drop — skips backup slots once today's clips arrive</div>
             </div>
             <span class="tag-quiet good" id="auto-badge">Armed</span>
           </div>
@@ -1508,8 +825,7 @@
         <div class="card-head">
           <div>
             <h2 class="card-title">AI self-improvement strategy</h2>
-            <div class="card-meta" id="ai-strategy-meta">Auto-learned from live scoreboard across YouTube, TikTok &amp;
-              Instagram</div>
+            <div class="card-meta" id="ai-strategy-meta">Auto-learned from live scoreboard across YouTube, TikTok &amp; Instagram</div>
           </div>
           <div class="ai-meta-row" id="ai-strategy-tags"></div>
         </div>
@@ -1566,8 +882,7 @@
         <div class="table-toolbar">
           <div>
             <h2 class="card-title">All 11 clipping platforms — individual earnings &amp; status</h2>
-            <div class="card-meta">WHOP · CLIPUR · CLIPSTER · CLIPSTAKE · DAREBAY · VUES · CLIPPING · CLIPFY · CLIPERSHQ
-              · CLIPPINGEXE · STARLET</div>
+            <div class="card-meta">WHOP · CLIPUR · CLIPSTER · CLIPSTAKE · DAREBAY · VUES · CLIPPING · CLIPFY · CLIPERSHQ · CLIPPINGEXE · STARLET</div>
           </div>
           <div class="segmented" id="plat-status-filter">
             <button class="seg-btn active" data-pfilter="all" type="button">All (11)</button>
@@ -1636,8 +951,7 @@
               <input class="calc-input" id="calc-fee" type="number" value="10" min="0" max="50" step="0.5" />
             </div>
           </div>
-          <div class="kv-row"
-            style="padding:8px 12px;background:var(--bg-sidebar);border:1px solid var(--hairline);border-radius:var(--r-control)">
+          <div class="kv-row" style="padding:8px 12px;background:var(--bg-sidebar);border:1px solid var(--hairline);border-radius:var(--r-control)">
             <span class="kv-k">Estimated net payout</span>
             <span class="kv-v good" id="calc-result" style="font-size:17px;font-weight:700">$33.75</span>
           </div>
@@ -1656,8 +970,7 @@
             <div class="card-meta" id="table-count">0 rows</div>
           </div>
           <div class="pager-controls">
-            <input class="search-input" id="clip-search" type="search" placeholder="Search streamer, hook, or ID"
-              aria-label="Search clips" />
+            <input class="search-input" id="clip-search" type="search" placeholder="Search streamer, hook, or ID" aria-label="Search clips" />
             <button class="btn-link-accent" id="see-all-clips-btn" type="button">See all clips →</button>
           </div>
         </div>
@@ -1719,14 +1032,10 @@
             <h2 class="card-title">Distribution health &amp; latest quality report</h2>
             <span class="card-meta" id="health-checked-2">-</span>
           </div>
-          <div class="kv-row"><span class="kv-k">Stuck posts (&lt;20 plays)</span><span class="kv-v"
-              id="health-stuck">0</span></div>
-          <div class="kv-row"><span class="kv-k">Kill switch</span><span class="kv-v" id="health-pause">Clear</span>
-          </div>
-          <div class="kv-row"><span class="kv-k">Profile quarantine</span><span class="kv-v"
-              id="health-quarantine">Clear</span></div>
-          <div class="kv-row"><span class="kv-k">IG ceiling streak</span><span class="kv-v"
-              id="health-ig-band">Normal</span></div>
+          <div class="kv-row"><span class="kv-k">Stuck posts (&lt;20 plays)</span><span class="kv-v" id="health-stuck">0</span></div>
+          <div class="kv-row"><span class="kv-k">Kill switch</span><span class="kv-v" id="health-pause">Clear</span></div>
+          <div class="kv-row"><span class="kv-k">Profile quarantine</span><span class="kv-v" id="health-quarantine">Clear</span></div>
+          <div class="kv-row"><span class="kv-k">IG ceiling streak</span><span class="kv-v" id="health-ig-band">Normal</span></div>
           <div class="sub-block">
             <div class="sub-block-label">Latest stream-clipper run</div>
             <div id="last-report-list" class="signal-list"></div>
@@ -1777,13 +1086,9 @@
   </div>
 
   <script>
-    /* === DASHBOARD_DATA_START === */
+/* === DASHBOARD_DATA_START === */
 const DASHBOARD_DATA = {
-<<<<<<< Updated upstream
-  "generated_at_utc": "2026-11-27T12:50:08.903163+00:00",
-=======
-  "generated_at_utc": "2026-11-27T13:34:41.053680+00:00",
->>>>>>> Stashed changes
+  "generated_at_utc": "2026-11-27T13:35:01.110920+00:00",
   "page_name": "Leonida Chaos",
   "timezone": "WAT (UTC+1)",
   "platforms": {
@@ -5320,21 +4625,13 @@ const DASHBOARD_DATA = {
     }
   ],
   "health": {
-<<<<<<< Updated upstream
-    "checked_at_utc": "2026-11-27T12:50:08.890876+00:00",
-=======
-    "checked_at_utc": "2026-11-27T13:34:41.042897+00:00",
->>>>>>> Stashed changes
+    "checked_at_utc": "2026-11-27T13:35:01.104237+00:00",
     "stuck_posts": [
       {
         "platform": "instagram",
         "post_id": "GTA-002",
         "dt_utc": "2026-11-20T15:30:00+00:00",
-<<<<<<< Updated upstream
-        "age_hours": 116.2,
-=======
-        "age_hours": 138.13,
->>>>>>> Stashed changes
+        "age_hours": 116.95,
         "views": 3,
         "is_live": true,
         "is_stuck": true,
@@ -5344,11 +4641,7 @@ const DASHBOARD_DATA = {
         "platform": "instagram",
         "post_id": "GTA-018",
         "dt_utc": "2026-11-23T15:30:00+00:00",
-<<<<<<< Updated upstream
-        "age_hours": 51.99,
-=======
-        "age_hours": 65.88,
->>>>>>> Stashed changes
+        "age_hours": 52.73,
         "views": 0,
         "is_live": true,
         "is_stuck": true,
@@ -5358,11 +4651,7 @@ const DASHBOARD_DATA = {
         "platform": "instagram",
         "post_id": "GTA-021",
         "dt_utc": "2026-11-24T00:30:00+00:00",
-<<<<<<< Updated upstream
-        "age_hours": 21.37,
-=======
-        "age_hours": 39.74,
->>>>>>> Stashed changes
+        "age_hours": 22.12,
         "views": 2,
         "is_live": true,
         "is_stuck": true,
@@ -5372,11 +4661,7 @@ const DASHBOARD_DATA = {
         "platform": "instagram",
         "post_id": "GTA-022",
         "dt_utc": "2026-11-24T03:30:00+00:00",
-<<<<<<< Updated upstream
-        "age_hours": 21.37,
-=======
-        "age_hours": 39.74,
->>>>>>> Stashed changes
+        "age_hours": 22.12,
         "views": 0,
         "is_live": true,
         "is_stuck": true,
@@ -5386,11 +4671,7 @@ const DASHBOARD_DATA = {
         "platform": "instagram",
         "post_id": "GTA-023",
         "dt_utc": "2026-11-24T06:30:00+00:00",
-<<<<<<< Updated upstream
-        "age_hours": 21.37,
-=======
-        "age_hours": 39.74,
->>>>>>> Stashed changes
+        "age_hours": 22.12,
         "views": 0,
         "is_live": true,
         "is_stuck": true,
@@ -5400,11 +4681,7 @@ const DASHBOARD_DATA = {
         "platform": "instagram",
         "post_id": "LIVE-004",
         "dt_utc": "2026-11-24T11:37:00+00:00",
-<<<<<<< Updated upstream
-        "age_hours": 2.92,
-=======
-        "age_hours": 3.66,
->>>>>>> Stashed changes
+        "age_hours": 3.67,
         "views": 1,
         "is_live": true,
         "is_stuck": true,
@@ -5414,11 +4691,7 @@ const DASHBOARD_DATA = {
         "platform": "instagram",
         "post_id": "GTA-024",
         "dt_utc": "2026-11-24T21:30:00+00:00",
-<<<<<<< Updated upstream
-        "age_hours": 3.2,
-=======
-        "age_hours": 3.94,
->>>>>>> Stashed changes
+        "age_hours": 3.95,
         "views": 0,
         "is_live": true,
         "is_stuck": true,
@@ -5428,11 +4701,7 @@ const DASHBOARD_DATA = {
         "platform": "instagram",
         "post_id": "GTA-028",
         "dt_utc": "2026-11-25T18:30:00+00:00",
-<<<<<<< Updated upstream
-        "age_hours": 21.37,
-=======
-        "age_hours": 22.11,
->>>>>>> Stashed changes
+        "age_hours": 22.12,
         "views": 0,
         "is_live": true,
         "is_stuck": true,
@@ -5442,11 +4711,7 @@ const DASHBOARD_DATA = {
         "platform": "instagram",
         "post_id": "GTA-029",
         "dt_utc": "2026-11-25T21:30:00+00:00",
-<<<<<<< Updated upstream
-        "age_hours": 3.25,
-=======
-        "age_hours": 3.99,
->>>>>>> Stashed changes
+        "age_hours": 4.0,
         "views": 1,
         "is_live": true,
         "is_stuck": true,
@@ -5456,31 +4721,7 @@ const DASHBOARD_DATA = {
         "platform": "instagram",
         "post_id": "LIVE-003",
         "dt_utc": "2026-11-27T09:34:00+00:00",
-<<<<<<< Updated upstream
-        "age_hours": 2.92,
-=======
-        "age_hours": 3.66,
-        "views": 0,
-        "is_live": true,
-        "is_stuck": true,
-        "hook": "they just fell out of the sky"
-      },
-      {
-        "platform": "tiktok",
-        "post_id": "GTA-029",
-        "dt_utc": "2026-11-25T21:30:00+00:00",
-        "age_hours": 3.99,
-        "views": 0,
-        "is_live": true,
-        "is_stuck": true,
-        "hook": "kai cenat car gives up mid chase"
-      },
-      {
-        "platform": "tiktok",
-        "post_id": "LIVE-003",
-        "dt_utc": "2026-11-27T09:36:00+00:00",
-        "age_hours": 3.66,
->>>>>>> Stashed changes
+        "age_hours": 3.67,
         "views": 0,
         "is_live": true,
         "is_stuck": true,
@@ -5941,11 +5182,7 @@ const DASHBOARD_DATA = {
   },
   "automation": {
     "today_wat": "2026-11-27",
-<<<<<<< Updated upstream
-    "now_wat": "2026-11-27 13:50 WAT",
-=======
-    "now_wat": "2026-11-27 14:34 WAT",
->>>>>>> Stashed changes
+    "now_wat": "2026-11-27 14:35 WAT",
     "today_status": "completed",
     "today_slot_used": "19:19 WAT (Backup 3)",
     "today_clips_delivered": 5,
@@ -6227,7 +5464,7 @@ const DASHBOARD_DATA = {
       if (!ymd) return "";
       const p = String(ymd).split("-");
       if (p.length !== 3) return ymd;
-      const m = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"][Number(p[1]) - 1] || p[1];
+      const m = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][Number(p[1]) - 1] || p[1];
       return `${m} ${Number(p[2])}`;
     }
 
@@ -6243,7 +5480,7 @@ const DASHBOARD_DATA = {
       });
       list.sort((a, b) => {
         const dir = state.sortDir === "asc" ? 1 : -1;
-        if (["views", "likes", "shares", "share_rate", "length_sec"].includes(state.sortKey)) {
+        if (["views","likes","shares","share_rate","length_sec"].includes(state.sortKey)) {
           return ((a[state.sortKey] || 0) - (b[state.sortKey] || 0)) * dir;
         }
         return (`${a.date} ${a.time} ${a.post_id}`).localeCompare(`${b.date} ${b.time} ${b.post_id}`) * dir;
@@ -6492,7 +5729,7 @@ const DASHBOARD_DATA = {
         if (m && !slotMap.has(`${m[1]}:${m[2]}`)) slotMap.set(`${m[1]}:${m[2]}`, c.post_id);
       });
       const avoidX = (330 / 1440) * W, avoidW = (90 / 1440) * W;
-      const slots = ["01:30", "04:30", "07:30", "10:30", "13:30", "16:30", "19:30", "22:30"];
+      const slots = ["01:30","04:30","07:30","10:30","13:30","16:30","19:30","22:30"];
       let out = `<rect x="0.5" y="${barY}" width="${W - 1}" height="${barH}" rx="7" fill="#0b0c0e" stroke="#232730" />`;
       out += `<rect x="${avoidX.toFixed(1)}" y="${barY + 1}" width="${avoidW.toFixed(1)}" height="${barH - 2}" fill="rgba(239,83,80,0.12)" />`;
       slots.forEach((s) => {
@@ -6506,7 +5743,7 @@ const DASHBOARD_DATA = {
           out += `<text x="${(rx + pw / 2).toFixed(1)}" y="${barY + 22}" text-anchor="middle" fill="#f1f3f5" font-size="10.5" font-weight="600">${esc(post)}</text>`;
         }
       });
-      [[0, "00:00", "start"], [W * 0.25, "06:00", "middle"], [W * 0.5, "12:00", "middle"], [W * 0.75, "18:00", "middle"], [W, "24:00 WAT", "end"]].forEach(([tx, lbl, anc]) => {
+      [[0,"00:00","start"],[W*0.25,"06:00","middle"],[W*0.5,"12:00","middle"],[W*0.75,"18:00","middle"],[W,"24:00 WAT","end"]].forEach(([tx,lbl,anc]) => {
         out += `<text x="${tx}" y="56" text-anchor="${anc}" fill="#7b8494" font-size="11">${lbl}</text>`;
       });
       svg.innerHTML = out;
@@ -6867,12 +6104,12 @@ const DASHBOARD_DATA = {
       state.sortKey = k;
       renderTable();
     }));
-    ["calc-platform", "calc-camp-id", "calc-views", "calc-cpm", "calc-cap", "calc-fee"].forEach((id) => {
+    ["calc-platform","calc-camp-id","calc-views","calc-cpm","calc-cap","calc-fee"].forEach((id) => {
       document.getElementById(id)?.addEventListener("input", updateCalculator);
       document.getElementById(id)?.addEventListener("change", updateCalculator);
     });
     document.getElementById("copy-calc-cmd")?.addEventListener("click", async () => {
-      try { await navigator.clipboard.writeText(document.getElementById("calc-cli-cmd").textContent); } catch { }
+      try { await navigator.clipboard.writeText(document.getElementById("calc-cli-cmd").textContent); } catch {}
     });
     document.getElementById("copy-summary-btn")?.addEventListener("click", async () => {
       const text = `${D.page_name || "Leonida Chaos"} (${shortUtc(D.generated_at_utc)})\nViews: ${fmtInt(D.totals?.views)} | Followers: ${fmtInt(D.totals?.followers)} | Campaign Earnings: ${fmtUsd(D.earnings?.total_accumulated_usd)}`;
@@ -6880,10 +6117,9 @@ const DASHBOARD_DATA = {
         await navigator.clipboard.writeText(text);
         document.getElementById("copy-summary-label").textContent = "Copied";
         setTimeout(() => { document.getElementById("copy-summary-label").textContent = "Copy recap"; }, 1400);
-      } catch { }
+      } catch {}
     });
     renderAll();
   </script>
 </body>
-
 </html>
