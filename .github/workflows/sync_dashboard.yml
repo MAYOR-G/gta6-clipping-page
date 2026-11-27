@@ -34,7 +34,7 @@ jobs:
       - name: Sync YouTube, TikTok & Instagram Stats + Campaign Views + Rebuild Dashboard
         env:
           SCRAPE_CREATORS_API_KEY: ${{ secrets.SCRAPE_CREATORS_API_KEY }}
-          SCRAPE_CREATORS_CREDIT_CAP: "10"
+          SCRAPE_CREATORS_CREDIT_CAP: "12"
           YT_CHANNEL_URL: ${{ vars.YT_CHANNEL_URL }}
           TIKTOK_HANDLE: ${{ vars.TIKTOK_HANDLE }}
           IG_HANDLE: ${{ vars.IG_HANDLE }}

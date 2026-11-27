@@ -55,11 +55,71 @@ GENERIC_STOPWORDS = {
     "the", "and", "out", "all", "now", "are", "was", "bro", "lol", "omg", "wtf",
 }
 
+WAT = timezone(timedelta(hours=1))
+
+CREDIT_RE = re.compile(r"(?i)credit\s*:\s*(@?[A-Za-z0-9_.]+(?:\s*\([^)]+\))?)")
+
 URL_ID_PATTERNS = {
     "youtube": re.compile(r"youtube\.com/(?:shorts|watch\?v=)/([A-Za-z0-9_-]{6,})|youtu\.be/([A-Za-z0-9_-]{6,})"),
     "tiktok": re.compile(r"tiktok\.com/@[^/]+/video/(\d{6,})"),
     "instagram": re.compile(r"instagram\.com/(?:reel|p)/([A-Za-z0-9_-]{6,})"),
 }
+
+
+def _to_int_or_none(val: Any) -> int | None:
+    if val is None or str(val).strip() == "":
+        return None
+    try:
+        return int(float(str(val).replace(",", "").strip()))
+    except Exception:
+        return None
+
+
+def _clean_duration_sec(val: Any) -> float | None:
+    if val is None or val == "":
+        return None
+    try:
+        dur = float(val)
+        if dur <= 0:
+            return None
+        if dur > 600:
+            dur = dur / 1000.0
+        return round(dur, 2) if 0 < dur <= 600 else None
+    except Exception:
+        return None
+
+
+def _clean_live_title(raw_title: str) -> str:
+    """Extract a clean concise title from a raw YouTube/TikTok/IG caption (strips Credit, hashtags, @mentions, emojis)."""
+    s = (raw_title or "").replace("\u2019", "'").replace("\u2018", "'").replace("\u201c", '"').replace("\u201d", '"')
+    s = s.splitlines()[0] if s else ""
+    s = re.split(r"(?i)credit\s*:", s, maxsplit=1)[0]
+    s = re.split(r"#", s, maxsplit=1)[0]
+    s = re.sub(r"@[A-Za-z0-9_.]+(?:\s*\([^)]*\))?", " ", s)
+    # Strip emojis/pictographs while preserving standard printable punctuation and text
+    s = re.sub(r"[\U00010000-\U0010ffff\u2600-\u27bf\ufe0f]+", " ", s)
+    s = re.sub(r"\s+", " ", s).strip(" -|:,")
+    if len(s) > 70:
+        s = s[:67].rsplit(" ", 1)[0].strip() + "..."
+    return s
+
+
+def _extract_credit_from_title(raw_title: str) -> str:
+    """Extract streamer credit handle from a caption such as 'Credit: @jynxzi (Twitch)'."""
+    s = raw_title or ""
+    m = CREDIT_RE.search(s)
+    if m:
+        cred = m.group(1).strip()
+        if not cred.startswith("@"):
+            cred = f"@{cred}"
+        return cred
+    mentions = [
+        h for h in re.findall(r"@([A-Za-z0-9_.]+)", s)
+        if h.lower() not in ("leonidachao", "leonida.chaos4", "leonida_chaos4")
+    ]
+    if mentions:
+        return f"@{mentions[0]}"
+    return ""
 
 
 def load_local_dotenv() -> None:
@@ -146,6 +206,7 @@ def fetch_youtube_channel_stats(channel_url: str, max_items: int = 100) -> dict[
     )
     videos = []
     followers = None
+    consec_failures = 0
     for line in out.strip().splitlines():
         if not line.strip():
             continue
@@ -153,38 +214,56 @@ def fetch_youtube_channel_stats(channel_url: str, max_items: int = 100) -> dict[
         vid_id = d.get("id")
         if not vid_id:
             continue
+        flat_views = _to_int_or_none(d.get("view_count"))
         item: dict[str, Any] = {
             "id": str(vid_id),
             "url": f"https://www.youtube.com/shorts/{vid_id}",
             "title": d.get("title") or "",
-            "views": d.get("view_count"),
+            "views": flat_views,
+            "views_approx": bool(flat_views is not None and flat_views >= 1000),
             "likes": None,
             "comments": None,
             "shares": None,
+            "duration": _clean_duration_sec(d.get("duration")),
             "published_utc": None,
         }
-        try:
-            detail_raw = subprocess.check_output(
-                ["yt-dlp", "--skip-download", "--dump-json", "--no-warnings", f"https://www.youtube.com/watch?v={vid_id}"],
-                text=True,
-                timeout=20,
-            )
-            det = json.loads(detail_raw.strip().splitlines()[0])
-            if det.get("view_count") is not None:
-                item["views"] = det.get("view_count")
-            elif item["views"] is None:
-                item["views"] = 0
-            item["likes"] = det.get("like_count")
-            item["comments"] = det.get("comment_count")
-            if det.get("title"):
-                item["title"] = det["title"]
-            if det.get("description"):
-                item["description"] = det["description"]
-            item["published_utc"] = parse_epoch_utc(det.get("timestamp")) or parse_yyyymmdd_utc(det.get("upload_date"))
-            if det.get("channel_follower_count") is not None:
-                followers = det["channel_follower_count"]
-        except Exception:
-            pass
+        if consec_failures < 3:
+            try:
+                detail_raw = subprocess.check_output(
+                    [
+                        "yt-dlp",
+                        "--skip-download",
+                        "--dump-json",
+                        "--no-warnings",
+                        "--extractor-args",
+                        "youtube:player_client=tv,web_embedded",
+                        f"https://www.youtube.com/watch?v={vid_id}",
+                    ],
+                    text=True,
+                    stderr=subprocess.DEVNULL,
+                    timeout=15,
+                )
+                det = json.loads(detail_raw.strip().splitlines()[0])
+                consec_failures = 0
+                if det.get("view_count") is not None:
+                    item["views"] = det.get("view_count")
+                    item["views_approx"] = False
+                elif item["views"] is None:
+                    item["views"] = 0
+                    item["views_approx"] = False
+                item["likes"] = det.get("like_count")
+                item["comments"] = det.get("comment_count")
+                if det.get("duration") is not None:
+                    item["duration"] = _clean_duration_sec(det.get("duration")) or item["duration"]
+                if det.get("title"):
+                    item["title"] = det["title"]
+                if det.get("description"):
+                    item["description"] = det["description"]
+                item["published_utc"] = parse_epoch_utc(det.get("timestamp")) or parse_yyyymmdd_utc(det.get("upload_date"))
+                if det.get("channel_follower_count") is not None:
+                    followers = det["channel_follower_count"]
+            except Exception:
+                consec_failures += 1
         videos.append(item)
     return {"platform": "youtube", "followers": followers, "videos": videos}
 
@@ -199,73 +278,149 @@ def scrape_creators_get(path: str, params: dict[str, str], api_key: str) -> dict
         return json.loads(resp.read().decode("utf-8"))
 
 
-def fetch_tiktok_stats(handle: str, api_key: str) -> tuple[dict[str, Any], int]:
-    """Use Scrape Creators /v3/tiktok/profile/videos (1 credit total — includes follower_count!)."""
+def fetch_tiktok_stats(handle: str, api_key: str, max_pages: int = 5) -> tuple[dict[str, Any], int]:
+    """Paginate Scrape Creators /v3/tiktok/profile/videos (1 credit/page — includes follower_count!)."""
     clean = clean_handle(handle)
-    vids_data = scrape_creators_get("/v3/tiktok/profile/videos", {"handle": clean, "sort_by": "latest"}, api_key)
     followers = None
-    videos = []
-    for item in vids_data.get("aweme_list") or vids_data.get("data") or []:
-        if followers is None:
-            fc = (item.get("author") or {}).get("follower_count")
-            if fc is not None:
-                followers = fc
-        st = item.get("statistics") or {}
-        vid_id = item.get("aweme_id") or item.get("id") or ""
-        videos.append({
-            "id": str(vid_id),
-            "url": f"https://www.tiktok.com/@{clean}/video/{vid_id}" if vid_id else "",
-            "title": item.get("desc") or "",
-            "views": st.get("play_count"),
-            "likes": st.get("digg_count"),
-            "shares": st.get("share_count"),
-            "comments": st.get("comment_count"),
-            "saves": st.get("collect_count"),
-            "published_utc": parse_epoch_utc(item.get("create_time")),
-        })
+    videos: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
+    cursor: Any = None
+    credits_used = 0
+    credits_remaining = None
+
+    for _ in range(max(1, max_pages)):
+        params: dict[str, str] = {"handle": clean, "sort_by": "latest"}
+        if cursor is not None:
+            params["max_cursor"] = str(cursor)
+        vids_data = scrape_creators_get("/v3/tiktok/profile/videos", params, api_key)
+        credits_used += 1
+        credits_remaining = vids_data.get("credits_remaining", credits_remaining)
+        items = vids_data.get("aweme_list") or vids_data.get("data") or []
+        for item in items:
+            if followers is None:
+                fc = (item.get("author") or {}).get("follower_count")
+                if fc is not None:
+                    followers = fc
+            vid_id = str(item.get("aweme_id") or item.get("id") or "")
+            if not vid_id or vid_id in seen_ids:
+                continue
+            seen_ids.add(vid_id)
+            st = item.get("statistics") or {}
+            vid_meta = item.get("video") or {}
+            videos.append({
+                "id": vid_id,
+                "url": f"https://www.tiktok.com/@{clean}/video/{vid_id}",
+                "title": item.get("desc") or "",
+                "views": st.get("play_count"),
+                "likes": st.get("digg_count"),
+                "shares": st.get("share_count"),
+                "comments": st.get("comment_count"),
+                "saves": st.get("collect_count"),
+                "duration": _clean_duration_sec(vid_meta.get("duration") or item.get("duration")),
+                "published_utc": parse_epoch_utc(item.get("create_time")),
+            })
+        has_more = vids_data.get("has_more")
+        cursor = vids_data.get("max_cursor")
+        if not has_more or cursor is None or not items:
+            break
+
     return {
         "platform": "tiktok",
         "followers": followers,
         "videos": videos,
-        "credits_remaining": vids_data.get("credits_remaining"),
-    }, 1
+        "credits_remaining": credits_remaining,
+    }, credits_used
 
 
-def fetch_instagram_stats(handle: str, api_key: str) -> tuple[dict[str, Any], int]:
+def fetch_tiktok_video_detail_ytdlp(url: str) -> dict[str, Any] | None:
+    """0-credit fallback via yt-dlp for bound TikTok URLs omitted from the profile feed."""
+    if not url:
+        return None
+    try:
+        raw = subprocess.check_output(
+            ["yt-dlp", "--skip-download", "--dump-json", "--no-warnings", url],
+            text=True,
+            stderr=subprocess.DEVNULL,
+            timeout=15,
+        )
+        det = json.loads(raw.strip().splitlines()[0])
+        vid_id = str(det.get("id") or extract_video_id_from_url(url, "tiktok") or "")
+        if not vid_id:
+            return None
+        return {
+            "id": vid_id,
+            "url": url,
+            "title": det.get("description") or det.get("title") or "",
+            "views": det.get("view_count"),
+            "likes": det.get("like_count"),
+            "shares": det.get("repost_count"),
+            "comments": det.get("comment_count"),
+            "saves": det.get("save_count"),
+            "published_utc": parse_epoch_utc(det.get("timestamp")) or parse_yyyymmdd_utc(det.get("upload_date")),
+        }
+    except Exception:
+        return None
+
+
+def fetch_instagram_stats(handle: str, api_key: str, max_pages: int = 5) -> tuple[dict[str, Any], int]:
+    """Fetch Instagram profile (1 credit) + paginate /v1/instagram/user/reels (1 credit/page)."""
     clean = clean_handle(handle)
     prof = scrape_creators_get("/v1/instagram/profile", {"handle": clean}, api_key)
-    reels_data = scrape_creators_get("/v1/instagram/user/reels", {"handle": clean}, api_key)
+    credits_used = 1
     user_obj = (prof.get("data") or {}).get("user") or prof.get("data") or prof
     followers = user_obj.get("follower_count")
     if followers is None:
         followers = (user_obj.get("edge_followed_by") or {}).get("count")
-    videos = []
-    for item in reels_data.get("items") or reels_data.get("data") or []:
-        media = item.get("media") or item
-        code = media.get("code") or media.get("shortcode") or ""
-        cap = (media.get("caption") or {}).get("text") if isinstance(media.get("caption"), dict) else (media.get("caption") or "")
-        plays = media.get("play_count")
-        if plays is None:
-            plays = media.get("ig_play_count")
-        if plays is None:
-            plays = media.get("video_view_count")
-        pub_dt = parse_epoch_utc(media.get("taken_at") or media.get("taken_at_timestamp"))
-        videos.append({
-            "id": str(code),
-            "url": f"https://www.instagram.com/reel/{code}/" if code else "",
-            "title": cap,
-            "views": plays,
-            "likes": media.get("like_count"),
-            "shares": media.get("reshare_count"),
-            "comments": media.get("comment_count"),
-            "published_utc": pub_dt,
-        })
+
+    videos: list[dict[str, Any]] = []
+    seen_codes: set[str] = set()
+    max_id: Any = None
+    credits_remaining = prof.get("credits_remaining")
+
+    for _ in range(max(1, max_pages)):
+        params: dict[str, str] = {"handle": clean}
+        if max_id is not None:
+            params["max_id"] = str(max_id)
+        reels_data = scrape_creators_get("/v1/instagram/user/reels", params, api_key)
+        credits_used += 1
+        credits_remaining = reels_data.get("credits_remaining", credits_remaining)
+        items = reels_data.get("items") or reels_data.get("data") or []
+        for item in items:
+            media = item.get("media") or item
+            code = str(media.get("code") or media.get("shortcode") or "")
+            if not code or code in seen_codes:
+                continue
+            seen_codes.add(code)
+            cap = (media.get("caption") or {}).get("text") if isinstance(media.get("caption"), dict) else (media.get("caption") or "")
+            plays = media.get("play_count")
+            if plays is None:
+                plays = media.get("ig_play_count")
+            if plays is None:
+                plays = media.get("video_view_count")
+            pub_dt = parse_epoch_utc(media.get("taken_at") or media.get("taken_at_timestamp"))
+            videos.append({
+                "id": code,
+                "url": f"https://www.instagram.com/reel/{code}/",
+                "title": cap,
+                "views": plays,
+                "likes": media.get("like_count"),
+                "shares": media.get("reshare_count"),
+                "comments": media.get("comment_count"),
+                "duration": _clean_duration_sec(media.get("video_duration")),
+                "published_utc": pub_dt,
+            })
+        pinfo = reels_data.get("paging_info") or {}
+        more = pinfo.get("more_available")
+        max_id = pinfo.get("max_id") or reels_data.get("next_max_id")
+        if not more or not max_id or not items:
+            break
+
     return {
         "platform": "instagram",
         "followers": followers,
         "videos": videos,
-        "credits_remaining": reels_data.get("credits_remaining"),
-    }, 2
+        "credits_remaining": credits_remaining,
+    }, credits_used
 
 
 def load_ledger_meta(ledger_path: Path = LEDGER_PATH) -> dict[tuple[str, str], dict[str, Any]]:
@@ -520,10 +675,147 @@ def repair_scoreboard_rows(
                 pass
 
 
+def _next_live_number(rows: list[dict[str, str]]) -> int:
+    highest = 0
+    for r in rows:
+        m = re.match(r"^LIVE-(\d+)$", (r.get("post_id") or "").strip())
+        if m:
+            highest = max(highest, int(m.group(1)))
+    return highest + 1
+
+
+def _same_clip_cross_platform(a: dict[str, Any], b: dict[str, Any]) -> bool:
+    """Return True if two unclaimed live videos on different platforms represent the same clip."""
+    if a["platform"] == b["platform"]:
+        return False
+    a_clean = normalize_text(a["clean_title"])
+    b_clean = normalize_text(b["clean_title"])
+    if len(a_clean) >= 6 and a_clean == b_clean:
+        return True
+    if _mentions_conflicting_streamer(a["raw_title"], b["streamer_norm"]) or _mentions_conflicting_streamer(
+        b["raw_title"], a["streamer_norm"]
+    ):
+        return False
+    pub_a = a.get("published_utc")
+    pub_b = b.get("published_utc")
+    if pub_a and pub_b and abs((pub_a - pub_b).total_seconds()) > 72 * 3600:
+        return False
+    words_a = set(_distinctive_words(a["clean_title"], a["streamer_norm"]))
+    words_b = set(_distinctive_words(b["clean_title"], b["streamer_norm"]))
+    return len(words_a & words_b) >= 2
+
+
+def _import_untracked_live_videos(
+    rows: list[dict[str, str]],
+    fieldnames: list[str],
+    by_plat: dict[str, dict[str, Any]],
+    claimed_ids_by_plat: dict[str, set[str]],
+    stamp: str,
+) -> int:
+    """
+    Pass 3: Auto-register any live unclaimed videos on YouTube/TikTok/Instagram under LIVE-### IDs
+    (grouped cross-platform by matching caption/credit) so dashboard totals match live accounts 100%.
+    Never creates blank unposted sibling rows and never touches GTA-### numbering.
+    """
+    candidates: list[dict[str, Any]] = []
+    for plat in ("tiktok", "instagram", "youtube"):
+        pdata = by_plat.get(plat)
+        if not pdata:
+            continue
+        claimed = claimed_ids_by_plat.setdefault(plat, set())
+        vids = sorted(
+            [v for v in (pdata.get("videos") or []) if str(v.get("id") or "") and str(v.get("id") or "") not in claimed],
+            key=lambda x: (x.get("published_utc") or datetime.max.replace(tzinfo=timezone.utc), str(x.get("id") or "")),
+        )
+        for v in vids:
+            raw_title = (v.get("title") or "").strip()
+            clean_title = _clean_live_title(raw_title) or raw_title[:60]
+            credit = _extract_credit_from_title(raw_title)
+            streamer_norm = normalize_text(credit.split("(")[0])
+            candidates.append({
+                "platform": plat,
+                "video": v,
+                "raw_title": raw_title,
+                "clean_title": clean_title,
+                "credit": credit,
+                "streamer_norm": streamer_norm,
+                "published_utc": v.get("published_utc"),
+                "followers": pdata.get("followers"),
+            })
+
+    if not candidates:
+        return 0
+
+    groups: list[list[dict[str, Any]]] = []
+    for cand in candidates:
+        placed = False
+        for grp in groups:
+            if any(c["platform"] == cand["platform"] for c in grp):
+                continue
+            if any(_same_clip_cross_platform(c, cand) for c in grp):
+                grp.append(cand)
+                placed = True
+                break
+        if not placed:
+            groups.append([cand])
+
+    next_num = _next_live_number(rows)
+    imported = 0
+    now_wat = datetime.now(WAT)
+
+    for grp in groups:
+        post_id = f"LIVE-{next_num:03d}"
+        next_num += 1
+        grp_credit = next((c["credit"] for c in grp if c["credit"]), "")
+        grp_clean_title = next((c["clean_title"] for c in grp if len(c["clean_title"]) >= 4), grp[0]["clean_title"])
+        grp_pub = next((c["published_utc"] for c in grp if c["published_utc"]), None)
+
+        for cand in sorted(grp, key=lambda x: x["platform"]):
+            v = cand["video"]
+            plat = cand["platform"]
+            pub_dt = (cand["published_utc"] or grp_pub)
+            pub_wat = pub_dt.astimezone(WAT) if pub_dt else now_wat
+            v_views = v.get("views")
+            dur = v.get("duration")
+
+            new_row = {col: "" for col in fieldnames}
+            new_row["post_id"] = post_id
+            new_row["date"] = pub_wat.strftime("%Y-%m-%d")
+            new_row["time"] = pub_wat.strftime("%H:%M WAT") if pub_dt else ""
+            new_row["platform"] = plat
+            new_row["pillar"] = "live_auto_discovered"
+            new_row["format"] = "stack_or_full"
+            new_row["hook"] = cand["clean_title"] if len(cand["clean_title"]) >= 4 else grp_clean_title
+            new_row["length_sec"] = f"{float(dur):.2f}" if dur is not None else ""
+            new_row["credit"] = cand["credit"] or grp_credit
+            if v_views is not None:
+                new_row["views_12h"] = str(v_views)
+                new_row["views_24h"] = str(v_views)
+            if v.get("likes") is not None:
+                new_row["likes"] = str(v["likes"])
+            if v.get("shares") is not None:
+                new_row["reposts_or_shares"] = str(v["shares"])
+            if v.get("comments") is not None:
+                new_row["replies_or_comments"] = str(v["comments"])
+            if v.get("saves") is not None:
+                new_row["saves_or_bookmarks"] = str(v["saves"])
+            if cand["followers"] is not None:
+                new_row["followers_at_read"] = str(cand["followers"])
+            new_row["test_name"] = "LIVE-SYNC"
+            new_row["notes"] = f"{v.get('url') or ''} | auto_discovered_live | read({stamp}):v={v_views}"
+
+            rows.append(new_row)
+            claimed_ids_by_plat[plat].add(str(v["id"]))
+            imported += 1
+
+    return imported
+
+
 def update_scoreboard(
     platform_data: list[dict[str, Any]],
     scoreboard_path: Path = SCOREBOARD_PATH,
     repair: bool = False,
+    allow_missing_fallback: bool = True,
 ) -> int:
     if not scoreboard_path.exists():
         return 0
@@ -551,6 +843,7 @@ def update_scoreboard(
             claimed_ids_by_plat[p].add(bound_id)
 
     # Pass 2: update bound rows and cleanly bind eligible unbound rows
+    tt_fallback_used = 0
     for row in rows:
         p = (row.get("platform") or "").strip().lower()
         pdata = by_plat.get(p)
@@ -559,16 +852,49 @@ def update_scoreboard(
         if pdata.get("followers") is not None:
             row["followers_at_read"] = str(pdata["followers"])
         claimed = claimed_ids_by_plat.setdefault(p, set())
-        matched = match_video(row, pdata.get("videos") or [], ledger_meta, claimed_ids=claimed)
+        plat_videos = pdata.get("videos") or []
+        matched = match_video(row, plat_videos, ledger_meta, claimed_ids=claimed)
+        if (
+            not matched
+            and p == "tiktok"
+            and allow_missing_fallback
+            and len(plat_videos) > 0
+            and tt_fallback_used < 5
+        ):
+            bound_tt_url = next(
+                (u for u in extract_urls_from_notes(row.get("notes") or "") if extract_video_id_from_url(u, "tiktok")),
+                None,
+            )
+            if bound_tt_url:
+                matched = fetch_tiktok_video_detail_ytdlp(bound_tt_url)
+                tt_fallback_used += 1
         if not matched:
             continue
         if matched.get("id"):
             claimed.add(str(matched["id"]))
-        v = matched.get("views")
+
+        clean_title = _clean_live_title(matched.get("title") or "")
+        if len(clean_title) >= 4:
+            row["hook"] = clean_title
+        if not (row.get("credit") or "").strip():
+            ext_cred = _extract_credit_from_title(matched.get("title") or "")
+            if ext_cred:
+                row["credit"] = ext_cred
+
+        v = _to_int_or_none(matched.get("views"))
+        existing_24 = _to_int_or_none(row.get("views_24h"))
+        existing_12 = _to_int_or_none(row.get("views_12h"))
+        effective_v = v
         if v is not None:
-            if not row.get("views_12h"):
-                row["views_12h"] = str(v)
-            row["views_24h"] = str(v)
+            if matched.get("views_approx") and existing_24 is not None and existing_24 > v:
+                effective_v = existing_24
+            else:
+                if existing_12 is None:
+                    row["views_12h"] = str(v)
+                row["views_24h"] = str(v)
+        elif existing_24 is not None:
+            effective_v = existing_24
+
         if matched.get("likes") is not None:
             row["likes"] = str(matched["likes"])
         if matched.get("shares") is not None:
@@ -578,9 +904,12 @@ def update_scoreboard(
         if matched.get("saves") is not None:
             row["saves_or_bookmarks"] = str(matched["saves"])
 
-        read_tag = f"read({stamp}):v={v}"
+        read_tag = f"read({stamp}):v={effective_v}"
         row["notes"] = _clean_notes_with_single_url(row.get("notes") or "", matched.get("url") or "", read_tag)
         updated_rows += 1
+
+    # Pass 3: auto-import any remaining unclaimed live videos under LIVE-### IDs
+    updated_rows += _import_untracked_live_videos(rows, fieldnames, by_plat, claimed_ids_by_plat, stamp)
 
     with scoreboard_path.open("w", encoding="utf-8", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
@@ -641,10 +970,11 @@ def main() -> int:
         seen_tt: set[str] = set()
         has_tt_fol = False
         for h in tt_handles:
-            if credits_used + 1 > sc_cap:
+            avail = sc_cap - credits_used
+            if avail < 1:
                 break
             try:
-                data, c = fetch_tiktok_stats(h, sc_key)
+                data, c = fetch_tiktok_stats(h, sc_key, max_pages=min(5, avail))
                 credits_used += c
                 if data.get("followers") is not None:
                     tt_merged["followers"] += int(data["followers"])
@@ -666,10 +996,11 @@ def main() -> int:
         seen_ig: set[str] = set()
         has_ig_fol = False
         for h in ig_handles:
-            if credits_used + 2 > sc_cap:
+            avail = sc_cap - credits_used
+            if avail < 2:
                 break
             try:
-                data, c = fetch_instagram_stats(h, sc_key)
+                data, c = fetch_instagram_stats(h, sc_key, max_pages=min(5, avail - 1))
                 credits_used += c
                 if data.get("followers") is not None:
                     ig_merged["followers"] += int(data["followers"])
@@ -690,6 +1021,7 @@ def main() -> int:
     print(json.dumps({
         "repair": args.repair,
         "synced_platforms": [d["platform"] for d in collected],
+        "videos_fetched": {d["platform"]: len(d.get("videos") or []) for d in collected},
         "followers": {d["platform"]: d.get("followers") for d in collected},
         "rows_updated": updated,
         "scrape_creators_credits_used": credits_used,

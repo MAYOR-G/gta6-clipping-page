@@ -9,15 +9,15 @@
         "posts": 3
       },
       "tiktok": {
-        "views": 389,
-        "likes": 8,
+        "views": 0,
+        "likes": 0,
         "shares": 0,
         "followers": 0,
         "posts": 3
       },
       "instagram": {
-        "views": 366,
-        "likes": 3,
+        "views": 0,
+        "likes": 0,
         "shares": 0,
         "followers": 0,
         "posts": 3
@@ -32,15 +32,15 @@
         "posts": 7
       },
       "tiktok": {
-        "views": 1936,
-        "likes": 36,
+        "views": 1795,
+        "likes": 34,
         "shares": 1,
         "followers": 0,
         "posts": 7
       },
       "instagram": {
-        "views": 913,
-        "likes": 8,
+        "views": 157,
+        "likes": 2,
         "shares": 0,
         "followers": 0,
         "posts": 7
@@ -55,15 +55,15 @@
         "posts": 13
       },
       "tiktok": {
-        "views": 2883,
-        "likes": 50,
+        "views": 2537,
+        "likes": 47,
         "shares": 2,
         "followers": 0,
         "posts": 13
       },
       "instagram": {
-        "views": 1250,
-        "likes": 13,
+        "views": 372,
+        "likes": 4,
         "shares": 0,
         "followers": 0,
         "posts": 13
@@ -78,14 +78,14 @@
         "posts": 20
       },
       "tiktok": {
-        "views": 3750,
-        "likes": 60,
-        "shares": 2,
+        "views": 3647,
+        "likes": 62,
+        "shares": 3,
         "followers": 0,
         "posts": 20
       },
       "instagram": {
-        "views": 2016,
+        "views": 1764,
         "likes": 15,
         "shares": 0,
         "followers": 0,
@@ -101,18 +101,18 @@
         "posts": 24
       },
       "tiktok": {
-        "views": 4234,
-        "likes": 73,
-        "shares": 2,
+        "views": 4086,
+        "likes": 71,
+        "shares": 3,
         "followers": 0,
         "posts": 24
       },
       "instagram": {
-        "views": 2272,
-        "likes": 18,
+        "views": 2143,
+        "likes": 17,
         "shares": 0,
         "followers": 0,
-        "posts": 24
+        "posts": 25
       }
     },
     "2026-11-25": {
@@ -121,21 +121,21 @@
         "likes": 0,
         "shares": 0,
         "followers": 0,
-        "posts": 29
+        "posts": 30
       },
       "tiktok": {
         "views": 5454,
-        "likes": 84,
-        "shares": 2,
+        "likes": 87,
+        "shares": 3,
         "followers": 0,
-        "posts": 29
+        "posts": 30
       },
       "instagram": {
         "views": 2428,
         "likes": 21,
         "shares": 0,
         "followers": 0,
-        "posts": 29
+        "posts": 31
       }
     },
     "2026-11-26": {
@@ -144,44 +144,44 @@
         "likes": 0,
         "shares": 0,
         "followers": 0,
-        "posts": 29
+        "posts": 30
       },
       "tiktok": {
         "views": 5741,
-        "likes": 86,
-        "shares": 2,
+        "likes": 89,
+        "shares": 3,
         "followers": 0,
-        "posts": 29
+        "posts": 31
       },
       "instagram": {
         "views": 2573,
         "likes": 22,
         "shares": 0,
         "followers": 0,
-        "posts": 29
+        "posts": 31
       }
     },
     "2026-11-27": {
       "youtube": {
-        "views": 9741,
+        "views": 10097,
         "likes": 37,
         "shares": 0,
         "followers": 1,
-        "posts": 34
+        "posts": 36
       },
       "tiktok": {
-        "views": 6375,
-        "likes": 98,
-        "shares": 2,
+        "views": 8547,
+        "likes": 136,
+        "shares": 6,
         "followers": 0,
-        "posts": 34
+        "posts": 37
       },
       "instagram": {
-        "views": 2724,
-        "likes": 23,
+        "views": 2989,
+        "likes": 25,
         "shares": 0,
         "followers": 1,
-        "posts": 34
+        "posts": 37
       }
     }
   }
