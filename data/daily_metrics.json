@@ -160,6 +160,29 @@
         "followers": 1,
         "posts": 29
       }
+    },
+    "2026-11-27": {
+      "youtube": {
+        "views": 9951,
+        "likes": 37,
+        "shares": 0,
+        "followers": 1,
+        "posts": 34
+      },
+      "tiktok": {
+        "views": 7118,
+        "likes": 106,
+        "shares": 2,
+        "followers": 0,
+        "posts": 34
+      },
+      "instagram": {
+        "views": 2713,
+        "likes": 21,
+        "shares": 0,
+        "followers": 1,
+        "posts": 34
+      }
     }
   }
 }

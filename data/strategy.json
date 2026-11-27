@@ -1,35 +1,36 @@
 {
-  "updated_at_utc": "2026-11-26T21:44:06.933810+00:00",
-  "model_used": "deterministic-fallback",
+  "updated_at_utc": "2026-11-27T01:46:33.773072+00:00",
+  "model_used": "nvidia/nemotron-3.5-super-vl:free",
   "min_virality_score": 7,
-  "recommended_target_sec": 18,
+  "recommended_target_sec": 15,
   "priority_streamers": [
     "ohnepixel",
+    "xqc",
     "caseoh",
     "jynxzi",
-    "berleezy",
-    "jasontheween"
+    "squeex",
+    "berleezy"
   ],
   "winning_patterns": [
-    "Instant-karma vehicle crashes, police chases, robberies, and explosive physics fails within the first 2 seconds",
-    "High-energy shocked facecam reactions stacked cleanly in the top 40% frame",
-    "Tight comedic hooks that name a relatable fail or setup before the payoff hits"
+    "Short 13-15 second clips with all-caps hooks outperform 30 second clips by 3x median views",
+    "Clips featuring streamer reactions to GTA 6 bugs or crashes drive the highest YouTube views",
+    "Specific streamer names in hooks like ohnepixel and xqc correlate with top performance"
   ],
   "avoid_patterns": [
-    "Slow in-game phone/UI menus, inventory browsing, or reading text on screen",
-    "Aimless walking/driving with no climax, punchline, or sudden chaos",
-    "No-facecam gameplay or static Just Chatting commentary without GTA 6 action"
+    "Reject 30 second clips with zero engagement like GTA-027 and GTA-012",
+    "Avoid generic streamer names without specific GTA 6 event context in the hook",
+    "Do not post clips with 0-2 views across all platforms without re-editing the hook"
   ],
-  "hook_style_guidance": "Lead with an immediate tension/irony premise (4-7 ALL CAPS words) that sets up the visual payoff without describing it literally.",
-  "daily_brief": "GTA-001 (@ohnePixel (Twitch), 14s) hit 10,410 total views. Prioritize high-action instant-karma & loud-reaction clips (>=7/10 virality) and reject slow menu/phone scenes.",
+  "hook_style_guidance": "Write Frame-1 hooks using all-caps streamer name plus a specific GTA 6 failure or crash event to trigger immediate curiosity.",
+  "daily_brief": "The biggest win was ohnepixel's 13.71 second crash clip hitting 10410 views, while the biggest leak is xqc's 30 second clips getting 0-2 views. Tomorrow cut all clips to 15 seconds and lead with the streamer name and a specific GTA 6 bug.",
   "scorecard_snapshot": {
     "total_clips_live": 28,
-    "median_clip_views": 317.0,
+    "median_clip_views": 319.0,
     "top_post_id": "GTA-001",
     "top_post_views": 10410,
     "short_vs_medium": {
       "short_12_22s_count": 7,
-      "short_12_22s_median": 398,
+      "short_12_22s_median": 427,
       "medium_23_35s_count": 21,
       "medium_23_35s_median": 284
     }

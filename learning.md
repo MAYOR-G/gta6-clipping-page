@@ -64,3 +64,10 @@ Dated lessons from every research pass and 2-hour cycle, plus the active experim
 - **Priority Creators:** ohnepixel, xqc, caseoh, jynxzi, berleezy, jasontheween
 - **Double Down:** Short 12-22s clips outperform 23-35s clips with a median of 370 views vs 275 views, proving faster pacing wins.; Hyper-specific crash and glitch hooks like HE PROMISED GTA 6 CHAT NO MORE CRASHING drive 10x+ views over generic gameplay reactions.; Top 5 winners are all under 16 seconds and lead with streamer name plus immediate chaos, confirming hook-first editing beats long setup.
 - **Reject / Avoid:** Reject 30-second strip club and car chase clips from Kai Cenat that generated 2-134 views due to slow buildup and no payoff.; Reject generic parachute wasted and massagator crash clips from Hasan and xQc that scored zero views across all platforms.; Reject any clip longer than 22 seconds without an immediate visual glitch or crash in the first 3 seconds.
+
+### AI Self-Improvement Review (2026-11-27)
+- **Model:** `nvidia/nemotron-3.5-super-vl:free` | **Virality Gate:** `>= 7/10`
+- **Brief:** The biggest win was ohnepixel's 13.71 second crash clip hitting 10410 views, while the biggest leak is xqc's 30 second clips getting 0-2 views. Tomorrow cut all clips to 15 seconds and lead with the streamer name and a specific GTA 6 bug.
+- **Priority Creators:** ohnepixel, xqc, caseoh, jynxzi, squeex, berleezy
+- **Double Down:** Short 13-15 second clips with all-caps hooks outperform 30 second clips by 3x median views; Clips featuring streamer reactions to GTA 6 bugs or crashes drive the highest YouTube views; Specific streamer names in hooks like ohnepixel and xqc correlate with top performance
+- **Reject / Avoid:** Reject 30 second clips with zero engagement like GTA-027 and GTA-012; Avoid generic streamer names without specific GTA 6 event context in the hook; Do not post clips with 0-2 views across all platforms without re-editing the hook

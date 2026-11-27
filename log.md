@@ -506,6 +506,96 @@ Every published/queued clip AND every rejected scout candidate is logged here so
 
 ---
 
+
+### GTA-030 — @jynxzi (Stream Clipper 18.1s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-27 04:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 18.10s (1080x1920, 30 fps) | **Captions:** hook+punchline
+- **Stranger Score:** 8/10 | **Signals:** twitch_clip_views, audio_peak
+- **Hook (Frame 1):** `JYNXZI CAN'T STEAL FERRARI`
+- **YouTube Shorts Title:** `Jynxzi tries to steal a Ferrari in GTA VI and fails`
+- **Punchline:** `CAR THEFT FAIL`
+- **Source URL & Created At:** `https://www.twitch.tv/jynxzi/clip/BelovedFantasticRuffHeyGirl-F8wOQVrMZ6PRyvg_` (2026-11-27T01:46:35Z)
+- **Credit:** `@jynxzi (Twitch)`
+- **Proof Frame:** `proofs/GTA-030_proof.png`
+- **Send Test:** True
+- **IG First Comment:** `watch until the end`
+
+---
+
+
+### GTA-031 — @shotz (Stream Clipper 14.8s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-27 07:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 14.83s (1080x1920, 30 fps) | **Captions:** hook+punchline
+- **Stranger Score:** 8/10 | **Signals:** twitch_clip_views, audio_peak
+- **Hook (Frame 1):** `SHOTZ SCOOTER EMERGENCY`
+- **YouTube Shorts Title:** `Shotz loses control of a mobility scooter in GTA VI`
+- **Punchline:** `STOP RIGHT NOW`
+- **Source URL & Created At:** `https://www.twitch.tv/shotz/clip/TriumphantJollyRatHumbleLife-j6kmZXYddyTo4RDZ` (2026-11-27T01:46:34Z)
+- **Credit:** `@shotz (Twitch)`
+- **Proof Frame:** `proofs/GTA-031_proof.png`
+- **Send Test:** True
+- **IG First Comment:** `who else would panic on a scooter`
+
+---
+
+
+### GTA-032 — @darkviperau (Stream Clipper 17.1s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-27 10:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 17.10s (1080x1920, 30 fps) | **Captions:** hook+punchline
+- **Stranger Score:** 8/10 | **Signals:** twitch_clip_views, audio_peak
+- **Hook (Frame 1):** `DARKVIPERAU GTA 6 ARRESTED`
+- **YouTube Shorts Title:** `DarkViperAU gets arrested in GTA 6 gameplay`
+- **Punchline:** `FAILED SCREEN`
+- **Source URL & Created At:** `https://www.twitch.tv/darkviperau/clip/WealthyObservantMoonAllenHuhu-ltidS7ug-8B8SKD2` (2026-11-27T01:46:37Z)
+- **Credit:** `@darkviperau (Twitch)`
+- **Proof Frame:** `proofs/GTA-032_proof.png`
+- **Send Test:** True
+- **IG First Comment:** `wild moment`
+
+---
+
+
+### GTA-033 — @kaicenat (Stream Clipper 17.1s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-27 13:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 17.10s (1080x1920, 30 fps) | **Captions:** hook+punchline
+- **Stranger Score:** 9/10 | **Signals:** twitch_clip_views, audio_peak
+- **Hook (Frame 1):** `KAI CENAAT WATCHES FLYING KICK`
+- **YouTube Shorts Title:** `Kai Cenat watches a witness get a flying kick for calling the`
+- **Punchline:** `SHE CALLED THE COPS`
+- **Source URL & Created At:** `https://www.twitch.tv/kaicenat/clip/ResourcefulPleasantCasetteBIRB-o4dpCMlGWX1vzPry` (2026-11-27T01:46:38Z)
+- **Credit:** `@kaicenat (Twitch)`
+- **Proof Frame:** `proofs/GTA-033_proof.png`
+- **Send Test:** True
+- **IG First Comment:** `wild moment`
+
+---
+
+
+### GTA-034 — @lacy (Stream Clipper 17.1s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-27 16:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 17.10s (1080x1920, 30 fps) | **Captions:** hook+punchline
+- **Stranger Score:** 9/10 | **Signals:** twitch_clip_views, audio_peak
+- **Hook (Frame 1):** `LACY GTA 6 FAMILY MOMENT`
+- **YouTube Shorts Title:** `Lacy reacts to emotional GTA 6 family scene`
+- **Punchline:** `SUNSET WALK`
+- **Source URL & Created At:** `https://www.twitch.tv/lacy/clip/BillowingDeafVultureEagleEye-z1BTfFgYTHxaqqfh` (2026-11-27T01:46:35Z)
+- **Credit:** `@lacy (Twitch)`
+- **Proof Frame:** `proofs/GTA-034_proof.png`
+- **Send Test:** True
+- **IG First Comment:** `who is watching this with me`
+
+---
+
 ## Scout Rejects Log
 
 *(Record rejected candidates with URL/ID and reason so the 2-hour routine skips them immediately.)*

@@ -17,6 +17,36 @@
         }
       ],
       "updated_at_utc": "2026-11-26T18:43:32.872956+00:00"
+    },
+    "2026-11-27": {
+      "date_wat": "2026-11-27",
+      "status": "completed",
+      "clips_delivered": 5,
+      "target_clips": 5,
+      "post_ids": [
+        "GTA-030",
+        "GTA-031",
+        "GTA-032",
+        "GTA-033",
+        "GTA-034"
+      ],
+      "slot_used": "19:19 WAT (Backup 3)",
+      "attempts": [
+        {
+          "at_utc": "2026-11-27T01:53:00.550454+00:00",
+          "slot_label": "19:19 WAT (Backup 3)",
+          "status": "completed",
+          "added_posts": [
+            "GTA-030",
+            "GTA-031",
+            "GTA-032",
+            "GTA-033",
+            "GTA-034"
+          ],
+          "note": "Delivered 5 clip(s)"
+        }
+      ],
+      "updated_at_utc": "2026-11-27T01:53:00.550450+00:00"
     }
   }
 }
