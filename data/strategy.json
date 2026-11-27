@@ -1,8 +1,8 @@
 {
-  "updated_at_utc": "2026-11-27T12:50:08.765090+00:00",
+  "updated_at_utc": "2026-11-27T13:49:25.100177+00:00",
   "model_used": "nvidia/nemotron-3.5-super-vl:free",
   "min_virality_score": 7,
-  "recommended_target_sec": 15,
+  "recommended_target_sec": 18,
   "priority_streamers": [
     "ohnepixel",
     "jynxzi",
@@ -12,17 +12,17 @@
     "berleezy"
   ],
   "winning_patterns": [
-    "Short 13-18 second clips with immediate chaotic action outperform 30-second clips, as shown by the 549.5 median views for shorts versus 275 for medium clips.",
-    "Specific narrative hooks referencing a streamer's name and a singular failure (e.g., 'he lasted three seconds') drive higher YouTube dominance than generic titles.",
-    "Clips featuring explosive or high-impact moments like bridge failures or helicopter crashes generate significantly more views than static gameplay or setup scenes."
+    "Short 12-22 second clips with immediate high-stakes action outperform 30-second medium clips by nearly double median views.",
+    "Specific outcome-driven hooks like 'lasted three seconds on that bridge' drive 10x more views than generic titles like 'this is a'.",
+    "YouTube Shorts is the dominant traffic source for top performers, contributing over 90% of views on the #1 clip."
   ],
   "avoid_patterns": [
-    "Reject clips with vague, incomplete hooks such as 'this is a' which resulted in 1-2 views.",
-    "Avoid 30-second clips with zero immediate payoff, as evidenced by multiple 0-view flops at exactly 30.04 seconds.",
-    "Do not post generic scene labels like 'GTA 6 STRIP CLUB SCENE' without a specific conflict or outcome, which yielded only 2 views."
+    "Reject 30-second clips with generic hooks such as 'this is a' or 'GTA 6 STRIP CLUB SCENE' which received 1-2 views.",
+    "Do not post clips where the streamer is silent or reacting without visible in-game chaos or destruction.",
+    "Avoid long intros or setup time; clips must deliver the payoff within the first 3 seconds to prevent scroll-away."
   ],
-  "hook_style_guidance": "Write Frame-1 hooks that combine a specific streamer name with a high-stakes, immediate outcome to create a curiosity gap within the first second.",
-  "daily_brief": "The biggest win was ohnepixel's bridge clip hitting over 10k views, while the biggest leak is posting 30-second clips with no immediate action which consistently get 0-2 views. Tomorrow, cut all clips to under 18 seconds and prioritize hooks that promise a specific failure or explosion.",
+  "hook_style_guidance": "Write Frame-1 hooks that name a specific streamer and a concrete, chaotic GTA 6 event in under 10 words to stop the scroll immediately.",
+  "daily_brief": "The biggest win was ohnepixel's bridge clip hitting 10,272 views using a 13-second specific hook. The biggest leak is posting 30-second generic clips that get 0-2 views. Tomorrow, cut all clips to under 22 seconds and only use outcome-driven hooks.",
   "scorecard_snapshot": {
     "total_clips_live": 33,
     "median_clip_views": 287,
