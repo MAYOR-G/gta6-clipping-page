@@ -1,38 +1,38 @@
 {
-  "updated_at_utc": "2026-11-27T08:48:31.042263+00:00",
+  "updated_at_utc": "2026-11-27T09:42:04.709014+00:00",
   "model_used": "nvidia/nemotron-3.5-super-vl:free",
   "min_virality_score": 7,
-  "recommended_target_sec": 18,
+  "recommended_target_sec": 15,
   "priority_streamers": [
     "ohnepixel",
-    "jynxzi",
     "xqc",
     "caseoh",
     "squeex",
+    "jynxzi",
     "berleezy"
   ],
   "winning_patterns": [
-    "Short 12-22 second clips outperform medium 23-35 second clips with a median of 428 views vs 284 views.",
-    "High-energy crash and physics break hooks like 'GTA 6 PHYSICS JUST BROKE XQC' drive the highest view counts.",
-    "Top streamer ohnepixel generated 10,410 views from a single clip, proving high-profile creator selection is the primary growth lever."
+    "Under 16 second clips with all-caps hooks promising a specific GTA 6 failure or crash outperformed 30 second generic gameplay by 15x median views",
+    "YouTube Shorts drove 9741 views versus TikTok 6375 and Instagram 2724, so prioritize YouTube-first publishing for high-potential clips",
+    "Clips crediting ohnepixel, xQc, CaseOh, and squeex generated all top 5 winners, proving streamer name recognition in the hook beats anonymous gameplay"
   ],
   "avoid_patterns": [
-    "Reject clips longer than 30 seconds as all 0-2 view flops are exactly 30.04 seconds.",
-    "Reject generic streamer name-only hooks like 'XQC GTA 6 MASSAGGATOR BC CRASH' that lack specific action or conflict.",
-    "Reject low-energy family moments or non-chaotic scenes like 'LACY GTA 6 FAMILY MOMENT' which received 3 views."
+    "Reject 30 second clips with generic titles like GTA 6 EXPLOSION NOW, MASSAGGATOR BC CRASH, or CAR CHASE that produced 0 to 2 views",
+    "Do not post Kai Cenat car chase or strip club content, which combined for 3 total views across two flops",
+    "Avoid any clip with zero shares and zero comments across all platforms, as these indicate zero algorithmic push"
   ],
-  "hook_style_guidance": "Write Frame-1 hooks that combine a specific streamer name with a chaotic GTA 6 event or physics failure in all caps to stop the scroll immediately.",
-  "daily_brief": "The biggest win was ohnepixel's crash promise clip hitting 10,410 views, while the biggest leak is 30-second clips generating zero views. Tomorrow, cut all clips under 22 seconds and prioritize ohnepixel and jynxzi content.",
+  "hook_style_guidance": "Write Frame-1 hooks as all-caps, streamer-name-first promises of a specific GTA 6 disaster, crash, or broken mechanic rather than generic scene descriptions.",
+  "daily_brief": "The ohnepixel crashing clip hit 10210 views and carried the entire account, while 30 second generic clips from xQc, Kai Cenat, and Jynxzi flatlined at zero to two views. Tomorrow, cut all clips to 15 seconds, lead with the streamer name and a specific GTA 6 failure, and publish first to YouTube Shorts.",
   "scorecard_snapshot": {
-    "total_clips_live": 30,
-    "median_clip_views": 319.0,
+    "total_clips_live": 29,
+    "median_clip_views": 287,
     "top_post_id": "GTA-001",
-    "top_post_views": 10410,
+    "top_post_views": 10210,
     "short_vs_medium": {
-      "short_12_22s_count": 9,
-      "short_12_22s_median": 428,
+      "short_12_22s_count": 8,
+      "short_12_22s_median": 460.0,
       "medium_23_35s_count": 21,
-      "medium_23_35s_median": 284
+      "medium_23_35s_median": 272
     }
   }
 }
