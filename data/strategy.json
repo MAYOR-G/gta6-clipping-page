@@ -1,28 +1,28 @@
 {
-  "updated_at_utc": "2026-11-28T01:29:28.507898+00:00",
+  "updated_at_utc": "2026-11-28T08:02:39.213125+00:00",
   "model_used": "nvidia/nemotron-3.5-super-vl:free",
   "min_virality_score": 7,
-  "recommended_target_sec": 15,
+  "recommended_target_sec": 18,
   "priority_streamers": [
     "ohnepixel",
-    "xqc",
     "jynxzi",
+    "xqc",
     "kaicenat",
     "caseoh",
-    "hasanabi"
+    "squeex"
   ],
   "winning_patterns": [
-    "Short 13-18 second clips with immediate payoff hooks like 'he lasted three seconds on that bridge' outperformed longer 30 second builds by 3x median views.",
-    "YouTube Shorts dominated total views (10225 vs 9818 TikTok) despite lower engagement, so prioritize YouTube-native pacing and thumbnails for high-view streamers.",
-    "Top winner ohnepixel drove 10272 views from one clip because the hook promised a specific fail moment rather than generic gameplay, proving curiosity-gap hooks beat hype titles."
+    "Short 12-22 second clips with chaotic vehicle crashes or physics failures outperform longer 30 second clips by 51 percent median views",
+    "Curiosity-driven hooks using specific names and immediate outcomes like he lasted three seconds on that bridge drive higher YouTube click-through than generic all-caps titles",
+    "Clips featuring ohnepixel, jynxzi, and xqc generate disproportionate views because their established audiences search their names and the algorithm recognizes high-energy streamer intent"
   ],
   "avoid_patterns": [
-    "Reject all-caps clickbait hooks such as 'XQC GTA 6 MASSAGGATOR BC CRASH' and 'SHOTZ SCOOTER EMERGENCY' which produced 0 views across all platforms.",
-    "Drop 30-second clips with slow intros like 'this is a' that earned 1 total view; viewers drop before the payoff.",
-    "Avoid low-energy streamer moments with no visible chaos, crash, or reaction, as seen in flops from shotz, kaicenat, and lacy."
+    "Reject all-caps clickbait titles like XQC GTA 6 MASSAGGATOR BC CRASH that read as spam and received zero views across all platforms",
+    "Do not post 30 second clips with slow setup or weak punchlines such as this is a or caseoh just saw that crash happen",
+    "Avoid low-energy streamer moments with no immediate action, visible crash, or clear conflict within the first three seconds"
   ],
-  "hook_style_guidance": "Write Frame-1 hooks as a specific, incomplete event (who + what + immediate consequence) so the viewer must watch to see the outcome.",
-  "daily_brief": "The ohnepixel bridge clip was the biggest win at 10272 views, while all-caps xqc crash clips were the biggest leak with zero views. Tomorrow, cut clips to 15 seconds, lead with a specific fail hook, and post first to YouTube Shorts.",
+  "hook_style_guidance": "Write Frame-1 hooks as a specific person plus a concrete, chaotic outcome in under ten words, avoiding vague setup or all-caps shouting.",
+  "daily_brief": "The ohnepixel bridge clip is the biggest win with over ten thousand views, proving short chaotic moments with named streamers win. The biggest leak is posting 30 second low-energy clips that get zero to one views, wasting upload slots. Tomorrow only ship 15 to 22 second clips with immediate crashes, explosions, or failed stunts from ohnepixel, jynxzi, xqc, or kaicenat.",
   "scorecard_snapshot": {
     "total_clips_live": 37,
     "median_clip_views": 284,
@@ -30,7 +30,7 @@
     "top_post_views": 10272,
     "short_vs_medium": {
       "short_12_22s_count": 14,
-      "short_12_22s_median": 412.5,
+      "short_12_22s_median": 416.0,
       "medium_23_35s_count": 23,
       "medium_23_35s_median": 275
     }
