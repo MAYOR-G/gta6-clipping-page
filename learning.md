@@ -71,3 +71,10 @@ Dated lessons from every research pass and 2-hour cycle, plus the active experim
 - **Priority Creators:** ohnepixel, xqc, caseoh, jynxzi, squeex, berleezy
 - **Double Down:** Short 13-15 second clips with all-caps hooks outperform 30 second clips by 3x median views; Clips featuring streamer reactions to GTA 6 bugs or crashes drive the highest YouTube views; Specific streamer names in hooks like ohnepixel and xqc correlate with top performance
 - **Reject / Avoid:** Reject 30 second clips with zero engagement like GTA-027 and GTA-012; Avoid generic streamer names without specific GTA 6 event context in the hook; Do not post clips with 0-2 views across all platforms without re-editing the hook
+
+### AI Self-Improvement Review (2026-11-28)
+- **Model:** `nvidia/nemotron-3.5-super-vl:free` | **Virality Gate:** `>= 7/10`
+- **Brief:** The ohnepixel bridge clip was the biggest win at 10272 views, while all-caps xqc crash clips were the biggest leak with zero views. Tomorrow, cut clips to 15 seconds, lead with a specific fail hook, and post first to YouTube Shorts.
+- **Priority Creators:** ohnepixel, xqc, jynxzi, kaicenat, caseoh, hasanabi
+- **Double Down:** Short 13-18 second clips with immediate payoff hooks like 'he lasted three seconds on that bridge' outperformed longer 30 second builds by 3x median views.; YouTube Shorts dominated total views (10225 vs 9818 TikTok) despite lower engagement, so prioritize YouTube-native pacing and thumbnails for high-view streamers.; Top winner ohnepixel drove 10272 views from one clip because the hook promised a specific fail moment rather than generic gameplay, proving curiosity-gap hooks beat hype titles.
+- **Reject / Avoid:** Reject all-caps clickbait hooks such as 'XQC GTA 6 MASSAGGATOR BC CRASH' and 'SHOTZ SCOOTER EMERGENCY' which produced 0 views across all platforms.; Drop 30-second clips with slow intros like 'this is a' that earned 1 total view; viewers drop before the payoff.; Avoid low-energy streamer moments with no visible chaos, crash, or reaction, as seen in flops from shotz, kaicenat, and lacy.

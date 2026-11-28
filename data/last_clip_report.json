@@ -1,13 +1,116 @@
 {
-  "generated_at_utc": "2026-11-27T01:53:00.550073+00:00",
+  "generated_at_utc": "2026-11-28T01:38:53.672628+00:00",
   "slot_label": "19:19 WAT (Backup 3)",
   "niche": "gta6",
   "campaign_id": null,
   "clips": [
     {
-      "post_id": "GTA-030",
-      "file": "GTA-030.mp4",
-      "streamer": "jynxzi",
+      "post_id": "GTA-035",
+      "file": "GTA-035.mp4",
+      "streamer": "penta",
+      "source_platform": "Twitch",
+      "duration_sec": 21.1,
+      "timestamp": "0.0s-18.0s",
+      "signals": [
+        "twitch_clip_views",
+        "audio_peak"
+      ],
+      "stranger_score": 7,
+      "virality_score": 6,
+      "has_captions": false,
+      "whisper_backend": "none",
+      "hook": "JASON ON THE BRIDGE",
+      "yt_title": "Jesus Christ Jason what are you doing",
+      "campaign_check": {
+        "passed": true,
+        "campaign_id": null,
+        "checks": [],
+        "auto_fixes": []
+      },
+      "slot": "2026-11-28 04:30 WAT",
+      "telegram_delivered": true
+    },
+    {
+      "post_id": "GTA-036",
+      "file": "GTA-036.mp4",
+      "streamer": "ohnepixel",
+      "source_platform": "Twitch",
+      "duration_sec": 21.1,
+      "timestamp": "0.0s-18.0s",
+      "signals": [
+        "twitch_clip_views"
+      ],
+      "stranger_score": 8,
+      "virality_score": 8,
+      "has_captions": false,
+      "whisper_backend": "none",
+      "hook": "OHNEPIXEL GTA 6 CAR CHAOS",
+      "yt_title": "ohnepixel GTA 6 car chaos caught on camera",
+      "campaign_check": {
+        "passed": true,
+        "campaign_id": null,
+        "checks": [],
+        "auto_fixes": []
+      },
+      "slot": "2026-11-28 07:30 WAT",
+      "telegram_delivered": true
+    },
+    {
+      "post_id": "GTA-037",
+      "file": "GTA-037.mp4",
+      "streamer": "fanum",
+      "source_platform": "Twitch",
+      "duration_sec": 21.1,
+      "timestamp": "0.0s-18.0s",
+      "signals": [
+        "twitch_clip_views",
+        "audio_peak"
+      ],
+      "stranger_score": 8,
+      "virality_score": 8,
+      "has_captions": false,
+      "whisper_backend": "none",
+      "hook": "FANUM GOT BAD LUCK",
+      "yt_title": "Fanum's GTA 6 police run ends in seconds",
+      "campaign_check": {
+        "passed": true,
+        "campaign_id": null,
+        "checks": [],
+        "auto_fixes": []
+      },
+      "slot": "2026-11-28 10:30 WAT",
+      "telegram_delivered": true
+    },
+    {
+      "post_id": "GTA-038",
+      "file": "GTA-038.mp4",
+      "streamer": "darkviperau",
+      "source_platform": "Twitch",
+      "duration_sec": 21.1,
+      "timestamp": "0.0s-18.0s",
+      "signals": [
+        "twitch_clip_views",
+        "audio_peak"
+      ],
+      "stranger_score": 8,
+      "virality_score": 8,
+      "has_captions": false,
+      "whisper_backend": "none",
+      "hook": "HE LASTED THREE SECONDS",
+      "yt_title": "DarkViperAU GTA 6 jet ski bridge moment",
+      "campaign_check": {
+        "passed": true,
+        "campaign_id": null,
+        "checks": [],
+        "auto_fixes": []
+      },
+      "slot": "2026-11-28 13:30 WAT",
+      "telegram_delivered": true
+    },
+    {
+      "post_id": "GTA-039",
+      "file": "GTA-039.mp4",
+      "streamer": "typicalgamer",
       "source_platform": "Twitch",
       "duration_sec": 18.1,
       "timestamp": "0.0s-15.0s",
@@ -15,123 +118,19 @@
         "twitch_clip_views",
         "audio_peak"
       ],
-      "stranger_score": 8,
-      "virality_score": 9,
+      "stranger_score": 7,
+      "virality_score": 6,
       "has_captions": false,
       "whisper_backend": "none",
-      "hook": "JYNXZI CAN'T STEAL FERRARI",
-      "yt_title": "Jynxzi tries to steal a Ferrari in GTA VI and fails",
+      "hook": "HE RAN FROM POLICE",
+      "yt_title": "He ran from police in GTA VI",
       "campaign_check": {
         "passed": true,
         "campaign_id": null,
         "checks": [],
         "auto_fixes": []
       },
-      "slot": "2026-11-27 04:30 WAT",
-      "telegram_delivered": true
-    },
-    {
-      "post_id": "GTA-031",
-      "file": "GTA-031.mp4",
-      "streamer": "shotz",
-      "source_platform": "Twitch",
-      "duration_sec": 14.83,
-      "timestamp": "0.9s-14.0s",
-      "signals": [
-        "twitch_clip_views",
-        "audio_peak"
-      ],
-      "stranger_score": 8,
-      "virality_score": 9,
-      "has_captions": false,
-      "whisper_backend": "none",
-      "hook": "SHOTZ SCOOTER EMERGENCY",
-      "yt_title": "Shotz loses control of a mobility scooter in GTA VI",
-      "campaign_check": {
-        "passed": true,
-        "campaign_id": null,
-        "checks": [],
-        "auto_fixes": []
-      },
-      "slot": "2026-11-27 07:30 WAT",
-      "telegram_delivered": true
-    },
-    {
-      "post_id": "GTA-032",
-      "file": "GTA-032.mp4",
-      "streamer": "darkviperau",
-      "source_platform": "Twitch",
-      "duration_sec": 17.1,
-      "timestamp": "0.0s-14.0s",
-      "signals": [
-        "twitch_clip_views",
-        "audio_peak"
-      ],
-      "stranger_score": 8,
-      "virality_score": 9,
-      "has_captions": false,
-      "whisper_backend": "none",
-      "hook": "DARKVIPERAU GTA 6 ARRESTED",
-      "yt_title": "DarkViperAU gets arrested in GTA 6 gameplay",
-      "campaign_check": {
-        "passed": true,
-        "campaign_id": null,
-        "checks": [],
-        "auto_fixes": []
-      },
-      "slot": "2026-11-27 10:30 WAT",
-      "telegram_delivered": true
-    },
-    {
-      "post_id": "GTA-033",
-      "file": "GTA-033.mp4",
-      "streamer": "kaicenat",
-      "source_platform": "Twitch",
-      "duration_sec": 17.1,
-      "timestamp": "0.0s-14.0s",
-      "signals": [
-        "twitch_clip_views",
-        "audio_peak"
-      ],
-      "stranger_score": 9,
-      "virality_score": 9,
-      "has_captions": false,
-      "whisper_backend": "none",
-      "hook": "KAI CENAAT WATCHES FLYING KICK",
-      "yt_title": "Kai Cenat watches a witness get a flying kick for calling the",
-      "campaign_check": {
-        "passed": true,
-        "campaign_id": null,
-        "checks": [],
-        "auto_fixes": []
-      },
-      "slot": "2026-11-27 13:30 WAT",
-      "telegram_delivered": true
-    },
-    {
-      "post_id": "GTA-034",
-      "file": "GTA-034.mp4",
-      "streamer": "lacy",
-      "source_platform": "Twitch",
-      "duration_sec": 17.1,
-      "timestamp": "0.0s-14.0s",
-      "signals": [
-        "twitch_clip_views",
-        "audio_peak"
-      ],
-      "stranger_score": 9,
-      "virality_score": 9,
-      "has_captions": false,
-      "whisper_backend": "none",
-      "hook": "LACY GTA 6 FAMILY MOMENT",
-      "yt_title": "Lacy reacts to emotional GTA 6 family scene",
-      "campaign_check": {
-        "passed": true,
-        "campaign_id": null,
-        "checks": [],
-        "auto_fixes": []
-      },
-      "slot": "2026-11-27 16:30 WAT",
+      "slot": "2026-11-28 16:30 WAT",
       "telegram_delivered": true
     }
   ]

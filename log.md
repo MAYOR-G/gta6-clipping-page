@@ -596,6 +596,96 @@ Every published/queued clip AND every rejected scout candidate is logged here so
 
 ---
 
+
+### GTA-035 — @penta (Stream Clipper 21.1s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-28 04:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 21.10s (1080x1920, 30 fps) | **Captions:** hook+punchline
+- **Stranger Score:** 7/10 | **Signals:** twitch_clip_views, audio_peak
+- **Hook (Frame 1):** `JASON ON THE BRIDGE`
+- **YouTube Shorts Title:** `Jesus Christ Jason what are you doing`
+- **Punchline:** `HE FELL`
+- **Source URL & Created At:** `https://www.twitch.tv/penta/clip/ThoughtfulHungryOctopusHassanChop-n3yasfobFm0ZvcxE` (2026-11-28T01:29:32Z)
+- **Credit:** `@penta (Twitch)`
+- **Proof Frame:** `proofs/GTA-035_proof.png`
+- **Send Test:** Send to your gaming friend: 'bro watch his face at the end'
+- **IG First Comment:** `who is jason`
+
+---
+
+
+### GTA-036 — @ohnepixel (Stream Clipper 21.1s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-28 07:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 21.10s (1080x1920, 30 fps) | **Captions:** hook+punchline
+- **Stranger Score:** 8/10 | **Signals:** twitch_clip_views
+- **Hook (Frame 1):** `OHNEPIXEL GTA 6 CAR CHAOS`
+- **YouTube Shorts Title:** `ohnepixel GTA 6 car chaos caught on camera`
+- **Punchline:** `CAR CRASHES HARD`
+- **Source URL & Created At:** `https://www.twitch.tv/ohnepixel/clip/AlertBlushingKiwiDendiFace-lDQFacgr1MV-LXoJ` (2026-11-28T01:29:29Z)
+- **Credit:** `@ohnepixel (Twitch)`
+- **Proof Frame:** `proofs/GTA-036_proof.png`
+- **Send Test:** True
+- **IG First Comment:** `source ohnepixel twitch`
+
+---
+
+
+### GTA-037 — @fanum (Stream Clipper 21.1s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-28 10:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 21.10s (1080x1920, 30 fps) | **Captions:** hook+punchline
+- **Stranger Score:** 8/10 | **Signals:** twitch_clip_views, audio_peak
+- **Hook (Frame 1):** `FANUM GOT BAD LUCK`
+- **YouTube Shorts Title:** `Fanum's GTA 6 police run ends in seconds`
+- **Punchline:** `POLICE CAUGHT HIM`
+- **Source URL & Created At:** `https://www.twitch.tv/fanum/clip/FragileEmpathicPelicanTriHard-e-Stfr1TF3nf4owy` (2026-11-28T01:29:31Z)
+- **Credit:** `@fanum (Twitch)`
+- **Proof Frame:** `proofs/GTA-037_proof.png`
+- **Send Test:** True
+- **IG First Comment:** `who else thought he was getting away`
+
+---
+
+
+### GTA-038 — @darkviperau (Stream Clipper 21.1s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-28 13:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 21.10s (1080x1920, 30 fps) | **Captions:** hook+punchline
+- **Stranger Score:** 8/10 | **Signals:** twitch_clip_views, audio_peak
+- **Hook (Frame 1):** `HE LASTED THREE SECONDS`
+- **YouTube Shorts Title:** `DarkViperAU GTA 6 jet ski bridge moment`
+- **Punchline:** `ON THAT BRIDGE`
+- **Source URL & Created At:** `https://www.twitch.tv/darkviperau/clip/PhilanthropicOptimisticAsparagusAMPTropPunch-syd7ULW1P9Upmvct` (2026-11-28T01:29:33Z)
+- **Credit:** `@darkviperau (Twitch)`
+- **Proof Frame:** `proofs/GTA-038_proof.png`
+- **Send Test:** True
+- **IG First Comment:** `source: darkviperau twitch`
+
+---
+
+
+### GTA-039 — @typicalgamer (Stream Clipper 18.1s)
+- **Status:** Cut & Delivered to Telegram
+- **Recommended Slot (WAT):** `2026-11-28 16:30 WAT`
+- **Platforms:** instagram, tiktok, youtube
+- **Duration:** 18.10s (1080x1920, 30 fps) | **Captions:** hook+punchline
+- **Stranger Score:** 7/10 | **Signals:** twitch_clip_views, audio_peak
+- **Hook (Frame 1):** `HE RAN FROM POLICE`
+- **YouTube Shorts Title:** `He ran from police in GTA VI`
+- **Punchline:** `GOT AWAY`
+- **Source URL & Created At:** `https://www.twitch.tv/typicalgamer/clip/CrypticRoundPeanutCharlieBitMe-5jAtl5umr8wzsHPG` (2026-11-28T01:29:33Z)
+- **Credit:** `@typicalgamer (Twitch)`
+- **Proof Frame:** `proofs/GTA-039_proof.png`
+- **Send Test:** True
+- **IG First Comment:** `what would you do`
+
+---
+
 ## Scout Rejects Log
 
 *(Record rejected candidates with URL/ID and reason so the 2-hour routine skips them immediately.)*
